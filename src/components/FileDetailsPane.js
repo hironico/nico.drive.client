@@ -6,10 +6,14 @@ import DavConfiguration from '../AppSettings';
 export default class FileDetailsPane extends Component {
     constructor() {
         super();
+
+        const config = new DavConfiguration();
+
         this.state = {            
             imageData: [],
             selectedIndex: 0,
-            tabs: ['Information', 'Image', 'Metadata']
+            tabs: ['Information', 'Image', 'Metadata'],
+            davConfig: config
         }
     }
 
@@ -25,15 +29,14 @@ export default class FileDetailsPane extends Component {
             return;
         }
         
-        return davClient.getFileDownloadLink(this.props.fileItem.filename);
+        return davClient.getFileDownloadLink(`${this.state.davConfig.homeDirectory}${this.props.fileItem.filename}`);
     }
 
     loadImageInformation = () => {
-        const config = new DavConfiguration();
-        const metaUrl = config.getExifApiUrl();
+        const metaUrl = this.state.davConfig.getExifApiUrl();
 
         const exifRequest = {
-            "filename": this.props.fileItem.filename.substring(5)
+            "filename": this.props.fileItem.filename
         }
 
         fetch(metaUrl, {
@@ -56,11 +59,10 @@ export default class FileDetailsPane extends Component {
 
 
     loadMetaDataInformation = () => {
-        const config = new DavConfiguration();
-        const metaUrl = config.getMetadataApiUrl();
+        const metaUrl = this.state.davConfig.getMetadataApiUrl();
 
         const metadataRequest = {
-            "filename": this.props.fileItem.filename.substring(5),
+            "filename": this.props.fileItem.filename,
             "raw": false
         }
 
@@ -102,9 +104,15 @@ export default class FileDetailsPane extends Component {
     }
 
     renderImageTabs = () => {
+
+        const isImage = this.state.davConfig.isImageFile(this.props.fileItem.basename);
+
         return <Pane>
         <Tablist marginBottom={16} flexBasis={240} marginRight={24}>
-            {this.state.tabs.map((tab, index) => (
+            {this.state.tabs.filter((tab, index) => {
+                return index > 0 ? isImage : true;
+            })
+            .map((tab, index) => (
                 <Tab
                 key={tab}
                 id={tab}

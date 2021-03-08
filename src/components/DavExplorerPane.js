@@ -1,12 +1,13 @@
 
-import { Pane, Heading, Paragraph, Link, ChevronRightIcon, HomeIcon, SideSheet } from 'evergreen-ui';
+import { Pane, Link, ChevronRightIcon, HomeIcon, SideSheet } from 'evergreen-ui';
 import { Fragment, Component } from 'react';
-import { AuthType, createClient } from "webdav";
+import { createClient } from "webdav";
 
 import DavConfiguration from '../AppSettings';
 
 import Folder from './Folder';
 import Image from './Image';
+import RegularFile from './RegularFile';
 import FileDetailsPane from './FileDetailsPane';
 
 export default class DavExplorerPane extends Component {
@@ -24,7 +25,8 @@ export default class DavExplorerPane extends Component {
             currentDirectory: config.homeDirectory,
             directories: [],
             files: [],
-            showDetails: false
+            showDetails: false,
+            davConfig: config
         }
     }
 
@@ -40,9 +42,8 @@ export default class DavExplorerPane extends Component {
 
     getDirectoryContents = async () => {
         const directoryItems = await this.state.davClient.getDirectoryContents(this.state.currentDirectory);
-        
-        let dirs = directoryItems.filter(item => { return item.type === 'directory'});
-        let files = directoryItems.filter(item => { return item.type === 'file'});
+        const dirs = directoryItems.filter(item => { return item.type === 'directory'});
+        const files = directoryItems.filter(item => { return item.type === 'file'});
 
         this.setState({
             directories: dirs,
@@ -81,9 +82,12 @@ export default class DavExplorerPane extends Component {
     }
 
     toggleFileDetails = (fileItem) => {
+        let modified = fileItem;
+        modified.filename = modified.filename.replace(this.state.davConfig.homeDirectory, "");
+
         this.setState({
             showDetails: true,
-            detailedFileItem: fileItem
+            detailedFileItem: modified
         });
     }
 
@@ -95,8 +99,12 @@ export default class DavExplorerPane extends Component {
     }
 
     renderFiles = () => {
-        let images = this.state.files.map((image, index) => {
-            return <Image fileItem={image} navigate={this.navigate} showDetails={this.toggleFileDetails} key={'file_' + index} />
+        let images = this.state.files.map((file, index) => {
+            if (this.state.davConfig.isImageFile(file.basename)) {
+                return <Image fileItem={file} navigate={this.navigate} showDetails={this.toggleFileDetails} key={'file_' + index} />
+            } else {
+                return <RegularFile fileItem={file} navigate={this.navigate} showDetails={this.toggleFileDetails} key={'file_' + index} />
+            }
         });
         return images;
     }

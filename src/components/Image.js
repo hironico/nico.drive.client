@@ -8,8 +8,10 @@ export default class Image extends Component {
 
     constructor() {
         super();
+        const config = new DavConfiguration();
         this.state = {
-            thumb: null
+            thumb: null,
+            davConfig: config
         }
     }
 
@@ -20,7 +22,7 @@ export default class Image extends Component {
     }
 
     generateThumb = () => {
-        const file = this.props.fileItem.filename;
+        const file = this.props.fileItem.filename.replace(this.state.davConfig.homeDirectory, '');
         const req = {
             "filename": file
         }
