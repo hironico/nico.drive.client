@@ -20,7 +20,8 @@ export default class DavExplorerPane extends Component {
 
         this.state = {
             davClient: client,
-            currentDirectory: '/blog',
+            homeDirectory: config.homeDirectory,
+            currentDirectory: config.homeDirectory,
             directories: [],
             files: [],
             showDetails: false
@@ -108,7 +109,7 @@ export default class DavExplorerPane extends Component {
         let breadCrumb = currentDirs.map((dir, index) => {
             if (index===0) {
                 return <Link href="#" style={{display: 'flex', alignItems: 'center'}} key={index+1} onClick={() => {
-                    this.navigateAbsolute('/blog');
+                    this.navigateAbsolute(this.state.homeDirectory);
                 }}><HomeIcon size={24} style={{marginLeft: '5px', marginRight: '5px'}}/></Link>
             } 
 

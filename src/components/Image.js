@@ -20,7 +20,7 @@ export default class Image extends Component {
     }
 
     generateThumb = () => {
-        const file = this.props.fileItem.filename.substring(5);
+        const file = this.props.fileItem.filename;
         const req = {
             "filename": file
         }

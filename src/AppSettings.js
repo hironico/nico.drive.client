@@ -2,10 +2,11 @@ import { AuthType } from "webdav";
 
 class DavConfiguration {
     davBaseUrl = 'https://localhost:8080';
-    davWebContext = '/photo';
+    davWebContext = '/dav';
     authType = AuthType.Basic;
     username = 'hironico';
     password = 'hironico';
+    homeDirectory = '/hironico';
 
     getClientUrl = () => {
         return `${this.davBaseUrl}${this.davWebContext}`;
