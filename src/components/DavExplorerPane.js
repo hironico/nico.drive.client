@@ -68,7 +68,7 @@ export default class DavExplorerPane extends Component {
     }
 
     navigateAbsolute = (absolutePath) => {
-        console.log('navigate absolute to: ' + absolutePath);
+        // console.log('navigate absolute to: ' + absolutePath);
         this.setState((prev) => {
             return {
                 currentDirectory: absolutePath,
@@ -83,7 +83,12 @@ export default class DavExplorerPane extends Component {
 
     toggleFileDetails = (fileItem) => {
         let modified = fileItem;
-        modified.filename = modified.filename.replace(this.state.davConfig.homeDirectory, "");
+
+        console.log('Loading filedetails for ' + fileItem.filename);
+
+        if (modified.filename.startsWith(this.state.davConfig.homeDirectory)) {
+            modified.filename = modified.filename.substring(this.state.davConfig.homeDirectory.length);
+        }
 
         this.setState({
             showDetails: true,
