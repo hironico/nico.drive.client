@@ -25,16 +25,15 @@ export default class Folder extends Component {
                 justifyContent="center"
                 alignItems="center"
                 flexDirection="column"
-            >                
-                <Pane style={styleThumb} background="tint2">
-                    <Icon icon={FolderOpenIcon} size={48} color="success" />
-                </Pane>
-                <Link href="#" onClick={(evt) => this.props.navigate(this.props.fileItem.basename)}>
+            >   
+                <Link href="#" onClick={(evt) => this.props.navigate(this.props.fileItem.basename)}>             
+                    <Pane style={styleThumb} background="tint2">
+                        <Icon icon={FolderOpenIcon} size={48} color="#F7D154" />
+                    </Pane>
                     <Pane display="inline-flex">                        
                         <Text size={400} style={{marginTop: '3px', marginLeft: '5px'}}>{this.props.fileItem.basename}</Text>
                     </Pane>
                 </Link>
-
             </Card>
         );
     }

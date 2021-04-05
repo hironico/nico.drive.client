@@ -2,16 +2,15 @@
 import { Card, Icon, Link, Pane, InfoSignIcon } from 'evergreen-ui';
 import { Component } from 'react';
 
-import DavConfiguration from '../AppSettings';
+import { DavConfigurationContext } from '../AppSettings';
 
 export default class Image extends Component {
+    static contextType = DavConfigurationContext;
 
     constructor() {
         super();
-        const config = new DavConfiguration();
         this.state = {
-            thumb: null,
-            davConfig: config
+            thumb: null
         }
     }
 
@@ -22,15 +21,12 @@ export default class Image extends Component {
     }
 
     generateThumb = () => {
-        const file = this.props.fileItem.filename.replace(this.state.davConfig.homeDirectory, '');
         const req = {
-            "filename": file
+            "filename": this.props.fileItem.filename
         }
 
-        const config = new DavConfiguration();
-
         const that = this;
-        fetch(config.getThumbApiUrl(), {
+        fetch(this.context.getThumbApiUrl(), { 
             method: 'POST',
             body: JSON.stringify(req),
             headers: {
@@ -52,7 +48,7 @@ export default class Image extends Component {
                 });   
             }                   
         })
-        .catch(err => console.log(`Could not generate thumb for file ${file}\nReason: ${err}`));
+        .catch(err => console.log(`Could not generate thumb for file ${this.props.fileItem.filename}\nReason: ${err}`));
     }
 
     showDetails = () => {

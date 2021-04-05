@@ -3,39 +3,37 @@ import { Fragment, Component } from 'react';
 
 import RatingPane from './RatingPane';
 
-import DavConfiguration from '../AppSettings';
+import { DavConfigurationContext } from '../AppSettings';
 
 export default class FileDetailsPane extends Component {
+    static contextType = DavConfigurationContext;
+
     constructor() {
         super();
-
-        const config = new DavConfiguration();
 
         this.state = {
             imageData: [],
             selectedIndex: 0,
-            tabs: ['Information', 'Image', 'Metadata'],
-            davConfig: config
+            tabs: ['Information', 'Image', 'Metadata']
         }
     }
 
-    componentWillMount = () => {
+    componentDidMount = () => {
         this.loadImageInformation();
         this.loadMetaDataInformation();
     }
 
-    getDownloadLink = () => {
-        const davClient = this.props.davClient;
-        if (typeof davClient === 'undefined' || davClient === null) {
-            // console.log('davClient prop is undefined. Cannot download file.');
+    getDownloadLink = () => {        
+        if (!this.context.connectionValid) {
+            // console.log('davClient is undefined in context. Cannot download file.');
             return;
         }
 
-        return davClient.getFileDownloadLink(`${this.state.davConfig.homeDirectory}${this.props.fileItem.filename}`);
+        return this.context.davClient.getFileDownloadLink(this.props.fileItem.filename);
     }
 
     loadImageInformation = () => {
-        const metaUrl = this.state.davConfig.getExifApiUrl();
+        const metaUrl = this.context.getExifApiUrl();
 
         const exifRequest = {
             "filename": this.props.fileItem.filename
@@ -61,7 +59,7 @@ export default class FileDetailsPane extends Component {
 
 
     loadMetaDataInformation = () => {
-        const metaUrl = this.state.davConfig.getMetadataApiUrl();
+        const metaUrl = this.context.getMetadataApiUrl();
 
         const metadataRequest = {
             "filename": this.props.fileItem.filename,
@@ -90,26 +88,26 @@ export default class FileDetailsPane extends Component {
     }
 
     renderFileItemSize = () => {
-        let unite = 'octets';
+        let unite = 'bytes';
         let taille = this.props.fileItem.size;
         if (taille > 1024) {
             taille = (taille / 1024).toFixed(2);
-            unite = 'Ko';
+            unite = 'KB';
         }
         if (taille > 1024) {
             taille = (taille / 1024).toFixed(2);
-            unite = 'Mo';
+            unite = 'MB';
         }
         if (taille > 1024) {
             taille = (taille / 1024).toFixed(2);
-            unite = 'Go';
+            unite = 'GB';
         }
 
         return <span>{taille}&nbsp;{unite}</span>
     }
 
     renderImageTabs = () => {
-        const isImage = this.state.davConfig.isImageFile(this.props.fileItem.basename);
+        const isImage = this.context.isImageFile(this.props.fileItem.basename);
         return <Pane padding={15}>
             <Tablist marginBottom={16} flexBasis={240} marginRight={24}>
                 {this.state.tabs.filter((tab, index) => {
@@ -250,7 +248,7 @@ export default class FileDetailsPane extends Component {
     }
 
     renderTags = () => {
-        const isImage = this.state.davConfig.isImageFile(this.props.fileItem.basename);
+        const isImage = this.context.isImageFile(this.props.fileItem.basename);
         if (!isImage) {
             return <div>&nbsp;</div>
         }
@@ -260,18 +258,13 @@ export default class FileDetailsPane extends Component {
         }
 
         let tags = [];
-
-        console.log(JSON.stringify(`Tags are: ${this.state.metadata.tags}`));
-
         if (typeof this.state.metadata.tags !== 'undefined') {
             if ('' !== this.state.metadata.tags) {
                 tags = this.state.metadata.tags.split(',');
             } 
         }
 
-
         const placeholder = tags.length === 0 ? 'No tags for this image' : '';
-
         return <TagInput
             inputProps={{ placeholder: placeholder }}
             values={tags}
@@ -282,7 +275,7 @@ export default class FileDetailsPane extends Component {
     }
 
     getRating = () => {
-        const isImage = this.state.davConfig.isImageFile(this.props.fileItem.basename);
+        const isImage = this.context.isImageFile(this.props.fileItem.basename);
         if (!isImage) {
             return 0;
         }
@@ -299,18 +292,17 @@ export default class FileDetailsPane extends Component {
     }
 
     render = () => {
-        console.log('Render file details: \n' + JSON.stringify(this.props.fileItem));
+        // console.log('Render file details: \n' + JSON.stringify(this.props.fileItem));
 
         const downloadIcon = <DownloadIcon size={24} />
         const infoIcon = <InfoSignIcon size={24} />
-        const hasDavClient = typeof this.props.davClient !== 'undefined' && this.props.davclient !== null;
-
+        
         return <Pane zIndex={1} flexShrink={0} elevation={0} backgroundColor="white">
             <Pane padding={16} borderBottom="muted">
                 <Heading size={600}>{this.props.fileItem.basename}</Heading>
             </Pane>
             <Pane display="inline-flex" alignItems="center">
-                <Button appearance="primary" intent="success" is="a" margin={20} iconBefore={downloadIcon} href={this.getDownloadLink()} target="_blank" disabled={!hasDavClient}>Download</Button>                
+                <Button appearance="primary" intent="success" is="a" margin={20} iconBefore={downloadIcon} href={this.getDownloadLink()} target="_blank" disabled={!this.context.connectionValid}>Download</Button>                
                 <RatingPane rating={this.getRating()} maxRating={5} marginRight={10} marginLeft={10}/>
             </Pane>
             <Pane display="flex" gridTemplateColumns="auto">

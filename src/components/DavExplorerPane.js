@@ -1,49 +1,51 @@
 
 import { Pane, Link, ChevronRightIcon, HomeIcon, SideSheet } from 'evergreen-ui';
-import { Fragment, Component } from 'react';
+import { Component } from 'react';
 import { createClient } from "webdav";
 
-import DavConfiguration from '../AppSettings';
+import { DavConfigurationContext } from '../AppSettings';
 
 import Folder from './Folder';
 import Image from './Image';
 import RegularFile from './RegularFile';
 import FileDetailsPane from './FileDetailsPane';
+import LoginDialog from './LoginDialog';
+import { Fragment } from 'react';
 
 export default class DavExplorerPane extends Component {
+    static contextType = DavConfigurationContext;
 
     constructor() {
         super();
 
-        const config = new DavConfiguration();
-
-        const client = createClient(config.getClientUrl(), config);
-
         this.state = {
-            davClient: client,
-            homeDirectory: config.homeDirectory,
-            currentDirectory: config.homeDirectory,
+            currentDirectory: null,
             directories: [],
             files: [],
-            showDetails: false,
-            davConfig: config
+            showDetails: false
         }
     }
 
-    componentDidMount = () => {
-        this.setState({
-            files: [],
-            directories: []
-        }, () => {
-            console.log('Did mount. Now get directory contents...');
-            this.getDirectoryContents()
-        });
+    componentDidUpdate = () => {
+        if (this.context.connectionValid && this.context.davClient !== null && this.state.currentDirectory === null) {
+            this.setState({
+                currentDirectory: '/'
+            }, () => {
+                this.getDirectoryContents();
+            });
+        }
     }
-
+    
     getDirectoryContents = async () => {
-        const directoryItems = await this.state.davClient.getDirectoryContents(this.state.currentDirectory);
-        const dirs = directoryItems.filter(item => { return item.type === 'directory'});
-        const files = directoryItems.filter(item => { return item.type === 'file'});
+
+        let dirs = [];
+        let files = [];
+
+        if (this.context.connectionValid) {
+            const directoryItems = await this.context.davClient.getDirectoryContents(this.state.currentDirectory);
+            dirs = directoryItems.filter(item => { return item.type === 'directory' });
+            files = directoryItems.filter(item => { return item.type === 'file' });
+        }
 
         this.setState({
             directories: dirs,
@@ -54,7 +56,8 @@ export default class DavExplorerPane extends Component {
     }
 
     navigate = (folderName) => {
-        let newDir = this.state.currentDirectory + '/' + folderName;
+        const separator = this.state.currentDirectory.endsWith('/') || folderName.startsWith('/') ? '' : '/';
+        let newDir = this.state.currentDirectory + separator + folderName;
         this.setState((prev) => {
             return {
                 currentDirectory: newDir,
@@ -62,13 +65,12 @@ export default class DavExplorerPane extends Component {
                 directories: []
             }
         }, () => {
-            console.log('Navigated, now get directory contents...');
+            console.log(`Navigated to ${newDir}, now get directory contents...`);
             this.getDirectoryContents();
         });
     }
 
     navigateAbsolute = (absolutePath) => {
-        // console.log('navigate absolute to: ' + absolutePath);
         this.setState((prev) => {
             return {
                 currentDirectory: absolutePath,
@@ -76,18 +78,15 @@ export default class DavExplorerPane extends Component {
                 directories: []
             }
         }, () => {
-            console.log('Absolute navigated, now get directory contents for ' + absolutePath);
+            console.log(`Absolute navigated to ${absolutePath}, now get directory contents...`);
             this.getDirectoryContents();
         });
     }
 
     toggleFileDetails = (fileItem) => {
         let modified = fileItem;
-
-        console.log('Loading filedetails for ' + fileItem.filename);
-
-        if (modified.filename.startsWith(this.state.davConfig.homeDirectory)) {
-            modified.filename = modified.filename.substring(this.state.davConfig.homeDirectory.length);
+        if (modified.filename.startsWith(this.context.homeDirectory)) {
+            modified.filename = modified.filename.substring(this.context.homeDirectory.length);
         }
 
         this.setState({
@@ -105,7 +104,7 @@ export default class DavExplorerPane extends Component {
 
     renderFiles = () => {
         let images = this.state.files.map((file, index) => {
-            if (this.state.davConfig.isImageFile(file.basename)) {
+            if (this.context.isImageFile(file.basename)) {
                 return <Image fileItem={file} navigate={this.navigate} showDetails={this.toggleFileDetails} key={'file_' + index} />
             } else {
                 return <RegularFile fileItem={file} navigate={this.navigate} showDetails={this.toggleFileDetails} key={'file_' + index} />
@@ -114,42 +113,61 @@ export default class DavExplorerPane extends Component {
         return images;
     }
 
-    render = () => {  
-        console.log('Rendering ' + this.state.currentDirectory);
-        
-        let path = this.state.currentDirectory.substring(1);
-        let currentDirs = path.split('/');
-        let breadCrumb = currentDirs.map((dir, index) => {
-            if (index===0) {
-                return <Link href="#" style={{display: 'flex', alignItems: 'center'}} key={index+1} onClick={() => {
-                    this.navigateAbsolute(this.state.homeDirectory);
-                }}><HomeIcon size={24} style={{marginLeft: '5px', marginRight: '5px'}}/></Link>
-            } 
+    renderBreadCrumb = () => {
+        let path = this.state.currentDirectory;
 
-            return <Link href="#" style={{display: 'flex', alignItems: 'center'}} key={index+1} onClick={() => {
-                let toNavigate = currentDirs.slice(0, index + 1);
-                let fullPath = toNavigate.join('/');
-                this.navigateAbsolute(`/${fullPath}`);
-            }}><ChevronRightIcon size={24} style={{marginLeft: '5px', marginRight: '5px'}}/>{dir}</Link>
-        })        
+        const chevronIcon = <ChevronRightIcon size={24} style={{ marginLeft: '5px', marginRight: '5px' }} />
+        const homeIcon = <HomeIcon size={24} style={{ marginLeft: '5px', marginRight: '5px' }} />
+
+        let currentDirs = path === '/' ? [''] : path.split('/');
+        let navDirs = [];
+        let breadCrumb = currentDirs.map((dir, index) => {
+            const icon = index === 0 ? homeIcon : chevronIcon;
+            navDirs.push(dir);
+            const fullPath = navDirs.join('/');
+            return <Link href="#" style={{ display: 'flex', alignItems: 'center' }} key={index + 1} onClick={() => {                
+                this.navigateAbsolute(dir === '' ? '/' : fullPath);
+            }}>{icon}{dir}</Link>
+        });
+
+        return breadCrumb;
+    }
+
+    renderRootPane = () => {
+        const breadCrumb = this.renderBreadCrumb();
 
         return <Fragment>
             <Pane zIndex={1} flexShrink={0} elevation={0} backgroundColor="white">
-            <Pane display="flex" padding={8} background="blueTint">            
-                {breadCrumb}
-            </Pane>
+                <Pane display="flex" padding={8} background="blueTint">
+                    {breadCrumb}
+                </Pane>
             </Pane>
             <Pane display="flex" flexWrap="wrap" justifyContent="space-evenly" background="overlay">
                 {this.renderFolders()}
                 {this.renderFiles()}
             </Pane>
+        </Fragment>
+    }
+
+    render = () => {
+
+        if (!this.context.connectionValid) {
+            return <h3>Please connect</h3>
+        }
+
+        if (!this.state.currentDirectory) {
+            return <h3>Loading...</h3>
+        }
+
+        return <Pane>
+            {this.renderRootPane()}
 
             <SideSheet
                 isShown={this.state.showDetails}
                 onCloseComplete={() => this.setState({ showDetails: false })}
             >
-                <FileDetailsPane fileItem={this.state.detailedFileItem} davClient={this.state.davClient} />     
+                <FileDetailsPane fileItem={this.state.detailedFileItem} davClient={this.state.davClient} />
             </SideSheet>
-        </Fragment>
+        </Pane>
     }
 }
