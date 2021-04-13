@@ -1,7 +1,6 @@
 
-import { Pane, Link, ChevronRightIcon, HomeIcon, SideSheet } from 'evergreen-ui';
-import { Component } from 'react';
-import { createClient } from "webdav";
+import { Pane, Link, ChevronRightIcon, HomeIcon, SideSheet, Avatar, Badge, Popover, Menu, InfoSignIcon, Position, LogOutIcon } from 'evergreen-ui';
+import { Component, Fragment } from 'react';
 
 import { DavConfigurationContext } from '../AppSettings';
 
@@ -9,8 +8,8 @@ import Folder from './Folder';
 import Image from './Image';
 import RegularFile from './RegularFile';
 import FileDetailsPane from './FileDetailsPane';
-import LoginDialog from './LoginDialog';
-import { Fragment } from 'react';
+
+import WelcomePage from './welcome-page/WelcomePage';
 
 export default class DavExplorerPane extends Component {
     static contextType = DavConfigurationContext;
@@ -95,6 +94,10 @@ export default class DavExplorerPane extends Component {
         });
     }
 
+    disconnect = () => {
+        this.context.disconnect();
+    }
+
     renderFolders = () => {
         let folders = this.state.directories.map((directory, index) => {
             return <Folder fileItem={directory} navigate={this.navigate} showDetails={this.toggleFileDetails} key={'dir_' + index} />
@@ -133,14 +136,39 @@ export default class DavExplorerPane extends Component {
         return breadCrumb;
     }
 
+    renderAvatarMenu = () => {
+        return <Popover
+        position={Position.BOTTOM_LEFT}
+        content={
+          <Menu>
+            <Menu.Group>
+              <Menu.Item icon={InfoSignIcon} intent="success"><Badge color="green">Connected!</Badge></Menu.Item>              
+              <Menu.Item>{this.context.getClientUrl()}</Menu.Item>
+            </Menu.Group>
+            <Menu.Divider />
+            <Menu.Group>
+              <Menu.Item icon={LogOutIcon} intent="danger" onClick={() => {this.disconnect()}}>
+                Disconnect
+              </Menu.Item>
+            </Menu.Group>
+          </Menu>
+        }
+      >
+        <Avatar name={this.context.username} size={40} marginLeft={15} marginRight={15} />
+      </Popover>
+    }
+
     renderRootPane = () => {
         const breadCrumb = this.renderBreadCrumb();
 
         return <Fragment>
-            <Pane zIndex={1} flexShrink={0} elevation={0} backgroundColor="white">
+            <Pane zIndex={1} flexShrink={0} elevation={0} backgroundColor="white" display="grid" gridTemplateColumns="auto 1fr">
                 <Pane display="flex" padding={8} background="blueTint">
                     {breadCrumb}
                 </Pane>
+                <Pane justifySelf="end" display="inline-flex" alignItems="center">
+                   {this.renderAvatarMenu()}
+                </Pane>                
             </Pane>
             <Pane display="flex" flexWrap="wrap" justifyContent="space-evenly" background="overlay">
                 {this.renderFolders()}
@@ -152,7 +180,7 @@ export default class DavExplorerPane extends Component {
     render = () => {
 
         if (!this.context.connectionValid) {
-            return <h3>Please connect</h3>
+            return <WelcomePage />
         }
 
         if (!this.state.currentDirectory) {

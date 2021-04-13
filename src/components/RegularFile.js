@@ -1,8 +1,10 @@
 
-import { Card, Icon, Pane, DocumentIcon, Link, InfoSignIcon } from 'evergreen-ui';
+import { Card, Icon, Pane, DocumentIcon, Link, Text, InfoSignIcon, DownloadIcon } from 'evergreen-ui';
 import { Component } from 'react';
+import { DavConfigurationContext } from '../AppSettings';
 
 export default class RegularFile extends Component {
+    static contextType = DavConfigurationContext;
 
     showDetails = () => {
         this.props.showDetails(this.props.fileItem);
@@ -32,11 +34,13 @@ export default class RegularFile extends Component {
             >                
                 <Pane style={styleThumb} background="tint2">
                     <Icon icon={DocumentIcon} size={48} color="success" />
+                </Pane>  
+
+                <Pane display="inline-flex" alignItem="center" justifyContent="space-between" style={{width: '190px', height: '18px', margin: '5px'}}>
+                    <Link href="#" onClick={(evt) => {this.showDetails()}}><Icon icon={InfoSignIcon} color="info"/></Link>
+                    <Text style={{overflow: 'hidden', maxWidth: '155px', maxHeight: '24px'}}>{this.props.fileItem.basename}</Text>
+                    <Link href={this.context.davClient.getFileDownloadLink(this.props.fileItem.filename)} target="_blank"><DownloadIcon color="success"/></Link>
                 </Pane>
-                <Pane display="inline-flex" style={{alignItems: 'center', justifyContent: 'left', width: '190px', height: '30px', margin: '5px', overflow: 'hidden'}}>
-                    <Link href="#" onClick={(evt) => {this.showDetails()}}><Icon icon={InfoSignIcon} size={24} color="info" /></Link>&nbsp;
-                    <Link href="#">{this.props.fileItem.basename}</Link>
-                </Pane>    
             </Card>
         );
     }

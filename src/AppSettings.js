@@ -9,17 +9,20 @@ const defaultValue =  {
     password: 'hironico',
     davClient: null,
     connectionValid: false,
+    showConnectionDialog: false,
     homeDirectory: '/blog',
     currentDirectory: '/',
     supportedFormats: ['JPEG', 'JPG', 'PNG', 'WEBP', 'AVIF', 'TIFF', 'GIF', 'SVG'],
-    setDavClient: () =>  { },
+    setDavClient: (client) =>  { },
     setConnectionValid:  () =>  { },
+    setShowConnectionDialog: (showConDlg) => { },
     getClientUrl:  () =>  { },
     getThumbApiUrl:  () =>  { },
     getExifApiUrl:  () =>  { },
     getMetadataApiUrl:  () =>  { },
     isImageFile:  () =>  { },
-    setCurrentDirectory: () => { }
+    setCurrentDirectory: () => { },
+    disconnect: () => { }
 }
 
 
@@ -37,28 +40,47 @@ class DavConfigurationProvider extends Component {
             password: 'hironico',
             davClient: null,
             connectionValid: false,
+            showConnectionDialog: false,
             homeDirectory: '/blog',
             supportedFormats: ['JPEG', 'JPG', 'PNG', 'WEBP', 'AVIF', 'TIFF', 'GIF', 'SVG'],
             setDavClient: this.setDavClient,
             setConnectionValid: this.setConnectionValid,
+            setShowConnectionDialog: this.setShowConnectionDialog,
             getClientUrl: this.getClientUrl,
             getThumbApiUrl: this.getThumbApiUrl,
             getExifApiUrl: this.getExifApiUrl,
             getMetadataApiUrl: this.getMetadataApiUrl,
             isImageFile: this.isImageFile,
-            getBasePath: this.getBasePath
+            getBasePath: this.getBasePath,
+            disconnect: this.disconnect
         }
     }
 
     setDavClient = (client) => {
         this.setState({
-            davClient: client
+            davClient: client, 
+            connectionValid: client ? true : false,
+            showConnectionDialog: client ? false : true
         });
     }
 
     setConnectionValid = (connectionValid) => {
         this.setState({
             connectionValid: connectionValid
+        });
+    }
+
+    disconnect = () => {
+        this.setState({
+            connectionValid: false,
+            davClient: null
+        });
+    }
+
+    setShowConnectionDialog = (showConDialog) => {
+        console.log('Must set showConnectionDialog to : ' + showConDialog);
+        this.setState({
+            showConnectionDialog: showConDialog
         });
     }
 

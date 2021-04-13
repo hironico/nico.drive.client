@@ -1,8 +1,8 @@
 import { Component } from 'react';
-import { Dialog, Pane, Label, TextInputField, FormField, ConsoleIcon } from 'evergreen-ui';
-import { DavConfigurationProvider, DavConfigurationContext } from '../AppSettings';
+import { Dialog, Pane, TextInputField, Text, Paragraph, Button } from 'evergreen-ui';
+import { DavConfigurationContext } from '../AppSettings';
 
-import { WebDAVClient, createClient, AuthType } from "webdav";
+import { createClient, AuthType } from "webdav";
 
 export default class LoginDialog extends Component {
     static contextType = DavConfigurationContext;
@@ -13,7 +13,8 @@ export default class LoginDialog extends Component {
             isLoading: false,
             username: '',
             password: '',
-            url: ''
+            url: '',
+            errorMessage: ''
         }
     }
 
@@ -35,12 +36,14 @@ export default class LoginDialog extends Component {
             console.log('Sucess !');
 
             this.context.setDavClient(client);
-            this.context.setConnectionValid(true);            
 
         } catch (error) {
             console.error('Could not connect to webdav: ' + JSON.stringify(error));
             this.context.setDavClient(null);
             this.context.setConnectionValid(false);
+            this.setState({
+                errorMessage: JSON.stringify(error)
+            });
         } finally {
             this.setState({
                 isLoading: false
@@ -52,7 +55,8 @@ export default class LoginDialog extends Component {
         this.setState({
             username: this.context.username,
             password: this.context.password,
-            url: this.context.getClientUrl() + this.context.homeDirectory
+            url: this.context.getClientUrl() + this.context.homeDirectory,
+            errorMessage: ''
         });
     }
 
@@ -62,14 +66,19 @@ export default class LoginDialog extends Component {
         }, () => this.testConnection());
     }
 
+    onCloseComplete = () => {
+        this.context.setShowConnectionDialog(false);
+        this.setState({ isLoading: false, errorMessage: '' });
+    }
+
     renderDialog = () => {
         return <Dialog
-            isShown={!this.context.connectionValid}
+            isShown={this.context.showConnectionDialog}
             title="WebDAV Connection setup..."
-            onCloseComplete={() => this.setState({ isShown: false, isLoading: false })}
+            onCloseComplete={() => this.onCloseComplete()}
             isConfirmLoading={this.state.isLoading}
-            onConfirm={() => this.onConfirm()}
-            confirmLabel={this.state.isLoading ? 'Connecting...' : 'Connect'}
+            onConfirm={(close) => this.onConfirm(close)}           
+            hasFooter={false}
         >
             <Pane display="grid" gridTemplateColumns="auto">
                     <TextInputField id="txt-login" 
@@ -90,7 +99,13 @@ export default class LoginDialog extends Component {
                                     onChange={e => this.setState({ url: e.target.value })}
                                     placeholder="WebDAV URL..."
                                     label="WebDAV base URL:"/>
-            </Pane>            
+                    <Pane>
+                        <Paragraph>{this.state.errorMessage}</Paragraph>
+                        <Button is="div" marginTop={16} onClick={() => this.onConfirm()} disabled={this.state.isLoading} appearance="primary" intent="success">
+                        {this.state.isLoading ? 'Please wait...' : 'Connect'}
+                        </Button>
+                    </Pane>
+            </Pane>          
         </Dialog>
     }
 

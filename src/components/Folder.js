@@ -30,9 +30,10 @@ export default class Folder extends Component {
                     <Pane style={styleThumb} background="tint2">
                         <Icon icon={FolderOpenIcon} size={48} color="#F7D154" />
                     </Pane>
-                    <Pane display="inline-flex">                        
-                        <Text size={400} style={{marginTop: '3px', marginLeft: '5px'}}>{this.props.fileItem.basename}</Text>
-                    </Pane>
+                    <Pane display="inline-flex" alignItem="center" justifyContent="center" style={{width: '190px', height: '18px', margin: '5px'}}>
+                        <FolderOpenIcon color="#F7D154"/>
+                        <Text style={{overflow: 'hidden', maxWidth: '155px', maxHeight: '24px'}}>{this.props.fileItem.basename}</Text>                        
+                    </Pane>                    
                 </Link>
             </Card>
         );

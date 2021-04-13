@@ -1,5 +1,5 @@
 
-import { Card, Icon, Link, Pane, InfoSignIcon } from 'evergreen-ui';
+import { Card, Icon, Link, Pane, Text, InfoSignIcon, DownloadIcon } from 'evergreen-ui';
 import { Component } from 'react';
 
 import { DavConfigurationContext } from '../AppSettings';
@@ -82,11 +82,11 @@ export default class Image extends Component {
                 flexDirection="column"
             > 
                 <div style={styleThumb}>&nbsp;</div>
-                <Pane display="inline-flex" style={{alignItems: 'center', justifyContent: 'left', width: '190px', height: '30px', margin: '5px', overflow: 'hidden'}}>
-                    <Link href="#" onClick={(evt) => {this.showDetails()}}><Icon icon={InfoSignIcon} size={24} color="info" /></Link>&nbsp;
-                    <Link href="#">{this.props.fileItem.basename}</Link>
-                </Pane>               
-                
+                <Pane display="inline-flex" alignItem="center" justifyContent="space-between" style={{width: '190px', height: '18px', margin: '5px'}}>
+                    <Link href="#" onClick={(evt) => {this.showDetails()}}><Icon icon={InfoSignIcon} color="info"/></Link>
+                    <Text style={{overflow: 'hidden', maxWidth: '155px', maxHeight: '24px'}}>{this.props.fileItem.basename}</Text>
+                    <Link href={this.context.davClient.getFileDownloadLink(this.props.fileItem.filename)} target="_blank"><DownloadIcon color="success"/></Link>
+                </Pane>
             </Card>
         );
     }
