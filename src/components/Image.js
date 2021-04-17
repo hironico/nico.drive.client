@@ -82,7 +82,7 @@ export default class Image extends Component {
                 flexDirection="column"
             > 
                 <div style={styleThumb}>&nbsp;</div>
-                <Pane display="inline-flex" alignItem="center" justifyContent="space-between" style={{width: '190px', height: '18px', margin: '5px'}}>
+                <Pane display="inline-flex" alignItems="center" justifyContent="space-between" style={{width: '190px', height: '18px', margin: '5px'}}>
                     <Link href="#" onClick={(evt) => {this.showDetails()}}><Icon icon={InfoSignIcon} color="info"/></Link>
                     <Text style={{overflow: 'hidden', maxWidth: '155px', maxHeight: '24px'}}>{this.props.fileItem.basename}</Text>
                     <Link href={this.context.davClient.getFileDownloadLink(this.props.fileItem.filename)} target="_blank"><DownloadIcon color="success"/></Link>

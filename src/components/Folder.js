@@ -30,7 +30,7 @@ export default class Folder extends Component {
                     <Pane style={styleThumb} background="tint2">
                         <Icon icon={FolderOpenIcon} size={48} color="#F7D154" />
                     </Pane>
-                    <Pane display="inline-flex" alignItem="center" justifyContent="center" style={{width: '190px', height: '18px', margin: '5px'}}>
+                    <Pane display="inline-flex" alignItems="center" justifyContent="center" style={{width: '190px', height: '18px', margin: '5px'}}>
                         <FolderOpenIcon color="#F7D154"/>
                         <Text style={{overflow: 'hidden', maxWidth: '155px', maxHeight: '24px'}}>{this.props.fileItem.basename}</Text>                        
                     </Pane>                    
