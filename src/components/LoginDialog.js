@@ -35,7 +35,7 @@ export default class LoginDialog extends Component {
 
             console.log('Sucess !');
 
-            this.context.setDavClient(client);
+            this.context.setDavClient(client, this.state.url);
 
         } catch (error) {
             console.error('Could not connect to webdav: ' + JSON.stringify(error));

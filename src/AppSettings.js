@@ -56,9 +56,20 @@ class DavConfigurationProvider extends Component {
         }
     }
 
-    setDavClient = (client) => {
+    setDavClient = (client, url) => {
+
+        const uri = new URL(url);
+        const davBaseUrl = `${uri.protocol}//${uri.host}`;
+        let pathTab = uri.pathname.split('/');
+        const davWebContext = `/${pathTab[0]}`;
+        pathTab = pathTab.splice(0, 1);
+        const homeDir = pathTab.join('/');
+
         this.setState({
             davClient: client, 
+            davBaseUrl: client ? davBaseUrl : '',
+            davWebContext: client ? davWebContext : '',
+            homeDirectory: client ? homeDir : '',
             connectionValid: client ? true : false,
             showConnectionDialog: client ? false : true
         });
