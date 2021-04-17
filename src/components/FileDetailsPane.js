@@ -48,7 +48,7 @@ export default class FileDetailsPane extends Component {
         })
             .then(res => res.json())
             .then(res => {
-                console.log('Received exif for this file: ' + JSON.stringify(res));
+                // console.log('Received exif for this file: ' + JSON.stringify(res));
                 this.setState({
                     imageData: res
                 });
@@ -75,15 +75,19 @@ export default class FileDetailsPane extends Component {
         })
             .then(res => res.json())
             .then(res => {
+                /*
                 console.log('Received metadata for this file: ' + JSON.stringify(res));
-
                 console.log('Tags are: ' + res.tags);
+                */
 
                 this.setState({
                     metadata: res
                 });
             }).catch(err => {
                 console.log('Error while reading metadata: ' + err);
+                this.setState({
+                    metadata: { tags: '' }
+                });
             });
     }
 
