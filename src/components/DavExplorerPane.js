@@ -142,7 +142,7 @@ export default class DavExplorerPane extends Component {
         content={
           <Menu>
             <Menu.Group>
-              <Menu.Item icon={InfoSignIcon} intent="success"><Badge color="green">Connected!</Badge></Menu.Item>              
+              <Menu.Item icon={InfoSignIcon} intent="success"><Badge color="green">{this.context.username}</Badge></Menu.Item>              
               <Menu.Item>{this.context.getClientUrl()}</Menu.Item>
             </Menu.Group>
             <Menu.Divider />
@@ -154,7 +154,7 @@ export default class DavExplorerPane extends Component {
           </Menu>
         }
       >
-        <Avatar name={this.context.username} size={40} marginLeft={15} marginRight={15} />
+        <Avatar name={this.context.username} size={40} marginLeft={15} marginRight={15} style={{cursor: 'pointer'}}/>
       </Popover>
     }
 
