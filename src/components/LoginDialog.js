@@ -21,8 +21,6 @@ export default class LoginDialog extends Component {
     testConnection = async () => {
         try {
 
-            console.log('Now testing connection...');
-
             const clientOptions = {
                 authType: AuthType.Basic,
                 username: this.state.username,
@@ -33,9 +31,15 @@ export default class LoginDialog extends Component {
 
             const directoryItems = await client.getDirectoryContents('./');
 
-            console.log('Sucess !');
-
             this.context.setDavClient(client, this.state.url);
+
+            // reset form in order not to have credentials after clicking logout
+            this.setState({
+                url: '',
+                username: '',
+                password: '',
+                errorMessage: ''
+            });
 
         } catch (error) {
             console.error('Could not connect to webdav: ' + JSON.stringify(error));

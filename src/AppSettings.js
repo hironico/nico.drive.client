@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { AuthType } from "webdav";
 
-const defaultValue =  {
+const defaultValue = {
     davBaseUrl: 'https://localhost:8080',
     davWebContext: '/photo',
     authType: AuthType.Basic,
@@ -13,20 +13,20 @@ const defaultValue =  {
     homeDirectory: '/blog',
     currentDirectory: '/',
     supportedFormats: ['JPEG', 'JPG', 'PNG', 'WEBP', 'AVIF', 'TIFF', 'GIF', 'SVG'],
-    setDavClient: (client) =>  { },
-    setConnectionValid:  () =>  { },
+    setDavClient: (client) => { },
+    setConnectionValid: () => { },
     setShowConnectionDialog: (showConDlg) => { },
-    getClientUrl:  () =>  { },
-    getThumbApiUrl:  () =>  { },
-    getExifApiUrl:  () =>  { },
-    getMetadataApiUrl:  () =>  { },
-    isImageFile:  () =>  { },
-    setCurrentDirectory: () => { },
+    getClientUrl: () => { },
+    getThumbApiUrl: () => { },
+    getExifApiUrl: () => { },
+    getMetadataApiUrl: () => { },
+    isImageFile: () => { },
+    setCurrentDirectory: () => { },
     disconnect: () => { }
 }
 
 
-const DavConfigurationContext = React.createContext({connectionValid: false});
+const DavConfigurationContext = React.createContext({ connectionValid: false });
 
 class DavConfigurationProvider extends Component {
 
@@ -57,16 +57,16 @@ class DavConfigurationProvider extends Component {
     }
 
     setDavClient = (client, url) => {
-
-        const uri = new URL(url);
-        const davBaseUrl = `${uri.protocol}//${uri.host}`;
-        let pathTab = uri.pathname.split('/');
-        const davWebContext = `/${pathTab[0]}`;
-        pathTab = pathTab.splice(0, 1);
-        const homeDir = pathTab.join('/');
+        const urlValid = (typeof url !== 'undefined' && url !== null);
+        const uri = urlValid ? new URL(url) : null;
+        const davBaseUrl = uri ? `${uri.protocol}//${uri.host}` : '';
+        let pathTab = uri ? uri.pathname.split('/') : '';
+        const davWebContext = uri ? `/${pathTab[0]}` : '';
+        pathTab = uri ? pathTab.splice(0, 1) : [];
+        const homeDir = uri ? pathTab.join('/') : '';
 
         this.setState({
-            davClient: client, 
+            davClient: client,
             davBaseUrl: client ? davBaseUrl : '',
             davWebContext: client ? davWebContext : '',
             homeDirectory: client ? homeDir : '',
@@ -82,10 +82,7 @@ class DavConfigurationProvider extends Component {
     }
 
     disconnect = () => {
-        this.setState({
-            connectionValid: false,
-            davClient: null
-        });
+        this.setDavClient(null, null);
     }
 
     setShowConnectionDialog = (showConDialog) => {
