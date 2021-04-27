@@ -12,7 +12,7 @@ const defaultValue = {
     showConnectionDialog: false,
     homeDirectory: '/blog',
     currentDirectory: '/',
-    supportedFormats: ['JPEG', 'JPG', 'PNG', 'WEBP', 'AVIF', 'TIFF', 'GIF', 'SVG'],
+    supportedFormats: ['JPEG', 'JPG', 'PNG', 'WEBP', 'AVIF', 'TIFF', 'TIF', 'GIF', 'SVG', 'CR2'],
     setDavClient: (client) => { },
     setConnectionValid: () => { },
     setShowConnectionDialog: (showConDlg) => { },
@@ -24,7 +24,6 @@ const defaultValue = {
     setCurrentDirectory: () => { },
     disconnect: () => { }
 }
-
 
 const DavConfigurationContext = React.createContext({ connectionValid: false });
 
@@ -42,7 +41,7 @@ class DavConfigurationProvider extends Component {
             connectionValid: false,
             showConnectionDialog: false,
             homeDirectory: '/blog',
-            supportedFormats: ['JPEG', 'JPG', 'PNG', 'WEBP', 'AVIF', 'TIFF', 'GIF', 'SVG'],
+            supportedFormats: ['JPEG', 'JPG', 'PNG', 'WEBP', 'AVIF', 'TIFF', 'GIF', 'SVG', 'CR2'],
             setDavClient: this.setDavClient,
             setConnectionValid: this.setConnectionValid,
             setShowConnectionDialog: this.setShowConnectionDialog,
