@@ -20,8 +20,10 @@ export default class WelcomePage extends Component {
         return <header id="header">
 				<div className="content">
 					<h1><a href="#">Nico's Drive</a></h1>
-					<p>Personal storage solution<br />
-					Keep your private memories ... <strong>private!</strong></p>
+					<p>The private online storage solution.<br />
+					Backup your memories ... <strong>automatically!</strong><br />
+                    Access your files anytime, anywhere, just like a shared drive,<br />
+                    On any computer.</p>
 					<ul className="actions">
                         <li><Button is="div" onClick={() => alert('Coming soon...')} appearance="default" height={60} padding={28} iconBefore={InfoSignIcon} fontSize={22}>Learn more</Button></li>
                         <li><Button is="div" onClick={() => this.showLoginDialog()} appearance="primary" intent="success" height={60} padding={28} iconBefore={LogInIcon} fontSize={22}>Login</Button></li>
