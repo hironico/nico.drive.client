@@ -54,6 +54,9 @@ export default class FileDetailsPane extends Component {
                 });
             }).catch(err => {
                 console.log('Error while reading exif data: ' + err);
+                this.setState({
+                    metadata: { tags: '' }
+                });
             });
     }
 
@@ -257,18 +260,17 @@ export default class FileDetailsPane extends Component {
             return <div>&nbsp;</div>
         }
 
-        if (!this.state.metadata) {
-            return <div>Tags loading...</div>
-        }
-
+        let placeholder = 'Loading tags info...';
         let tags = [];
-        if (typeof this.state.metadata.tags !== 'undefined') {
-            if ('' !== this.state.metadata.tags) {
-                tags = this.state.metadata.tags.split(',');
-            } 
+        if (this.state.metadata) {            
+            if (typeof this.state.metadata.tags !== 'undefined') {
+                if ('' !== this.state.metadata.tags) {
+                    tags = this.state.metadata.tags.split(',');
+                } 
+            }
+            placeholder = tags.length === 0 ? 'No tags for this image' : '';
         }
 
-        const placeholder = tags.length === 0 ? 'No tags for this image' : '';
         return <TagInput
             inputProps={{ placeholder: placeholder }}
             values={tags}
