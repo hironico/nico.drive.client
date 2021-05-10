@@ -14,8 +14,16 @@ export default class LoginDialog extends Component {
             username: '',
             password: '',
             url: '',
-            errorMessage: ''
+            errorMessage: '',
+            davContext: 'dav'
         }
+    }
+
+    buildUrl = () => {
+        let newUrl = `${window.location.protocol}//${window.location.hostname}:${window.location.port}/${this.state.davContext}/${this.state.username}/`;
+        this.setState({
+            url: newUrl
+        });
     }
 
     testConnection = async () => {
@@ -46,7 +54,7 @@ export default class LoginDialog extends Component {
             this.context.setDavClient(null);
             this.context.setConnectionValid(false);
             this.setState({
-                errorMessage: JSON.stringify(error)
+                errorMessage: 'Something went wrong while connecting. Check your credentiuals and try again.'
             });
         } finally {
             this.setState({
@@ -75,6 +83,14 @@ export default class LoginDialog extends Component {
         this.setState({ isLoading: false, errorMessage: '' });
     }
 
+    onTxtLoginChange = (evt) => {
+        this.setState({ 
+            username: evt.target.value 
+        }, () => { 
+            this.buildUrl() 
+        });
+    }
+
     renderDialog = () => {
         return <Dialog
             isShown={this.context.showConnectionDialog}
@@ -87,7 +103,7 @@ export default class LoginDialog extends Component {
             <Pane display="grid" gridTemplateColumns="auto">
                     <TextInputField id="txt-login" 
                                     value={this.state.username} 
-                                    onChange={e => this.setState({ username: e.target.value })}
+                                    onChange={this.onTxtLoginChange}
                                     placeholder="Login name..." 
                                     label="Login:"/>
 
