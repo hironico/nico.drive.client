@@ -25,7 +25,7 @@ export default class WelcomePage extends Component {
                     Access your files anytime, anywhere, just like a shared drive,<br />
                     On any computer.</p>
 					<ul className="actions">
-                        <li><Button is="div" onClick={() => alert('Coming soon...')} appearance="default" height={60} padding={28} iconBefore={InfoSignIcon} fontSize={22}>Learn more</Button></li>
+                        <li><Button is="div" onClick={() => window.location.assign('https://github.com/hironico/nico.drive#readme')} appearance="default" height={60} padding={28} iconBefore={InfoSignIcon} fontSize={22}>Learn more</Button></li>
                         <li><Button is="div" onClick={() => this.showLoginDialog()} appearance="primary" intent="success" height={60} padding={28} iconBefore={LogInIcon} fontSize={22}>Login</Button></li>
 					</ul>
 				</div>
