@@ -1,5 +1,5 @@
 
-import { Card, Icon, Pane, DocumentIcon, Link, Text, InfoSignIcon, DownloadIcon } from 'evergreen-ui';
+import { Card, Icon, Pane, DocumentIcon, Link, Text, InfoSignIcon, DownloadIcon, Table } from 'evergreen-ui';
 import { Component } from 'react';
 import { DavConfigurationContext } from '../AppSettings';
 
@@ -10,7 +10,7 @@ export default class RegularFile extends Component {
         this.props.showDetails(this.props.fileItem);
     }
 
-    render = () => {
+    renderGrid = () => {
         let styleThumb = {
             width: '200px',
             height: '200px',
@@ -43,5 +43,34 @@ export default class RegularFile extends Component {
                 </Pane>
             </Card>
         );
+    }
+
+    renderTable = () => {
+        return <Table.Row key={this.props.fileItem.basename} isSelectable>
+              <Table.TextCell flexGrow={2} textAlign="left">
+                  <Link href="#" onClick={(evt) => this.props.navigate(this.props.fileItem.basename)}>
+                    <DocumentIcon />&nbsp;
+                    {this.props.fileItem.basename}
+                  </Link>
+                </Table.TextCell>
+              <Table.TextCell flexGrow={1} textAlign="right">
+                <Link href="#" onClick={(evt) => {this.showDetails()}}><Icon icon={InfoSignIcon} color="info"/></Link>&nbsp;
+                <Link href={this.context.davClient.getFileDownloadLink(this.props.fileItem.filename)} target="_blank"><DownloadIcon color="success"/></Link>
+              </Table.TextCell>
+            </Table.Row>
+    }
+
+    render = () => {
+        switch (this.props.displayMode) {
+            case 'grid':
+                return this.renderGrid();
+
+            case 'table':
+                return this.renderTable();
+
+            default:
+                console.log(`Invalid display mode: ${this.props.displayMode}. Using grid as a default.`);
+                return this.renderGrid();
+        }
     }
 }

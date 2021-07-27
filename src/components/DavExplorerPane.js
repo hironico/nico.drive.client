@@ -1,15 +1,16 @@
 
-import { Pane, Link, ChevronRightIcon, HomeIcon, SideSheet, Avatar, Badge, Popover, Menu, InfoSignIcon, Position, LogOutIcon } from 'evergreen-ui';
 import { Component, Fragment } from 'react';
+
+import { Link, Pane, SideSheet, Avatar, Badge, Popover, Menu, Position, Table, ListIcon, GridViewIcon } from 'evergreen-ui';
+import { InfoSignIcon, LogOutIcon } from 'evergreen-ui';
 
 import { DavConfigurationContext } from '../AppSettings';
 
-import Folder from './Folder';
-import Image from './Image';
-import RegularFile from './RegularFile';
 import FileDetailsPane from './FileDetailsPane';
+import DavBreadCrumb from './DavBreadCrumb';
 
 import WelcomePage from './welcome-page/WelcomePage';
+import DavDirectoryPane from './DavDirectoryPane';
 
 export default class DavExplorerPane extends Component {
     static contextType = DavConfigurationContext;
@@ -21,7 +22,8 @@ export default class DavExplorerPane extends Component {
             currentDirectory: null,
             directories: [],
             files: [],
-            showDetails: false
+            showDetails: false,
+            displayMode: 'table'
         }
     }
 
@@ -98,44 +100,6 @@ export default class DavExplorerPane extends Component {
         this.context.disconnect();
     }
 
-    renderFolders = () => {
-        let folders = this.state.directories.map((directory, index) => {
-            return <Folder fileItem={directory} navigate={this.navigate} showDetails={this.toggleFileDetails} key={'dir_' + index} />
-        });
-        return folders;
-    }
-
-    renderFiles = () => {
-        let images = this.state.files.map((file, index) => {
-            if (this.context.isImageFile(file.basename)) {
-                return <Image fileItem={file} navigate={this.navigate} showDetails={this.toggleFileDetails} key={'file_' + index} />
-            } else {
-                return <RegularFile fileItem={file} navigate={this.navigate} showDetails={this.toggleFileDetails} key={'file_' + index} />
-            }
-        });
-        return images;
-    }
-
-    renderBreadCrumb = () => {
-        let path = this.state.currentDirectory;
-
-        const chevronIcon = <ChevronRightIcon size={24} style={{ marginLeft: '5px', marginRight: '5px' }} />
-        const homeIcon = <HomeIcon size={24} style={{ marginLeft: '5px', marginRight: '5px' }} />
-
-        let currentDirs = path === '/' ? [''] : path.split('/');
-        let navDirs = [];
-        let breadCrumb = currentDirs.map((dir, index) => {
-            const icon = index === 0 ? homeIcon : chevronIcon;
-            navDirs.push(dir);
-            const fullPath = navDirs.join('/');
-            return <Link href="#" style={{ display: 'flex', alignItems: 'center' }} key={index + 1} onClick={() => {                
-                this.navigateAbsolute(dir === '' ? '/' : fullPath);
-            }}>{icon}{dir}</Link>
-        });
-
-        return breadCrumb;
-    }
-
     renderAvatarMenu = () => {
         return <Popover
         position={Position.BOTTOM_LEFT}
@@ -158,22 +122,36 @@ export default class DavExplorerPane extends Component {
       </Popover>
     }
 
-    renderRootPane = () => {
-        const breadCrumb = this.renderBreadCrumb();
+    changeDisplayMode = (displayMode) => {
+        this.setState({
+            displayMode: displayMode
+        });
+    }
 
+    renderDisplayTools = () => {
         return <Fragment>
-            <Pane zIndex={1} flexShrink={0} elevation={0} backgroundColor="white" display="grid" gridTemplateColumns="auto 1fr">
-                <Pane display="flex" padding={8} background="blueTint">
-                    {breadCrumb}
-                </Pane>
+            <Link href="#" style={{ display: 'flex', alignItems: 'center' }} onClick={(evt) => this.changeDisplayMode('grid')}>
+                <GridViewIcon size={24} style={{ marginLeft: '5px', marginRight: '5px' }} />
+            </Link>
+            &nbsp;
+            <Link href="#" style={{ display: 'flex', alignItems: 'center' }} onClick={(evt) => this.changeDisplayMode('table')}>
+                <ListIcon size={24} style={{ marginLeft: '5px', marginRight: '5px' }} />
+            </Link>            
+        </Fragment>
+    }
+
+    renderRootPane = () => {
+        return <Fragment>
+            <Pane zIndex={1} flexShrink={0} elevation={0} backgroundColor="white" display="grid" gridTemplateColumns="auto 1fr">                
+                <DavBreadCrumb handleNavigate={this.navigateAbsolute} currentDirectory={this.state.currentDirectory} />
                 <Pane justifySelf="end" display="inline-flex" alignItems="center">
+                   {this.renderDisplayTools()}
                    {this.renderAvatarMenu()}
-                </Pane>                
+                </Pane>
             </Pane>
-            <Pane display="flex" flexWrap="wrap" justifyContent="space-evenly" background="overlay">
-                {this.renderFolders()}
-                {this.renderFiles()}
-            </Pane>
+            
+            <DavDirectoryPane displayMode={this.state.displayMode} handleNavigate={this.navigate} handleShowDetails={this.toggleFileDetails} folders={this.state.directories} files={this.state.files} />
+
         </Fragment>
     }
 

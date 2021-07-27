@@ -1,5 +1,5 @@
 
-import { Card, Icon, Link, Pane, Text, InfoSignIcon, DownloadIcon } from 'evergreen-ui';
+import { Card, Icon, Link, Pane, Text, InfoSignIcon, DownloadIcon, Table } from 'evergreen-ui';
 import { Component } from 'react';
 
 import { DavConfigurationContext } from '../AppSettings';
@@ -55,7 +55,7 @@ export default class Image extends Component {
         this.props.showDetails(this.props.fileItem);
     }
 
-    render = () => {
+    renderGrid = () => {
         let styleThumb = {};
         if (this.state.thumb !== null) {
             const imgUrl = 'url(' + this.state.thumb + ')';
@@ -89,5 +89,50 @@ export default class Image extends Component {
                 </Pane>
             </Card>
         );
+    }
+
+    renderTable = () => {
+
+        let styleThumb = {};
+        if (this.state.thumb !== null) {
+            const imgUrl = 'url(' + this.state.thumb + ')';
+            styleThumb = {
+                backgroundImage: imgUrl,
+                backgroundPosition: 'center',
+                backgroundSize: 'cover',
+                width: '16px',
+                height: '16px',
+                marginRight: '5px'
+            }        
+        } 
+
+        return <Table.Row key={this.props.fileItem.basename} isSelectable justifyContent="space-between">
+              <Table.TextCell flexGrow={2} textAlign="left">
+                  <Link href="#" onClick={(evt) => this.props.navigate(this.props.fileItem.basename)}>
+                      <div style={{display: 'inline-flex'}}>
+                      <div style={styleThumb}>&nbsp;</div>
+                      <div>{this.props.fileItem.basename}</div>
+                      </div>                  
+                  </Link>
+                </Table.TextCell>
+              <Table.TextCell flexGrow={1} textAlign="right">
+                  <Link href="#" onClick={(evt) => {this.showDetails()}}><Icon icon={InfoSignIcon} color="info"/></Link>&nbsp;
+                  <Link href={this.context.davClient.getFileDownloadLink(this.props.fileItem.filename)} target="_blank"><DownloadIcon color="success"/></Link>
+              </Table.TextCell>
+            </Table.Row>
+    }
+
+    render = () => {
+        switch (this.props.displayMode) {
+            case 'grid':
+                return this.renderGrid();
+
+            case 'table':
+                return this.renderTable();
+
+            default:
+                console.log(`Invalid display mode: ${this.props.displayMode}. Using grid as a default.`);
+                return this.renderGrid();
+        }
     }
 }
