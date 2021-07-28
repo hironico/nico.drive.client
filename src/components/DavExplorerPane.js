@@ -1,17 +1,20 @@
 
-import { Component, Fragment } from 'react';
+import { Component} from 'react';
 
-import { Link, Pane, SideSheet, Avatar, Badge, Popover, Menu, Position, Table, ListIcon, GridViewIcon } from 'evergreen-ui';
-import { InfoSignIcon, LogOutIcon } from 'evergreen-ui';
+import { Pane, SideSheet } from 'evergreen-ui';
 
 import { DavConfigurationContext } from '../AppSettings';
 
-import FileDetailsPane from './FileDetailsPane';
-import DavBreadCrumb from './DavBreadCrumb';
-
 import WelcomePage from './welcome-page/WelcomePage';
+import FileDetailsPane from './FileDetailsPane';
 import DavDirectoryPane from './DavDirectoryPane';
+import DavToolBar from './DavToolBar';
 
+/**
+ * The DAV Explorer Pane is the main component. It composes the page and has functions to interect with
+ * the DAV Client. It uses sub components such as DavToolBar and DavDirectoryPane to render things returned 
+ * by the DavClient.
+ */
 export default class DavExplorerPane extends Component {
     static contextType = DavConfigurationContext;
 
@@ -100,59 +103,10 @@ export default class DavExplorerPane extends Component {
         this.context.disconnect();
     }
 
-    renderAvatarMenu = () => {
-        return <Popover
-        position={Position.BOTTOM_LEFT}
-        content={
-          <Menu>
-            <Menu.Group>
-              <Menu.Item icon={InfoSignIcon} intent="success"><Badge color="green">{this.context.username}</Badge></Menu.Item>              
-              <Menu.Item>{this.context.getClientUrl()}</Menu.Item>
-            </Menu.Group>
-            <Menu.Divider />
-            <Menu.Group>
-              <Menu.Item icon={LogOutIcon} intent="danger" onClick={() => {this.disconnect()}}>
-                Disconnect
-              </Menu.Item>
-            </Menu.Group>
-          </Menu>
-        }
-      >
-        <Avatar name={this.context.username} size={40} marginLeft={15} marginRight={15} style={{cursor: 'pointer'}}/>
-      </Popover>
-    }
-
     changeDisplayMode = (displayMode) => {
         this.setState({
             displayMode: displayMode
         });
-    }
-
-    renderDisplayTools = () => {
-        return <Fragment>
-            <Link href="#" style={{ display: 'flex', alignItems: 'center' }} onClick={(evt) => this.changeDisplayMode('grid')}>
-                <GridViewIcon size={24} style={{ marginLeft: '5px', marginRight: '5px' }} />
-            </Link>
-            &nbsp;
-            <Link href="#" style={{ display: 'flex', alignItems: 'center' }} onClick={(evt) => this.changeDisplayMode('table')}>
-                <ListIcon size={24} style={{ marginLeft: '5px', marginRight: '5px' }} />
-            </Link>            
-        </Fragment>
-    }
-
-    renderRootPane = () => {
-        return <Fragment>
-            <Pane zIndex={1} flexShrink={0} elevation={0} backgroundColor="white" display="grid" gridTemplateColumns="auto 1fr">                
-                <DavBreadCrumb handleNavigate={this.navigateAbsolute} currentDirectory={this.state.currentDirectory} />
-                <Pane justifySelf="end" display="inline-flex" alignItems="center">
-                   {this.renderDisplayTools()}
-                   {this.renderAvatarMenu()}
-                </Pane>
-            </Pane>
-            
-            <DavDirectoryPane displayMode={this.state.displayMode} handleNavigate={this.navigate} handleShowDetails={this.toggleFileDetails} folders={this.state.directories} files={this.state.files} />
-
-        </Fragment>
     }
 
     render = () => {
@@ -166,7 +120,16 @@ export default class DavExplorerPane extends Component {
         }
 
         return <Pane>
-            {this.renderRootPane()}
+            <DavToolBar currentDirectory={this.state.currentDirectory} 
+                        handleDisplayMode={this.changeDisplayMode} 
+                        handleDisconnect={this.disconnect} 
+                        handleNavigate={this.navigateAbsolute} />
+
+            <DavDirectoryPane displayMode={this.state.displayMode} 
+                              folders={this.state.directories} 
+                              files={this.state.files}
+                              handleNavigate={this.navigate} 
+                              handleShowDetails={this.toggleFileDetails} />
 
             <SideSheet
                 isShown={this.state.showDetails}
