@@ -2,7 +2,9 @@
 import { Card, Icon, Text, Pane, FolderOpenIcon, Link, Table } from 'evergreen-ui';
 import { Component } from 'react';
 
-export default class Folder extends Component {
+import RegularFile from './RegularFile';
+
+export default class Folder extends RegularFile {
 
     renderGrid = () => {
         let styleThumb = {
@@ -41,27 +43,19 @@ export default class Folder extends Component {
 
     renderTable = () => {
         return <Table.Row key={this.props.fileItem.basename} isSelectable justifyContent="space-between">
-              <Table.TextCell flexGrow={2} textAlign="left">
+              <Table.TextCell flexGrow={3} textAlign="left">
                   <Link href="#" onClick={(evt) => this.props.handleNavigate(this.props.fileItem.basename)}>
                   <FolderOpenIcon color="#F7D154"/>&nbsp;
                   {this.props.fileItem.basename}
                   </Link>
                 </Table.TextCell>
+                <Table.TextCell textAlign="left">
+                    &nbsp;                    
+                </Table.TextCell>
+                <Table.TextCell textAlign="left">
+                    {this.props.fileItem.lastmod}
+                </Table.TextCell>
               <Table.TextCell flexGrow={1}>&nbsp;</Table.TextCell>
             </Table.Row>
-    }
-
-    render = () => {
-        switch (this.props.displayMode) {
-            case 'grid':
-                return this.renderGrid();
-
-            case 'table':
-                return this.renderTable();
-
-            default:
-                console.log(`Invalid display mode: ${this.props.displayMode}. Using grid as a default.`);
-                return this.renderGrid();
-        }
     }
 }

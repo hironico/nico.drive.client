@@ -14,6 +14,10 @@ import { DavConfigurationContext } from '../AppSettings';
 export default class DavDirectoryPane extends Component {
     static contextType = DavConfigurationContext;
 
+    filterFileItems = (value) => {
+        console.log('Should filter items dynamically.');
+    }
+
     renderFolders = () => {
         let folders = this.props.folders.map((directory, index) => {
             return <Folder key={'dir_' + index} 
@@ -52,8 +56,10 @@ export default class DavDirectoryPane extends Component {
     renderDirectoryContentsTable = () => {
         return <Table>
             <Table.Head>
-                <Table.SearchHeaderCell placeholder="Search files..." flexGrow={1}/>
-                <Table.TextHeaderCell>Actions</Table.TextHeaderCell>
+                <Table.SearchHeaderCell placeholder="Search files..." flexGrow={3} onChange={(value) => this.filterFileItems(value)}/>                
+                <Table.TextHeaderCell textAlign="left">Size</Table.TextHeaderCell>
+                <Table.TextHeaderCell textAlign="left">Modified</Table.TextHeaderCell>
+                <Table.TextHeaderCell textAlign="right">Actions</Table.TextHeaderCell>
             </Table.Head>
         <Table.Body>
             {this.renderFolders()}

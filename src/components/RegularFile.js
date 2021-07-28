@@ -6,6 +6,25 @@ import { DavConfigurationContext } from '../AppSettings';
 export default class RegularFile extends Component {
     static contextType = DavConfigurationContext;
 
+    renderFileItemSize = () => {
+        let unite = 'bytes';
+        let taille = this.props.fileItem.size;
+        if (taille > 1024) {
+            taille = (taille / 1024).toFixed(2);
+            unite = 'KB';
+        }
+        if (taille > 1024) {
+            taille = (taille / 1024).toFixed(2);
+            unite = 'MB';
+        }
+        if (taille > 1024) {
+            taille = (taille / 1024).toFixed(2);
+            unite = 'GB';
+        }
+
+        return `${taille} ${unite}`;
+    }
+
     renderGrid = () => {
         let styleThumb = {
             width: '200px',
@@ -43,12 +62,18 @@ export default class RegularFile extends Component {
 
     renderTable = () => {
         return <Table.Row key={this.props.fileItem.basename} isSelectable>
-              <Table.TextCell flexGrow={2} textAlign="left">
+              <Table.TextCell flexGrow={3} textAlign="left">
                   <Link href={this.context.davClient.getFileDownloadLink(this.props.fileItem.filename)} target="_blank">
                     <DocumentIcon />&nbsp;
                     {this.props.fileItem.basename}
                   </Link>
-                </Table.TextCell>
+              </Table.TextCell>
+              <Table.TextCell textAlign="left">
+                  {this.renderFileItemSize()}
+              </Table.TextCell>
+              <Table.TextCell textAlign="left">
+                  {this.props.fileItem.lastmod}
+              </Table.TextCell>
               <Table.TextCell flexGrow={1} textAlign="right">
                 <Link href="#" onClick={(evt) => {this.props.handleShowDetails(this.props.fileItem)}}><Icon icon={InfoSignIcon} color="info"/></Link>&nbsp;
                 <Link href={this.context.davClient.getFileDownloadLink(this.props.fileItem.filename)} target="_blank"><DownloadIcon color="success"/></Link>
@@ -57,6 +82,9 @@ export default class RegularFile extends Component {
     }
 
     render = () => {
+
+        console.log(JSON.stringify(this.props.fileItem));
+
         switch (this.props.displayMode) {
             case 'grid':
                 return this.renderGrid();
