@@ -51,10 +51,6 @@ export default class Image extends Component {
         .catch(err => console.log(`Could not generate thumb for file ${this.props.fileItem.filename}\nReason: ${err}`));
     }
 
-    showDetails = () => {
-        this.props.showDetails(this.props.fileItem);
-    }
-
     renderGrid = () => {
         let styleThumb = {};
         if (this.state.thumb !== null) {
@@ -83,7 +79,7 @@ export default class Image extends Component {
             > 
                 <div style={styleThumb}>&nbsp;</div>
                 <Pane display="inline-flex" alignItems="center" justifyContent="space-between" style={{width: '190px', height: '18px', margin: '5px'}}>
-                    <Link href="#" onClick={(evt) => {this.showDetails()}}><Icon icon={InfoSignIcon} color="info"/></Link>
+                    <Link href="#" onClick={(evt) => {this.props.handleShowDetails(this.props.fileItem)}}><Icon icon={InfoSignIcon} color="info"/></Link>
                     <Text style={{overflow: 'hidden', maxWidth: '155px', maxHeight: '24px'}}>{this.props.fileItem.basename}</Text>
                     <Link href={this.context.davClient.getFileDownloadLink(this.props.fileItem.filename)} target="_blank"><DownloadIcon color="success"/></Link>
                 </Pane>
@@ -108,7 +104,7 @@ export default class Image extends Component {
 
         return <Table.Row key={this.props.fileItem.basename} isSelectable justifyContent="space-between">
               <Table.TextCell flexGrow={2} textAlign="left">
-                  <Link href="#" onClick={(evt) => this.props.navigate(this.props.fileItem.basename)}>
+                  <Link href={this.context.davClient.getFileDownloadLink(this.props.fileItem.filename)} target="_blank">
                       <div style={{display: 'inline-flex'}}>
                       <div style={styleThumb}>&nbsp;</div>
                       <div>{this.props.fileItem.basename}</div>
@@ -116,7 +112,7 @@ export default class Image extends Component {
                   </Link>
                 </Table.TextCell>
               <Table.TextCell flexGrow={1} textAlign="right">
-                  <Link href="#" onClick={(evt) => {this.showDetails()}}><Icon icon={InfoSignIcon} color="info"/></Link>&nbsp;
+                  <Link href="#" onClick={(evt) => {this.props.handleShowDetails(this.props.fileItem)}}><Icon icon={InfoSignIcon} color="info"/></Link>&nbsp;
                   <Link href={this.context.davClient.getFileDownloadLink(this.props.fileItem.filename)} target="_blank"><DownloadIcon color="success"/></Link>
               </Table.TextCell>
             </Table.Row>

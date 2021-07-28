@@ -26,7 +26,7 @@ export default class Folder extends Component {
                 alignItems="center"
                 flexDirection="column"
             >   
-                <Link href="#" onClick={(evt) => this.props.navigate(this.props.fileItem.basename)}>             
+                <Link href="#" onClick={(evt) => this.props.handleNavigate(this.props.fileItem.basename)}>             
                     <Pane style={styleThumb} background="tint2">
                         <Icon icon={FolderOpenIcon} size={48} color="#F7D154" />
                     </Pane>
@@ -42,7 +42,7 @@ export default class Folder extends Component {
     renderTable = () => {
         return <Table.Row key={this.props.fileItem.basename} isSelectable justifyContent="space-between">
               <Table.TextCell flexGrow={2} textAlign="left">
-                  <Link href="#" onClick={(evt) => this.props.navigate(this.props.fileItem.basename)}>
+                  <Link href="#" onClick={(evt) => this.props.handleNavigate(this.props.fileItem.basename)}>
                   <FolderOpenIcon color="#F7D154"/>&nbsp;
                   {this.props.fileItem.basename}
                   </Link>

@@ -6,10 +6,6 @@ import { DavConfigurationContext } from '../AppSettings';
 export default class RegularFile extends Component {
     static contextType = DavConfigurationContext;
 
-    showDetails = () => {
-        this.props.showDetails(this.props.fileItem);
-    }
-
     renderGrid = () => {
         let styleThumb = {
             width: '200px',
@@ -37,7 +33,7 @@ export default class RegularFile extends Component {
                 </Pane>  
 
                 <Pane display="inline-flex" alignItems="center" justifyContent="space-between" style={{width: '190px', height: '18px', margin: '5px'}}>
-                    <Link href="#" onClick={(evt) => {this.showDetails()}}><Icon icon={InfoSignIcon} color="info"/></Link>
+                    <Link href="#" onClick={(evt) => {this.props.handleShowDetails(this.props.fileItem)}}><Icon icon={InfoSignIcon} color="info"/></Link>
                     <Text style={{overflow: 'hidden', maxWidth: '155px', maxHeight: '24px'}}>{this.props.fileItem.basename}</Text>
                     <Link href={this.context.davClient.getFileDownloadLink(this.props.fileItem.filename)} target="_blank"><DownloadIcon color="success"/></Link>
                 </Pane>
@@ -48,13 +44,13 @@ export default class RegularFile extends Component {
     renderTable = () => {
         return <Table.Row key={this.props.fileItem.basename} isSelectable>
               <Table.TextCell flexGrow={2} textAlign="left">
-                  <Link href="#" onClick={(evt) => this.props.navigate(this.props.fileItem.basename)}>
+                  <Link href={this.context.davClient.getFileDownloadLink(this.props.fileItem.filename)} target="_blank">
                     <DocumentIcon />&nbsp;
                     {this.props.fileItem.basename}
                   </Link>
                 </Table.TextCell>
               <Table.TextCell flexGrow={1} textAlign="right">
-                <Link href="#" onClick={(evt) => {this.showDetails()}}><Icon icon={InfoSignIcon} color="info"/></Link>&nbsp;
+                <Link href="#" onClick={(evt) => {this.props.handleShowDetails(this.props.fileItem)}}><Icon icon={InfoSignIcon} color="info"/></Link>&nbsp;
                 <Link href={this.context.davClient.getFileDownloadLink(this.props.fileItem.filename)} target="_blank"><DownloadIcon color="success"/></Link>
               </Table.TextCell>
             </Table.Row>

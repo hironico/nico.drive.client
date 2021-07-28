@@ -16,7 +16,11 @@ export default class DavDirectoryPane extends Component {
 
     renderFolders = () => {
         let folders = this.props.folders.map((directory, index) => {
-            return <Folder fileItem={directory} navigate={this.props.handleNavigate} showDetails={this.props.handleShowDetails} key={'dir_' + index} displayMode={this.props.displayMode}/>
+            return <Folder key={'dir_' + index} 
+                           fileItem={directory} 
+                           displayMode={this.props.displayMode}
+                           handleNavigate={this.props.handleNavigate} 
+                           handleShowDetails={this.props.handleShowDetails} />
         });
         return folders;
     }
@@ -24,9 +28,15 @@ export default class DavDirectoryPane extends Component {
     renderFiles = () => {
         let images = this.props.files.map((file, index) => {
             if (this.context.isImageFile(file.basename)) {
-                return <Image fileItem={file} navigate={this.props.handleNavigate} showDetails={this.props.handleShowDetails} key={'file_' + index} displayMode={this.props.displayMode} />
+                return <Image key={'file_' + index} 
+                              fileItem={file}
+                              displayMode={this.props.displayMode}
+                              handleShowDetails={this.props.handleShowDetails} />
             } else {
-                return <RegularFile fileItem={file} navigate={this.props.handleNavigate} showDetails={this.props.handleShowDetails} key={'file_' + index} displayMode={this.props.displayMode} />
+                return <RegularFile key={'file_' + index} 
+                                    fileItem={file}
+                                    displayMode={this.props.displayMode} 
+                                    handleShowDetails={this.props.handleShowDetails} />
             }
         });
         return images;
