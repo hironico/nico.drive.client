@@ -82,9 +82,6 @@ export default class RegularFile extends Component {
     }
 
     render = () => {
-
-        console.log(JSON.stringify(this.props.fileItem));
-
         switch (this.props.displayMode) {
             case 'grid':
                 return this.renderGrid();

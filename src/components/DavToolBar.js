@@ -1,11 +1,12 @@
 import { Component, Fragment } from "react";
 
-import { Pane, Link, Menu, Popover, Badge, Avatar, Position } from "evergreen-ui";
-import { GridViewIcon, ListIcon, InfoSignIcon, LogOutIcon } from "evergreen-ui";
+import { Pane, Link, Menu, Popover, Badge, Avatar, Position, SearchInput } from "evergreen-ui";
+import { GridViewIcon, ListIcon, InfoSignIcon, LogOutIcon, MenuIcon } from "evergreen-ui";
 
 import { DavConfigurationContext } from '../AppSettings';
 
 import DavBreadCrumb from "./DavBreadCrumb";
+import React from "react";
 
 export default class DavToolBar extends Component {
     static contextType = DavConfigurationContext;
@@ -28,7 +29,7 @@ export default class DavToolBar extends Component {
                     </Menu>
                     }
                 >
-                <Avatar name={this.context.username} size={40} marginLeft={15} marginRight={15} style={{cursor: 'pointer'}}/>
+                <Avatar name={this.context.username} size={40} marginLeft={15} marginRight={15} style={{cursor: 'pointer'}}/>                
             </Popover>
     }
 
@@ -45,11 +46,11 @@ export default class DavToolBar extends Component {
     }
 
     render = () => {
-        return <Pane zIndex={1} flexShrink={0} elevation={0} backgroundColor="white" display="grid" gridTemplateColumns="auto 1fr">                
+        return <Pane zIndex={1} flexShrink={0} elevation={0} backgroundColor="white" display="grid" gridTemplateColumns="auto 1fr">                                
                 <DavBreadCrumb handleNavigate={this.props.handleNavigate} currentDirectory={this.props.currentDirectory} />
                 <Pane justifySelf="end" display="inline-flex" alignItems="center">
-                   {this.renderDisplayTools()}
-                   {this.renderAvatarMenu()}
+                   {this.renderDisplayTools()}         
+                   {this.renderAvatarMenu()}          
                 </Pane>
             </Pane>
     }

@@ -1,4 +1,4 @@
-import { Component } from "react"
+import { Component, useDebugValue } from "react"
 import { Pane, Table } from "evergreen-ui";
 
 import Folder from './Folder';
@@ -14,12 +14,26 @@ import { DavConfigurationContext } from '../AppSettings';
 export default class DavDirectoryPane extends Component {
     static contextType = DavConfigurationContext;
 
+    constructor () {
+        super();
+        this.state = {
+            filter: '',
+            filterRegExp: new RegExp('.*', 'i')
+        };
+    }
+
     filterFileItems = (value) => {
-        console.log('Should filter items dynamically.');
+        let valueStr = value === null || value === '' ? '.*' : value;
+        this.setState({
+            filter: value,
+            filterRegExp: new RegExp(valueStr, 'i')
+        });
     }
 
     renderFolders = () => {
-        let folders = this.props.folders.map((directory, index) => {
+        let folders = this.props.folders
+            .filter(folder => folder.basename.search(this.state.filterRegExp) !== -1)
+            .map((directory, index) => {
             return <Folder key={'dir_' + index} 
                            fileItem={directory} 
                            displayMode={this.props.displayMode}
@@ -30,7 +44,9 @@ export default class DavDirectoryPane extends Component {
     }
 
     renderFiles = () => {
-        let images = this.props.files.map((file, index) => {
+        let images = this.props.files
+            .filter(file => file.basename.search(this.state.filterRegExp) !== -1)
+            .map((file, index) => {
             if (this.context.isImageFile(file.basename)) {
                 return <Image key={'file_' + index} 
                               fileItem={file}
