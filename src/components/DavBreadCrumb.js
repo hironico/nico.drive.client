@@ -7,8 +7,8 @@ export default class DavBreadCrumb extends Component {
     render = () => {
         let path = this.props.currentDirectory;
 
-        const chevronIcon = <ChevronRightIcon size={24} style={{ marginLeft: '5px', marginRight: '5px' }} />
-        const homeIcon = <HomeIcon size={24} style={{ marginLeft: '5px', marginRight: '5px' }} />
+        const chevronIcon = <ChevronRightIcon size={18} style={{ marginLeft: '5px', marginRight: '5px' }} />
+        const homeIcon = <HomeIcon size={18} style={{ marginLeft: '5px', marginRight: '5px' }} />
 
         let currentDirs = path === '/' ? [''] : path.split('/');
         let navDirs = [];

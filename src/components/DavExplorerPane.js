@@ -1,7 +1,7 @@
 
 import { Component} from 'react';
 
-import { Pane, SideSheet } from 'evergreen-ui';
+import { Pane, SideSheet, Heading } from 'evergreen-ui';
 
 import { DavConfigurationContext } from '../AppSettings';
 
@@ -119,7 +119,10 @@ export default class DavExplorerPane extends Component {
             return <h3>Loading...</h3>
         }
 
-        return <Pane>
+        return <Pane gridTemplateRows="1fr auto">
+            <Pane background="tint2">
+                <Heading size={800}>Nico's Drive</Heading>
+            </Pane>
             <DavToolBar currentDirectory={this.state.currentDirectory} 
                         handleDisplayMode={this.changeDisplayMode} 
                         handleDisconnect={this.disconnect} 

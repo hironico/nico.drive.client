@@ -29,24 +29,24 @@ export default class DavToolBar extends Component {
                     </Menu>
                     }
                 >
-                <Avatar name={this.context.username} size={40} marginLeft={15} marginRight={15} style={{cursor: 'pointer'}}/>                
+                <Avatar name={this.context.username} size={32} marginLeft={15} marginRight={15} style={{cursor: 'pointer'}}/>                
             </Popover>
     }
 
     renderDisplayTools = () => {
         return <Fragment>
             <Link href="#" style={{ display: 'flex', alignItems: 'center' }} onClick={(evt) => this.props.handleDisplayMode('grid')}>
-                <GridViewIcon size={24} style={{ marginLeft: '5px', marginRight: '5px' }} />
+                <GridViewIcon size={18} style={{ marginLeft: '5px', marginRight: '5px' }} />
             </Link>
             &nbsp;
             <Link href="#" style={{ display: 'flex', alignItems: 'center' }} onClick={(evt) => this.props.handleDisplayMode('table')}>
-                <ListIcon size={24} style={{ marginLeft: '5px', marginRight: '5px' }} />
+                <ListIcon size={18} style={{ marginLeft: '5px', marginRight: '5px' }} />
             </Link>            
         </Fragment>
     }
 
     render = () => {
-        return <Pane zIndex={1} flexShrink={0} elevation={0} backgroundColor="white" display="grid" gridTemplateColumns="auto 1fr">                                
+        return <Pane zIndex={1} flexShrink={0} elevation={0} background="tint2" display="grid" gridTemplateColumns="auto 1fr">                                
                 <DavBreadCrumb handleNavigate={this.props.handleNavigate} currentDirectory={this.props.currentDirectory} />
                 <Pane justifySelf="end" display="inline-flex" alignItems="center">
                    {this.renderDisplayTools()}         

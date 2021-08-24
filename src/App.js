@@ -1,6 +1,6 @@
 
 import { React, Component } from 'react';
-import { Pane } from 'evergreen-ui';
+import { Heading, Pane } from 'evergreen-ui';
 
 import logo from './logo.svg';
 import './App.css';

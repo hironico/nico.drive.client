@@ -30,6 +30,17 @@ export default class DavDirectoryPane extends Component {
         });
     }
 
+    /**
+     * Ensure filter is cleared out before navigating to a new folder
+     */
+    navigate = (folderName) => {
+        this.setState({
+            filter: '',
+            filterRegExp: new RegExp('.*', 'i')
+        }, () => { this.props.handleNavigate(folderName) }
+        );
+    }
+
     renderFolders = () => {
         let folders = this.props.folders
             .filter(folder => folder.basename.search(this.state.filterRegExp) !== -1)
@@ -37,7 +48,7 @@ export default class DavDirectoryPane extends Component {
             return <Folder key={'dir_' + index} 
                            fileItem={directory} 
                            displayMode={this.props.displayMode}
-                           handleNavigate={this.props.handleNavigate} 
+                           handleNavigate={this.navigate} 
                            handleShowDetails={this.props.handleShowDetails} />
         });
         return folders;
@@ -72,7 +83,7 @@ export default class DavDirectoryPane extends Component {
     renderDirectoryContentsTable = () => {
         return <Table>
             <Table.Head>
-                <Table.SearchHeaderCell placeholder="Search files..." flexGrow={3} onChange={(value) => this.filterFileItems(value)}/>                
+                <Table.SearchHeaderCell placeholder="Search files..." flexGrow={3} onChange={(value) => this.filterFileItems(value)} value={this.state.filter} />                
                 <Table.TextHeaderCell textAlign="left">Size</Table.TextHeaderCell>
                 <Table.TextHeaderCell textAlign="left">Modified</Table.TextHeaderCell>
                 <Table.TextHeaderCell textAlign="right">Actions</Table.TextHeaderCell>
