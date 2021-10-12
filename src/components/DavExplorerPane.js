@@ -1,7 +1,7 @@
 
 import { Component} from 'react';
 
-import { Pane, SideSheet, Heading } from 'evergreen-ui';
+import { Pane, SideSheet, Heading, SearchInput, MenuIcon, Position } from 'evergreen-ui';
 
 import { DavConfigurationContext } from '../AppSettings';
 
@@ -25,7 +25,8 @@ export default class DavExplorerPane extends Component {
             currentDirectory: null,
             directories: [],
             files: [],
-            showDetails: false,
+            showMenu: true,
+            showDetails: false,            
             displayMode: 'table'
         }
     }
@@ -119,22 +120,41 @@ export default class DavExplorerPane extends Component {
             return <h3>Loading...</h3>
         }
 
-        return <Pane gridTemplateRows="1fr auto">
-            <Pane background="tint2">
-                <Heading size={800}>Nico's Drive</Heading>
+        return <Pane display="grid" gridTemplateColumns="auto 4fr" height="100%">
+            <Pane background="#696f8c" elevation={2} padding={15}>
+                <MenuIcon size={32} color="#F4F6FA" onClick={() => {this.setState({ showMenu: true})}}/>
             </Pane>
-            <DavToolBar currentDirectory={this.state.currentDirectory} 
-                        handleDisplayMode={this.changeDisplayMode} 
-                        handleDisconnect={this.disconnect} 
-                        handleNavigate={this.navigateAbsolute} />
 
-            <DavDirectoryPane displayMode={this.state.displayMode} 
-                              folders={this.state.directories} 
-                              files={this.state.files}
-                              handleNavigate={this.navigate} 
-                              handleShowDetails={this.toggleFileDetails} />
+            <Pane gridTemplateRows="1fr auto">
+                <Pane background="tint2">
+                    <Heading size={600} marginTop={15}>
+                        <SearchInput placeholder="Search in your files..." />
+                    </Heading>
+                </Pane>
+                <DavToolBar currentDirectory={this.state.currentDirectory} 
+                            handleDisplayMode={this.changeDisplayMode} 
+                            handleDisconnect={this.disconnect} 
+                            handleNavigate={this.navigateAbsolute} />
 
-            <SideSheet
+                <DavDirectoryPane displayMode={this.state.displayMode} 
+                                folders={this.state.directories} 
+                                files={this.state.files}
+                                handleNavigate={this.navigate} 
+                                handleShowDetails={this.toggleFileDetails} />
+                
+            </Pane>
+
+            <SideSheet id="side-menu"
+                position={Position.LEFT}
+                isShown={this.state.showMenu}
+                onCloseComplete={() => this.setState({ showMenu: false })}                
+                >
+                    <Pane height="100%" background="#696f8c" paddingTop={15}>
+                        <Heading size={600} color="#F4F6FA">My files</Heading>
+                    </Pane>
+            </SideSheet>
+
+            <SideSheet id="side-details"
                 isShown={this.state.showDetails}
                 onCloseComplete={() => this.setState({ showDetails: false })}
             >

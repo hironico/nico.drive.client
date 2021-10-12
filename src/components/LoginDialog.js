@@ -19,8 +19,16 @@ export default class LoginDialog extends Component {
         }
     }
 
+    componentDidUpdate = () => {
+        if (this.state.url === '') {
+            this.buildUrl();
+        }
+    }
+
     buildUrl = () => {
-        let newUrl = `${window.location.protocol}//${window.location.hostname}:${window.location.port}/${this.state.davContext}/${this.state.username}/`;
+        const protocol = 'localhost' === window.location.hostname ? 'http' : 'https';
+        const port = 'localhost' === window.location.hostname ? '8080' : window.location.port;
+        const newUrl = `${protocol}://${window.location.hostname}:${port}/${this.state.davContext}/${this.state.username}/`;
         this.setState({
             url: newUrl
         });

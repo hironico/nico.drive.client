@@ -36,3 +36,16 @@
     transform: rotate(360deg);
   }
 }
+
+html, body {
+  height: 100%;
+}
+
+.App {
+  position: absolute;
+  top: 0;
+  bottom: 100vh;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}

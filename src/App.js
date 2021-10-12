@@ -14,8 +14,8 @@ class App extends Component {
 
   render = () => {
     return (      
-        <div className="App">
-          <Pane clearfix width="100%">
+        <div className="App" height="100%">
+          <Pane clearfix width="100%" height="100%">
               <DavConfigurationProvider>
                 <LoginDialog />
                 <DavExplorerPane />
