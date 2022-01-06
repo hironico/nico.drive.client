@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { AuthType } from "webdav";
 
 const defaultValue = {
-    davBaseUrl: 'https://localhost:8080',
+    davBaseUrl: 'http://localhost:8080',
     davWebContext: '/dav',
     authType: AuthType.Basic,
     username: 'hironico',
@@ -32,7 +32,7 @@ class DavConfigurationProvider extends Component {
     constructor() {
         super();
         this.state = {
-            davBaseUrl: 'https://localhost:8080',
+            davBaseUrl: 'http://localhost:8080',
             davWebContext: '/dav',
             authType: AuthType.Basic,
             username: 'hironico',

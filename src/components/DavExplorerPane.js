@@ -1,7 +1,8 @@
 
 import { Component} from 'react';
 
-import { Pane, SideSheet, Heading, SearchInput, MenuIcon, Position } from 'evergreen-ui';
+import { Pane, SideSheet, Heading, SearchInput, Position, Popover, Avatar, Menu, Badge } from 'evergreen-ui';
+import { InfoSignIcon, LogOutIcon } from 'evergreen-ui';
 
 import { DavConfigurationContext } from '../AppSettings';
 
@@ -9,6 +10,30 @@ import WelcomePage from './welcome-page/WelcomePage';
 import FileDetailsPane from './FileDetailsPane';
 import DavDirectoryPane from './DavDirectoryPane';
 import DavToolBar from './DavToolBar';
+
+import Tree from './tree/Tree';
+import TreeFolder from './tree/TreeFolder';
+import TreeFile from './tree/TreeFile';
+
+const structure = [
+    {
+      type: "folder",
+      name: "src",
+      childrens: [
+        {
+          type: "folder",
+          name: "Components",
+          childrens: [
+            { type: "file", name: "Modal.js" },
+            { type: "file", name: "Modal.css" }
+          ]
+        },
+        { type: "file", name: "index.js" },
+        { type: "file", name: "index.html" }
+      ]
+    },
+    { type: "file", name: "package.json" }
+  ];
 
 /**
  * The DAV Explorer Pane is the main component. It composes the page and has functions to interect with
@@ -25,7 +50,7 @@ export default class DavExplorerPane extends Component {
             currentDirectory: null,
             directories: [],
             files: [],
-            showMenu: true,
+            rootDirs: [],
             showDetails: false,            
             displayMode: 'table'
         }
@@ -50,6 +75,12 @@ export default class DavExplorerPane extends Component {
             const directoryItems = await this.context.davClient.getDirectoryContents(this.state.currentDirectory);
             dirs = directoryItems.filter(item => { return item.type === 'directory' });
             files = directoryItems.filter(item => { return item.type === 'file' });
+
+            if ('/' === this.state.currentDirectory) {
+                this.setState({
+                    rootDirs: dirs
+                });
+            }
         }
 
         this.setState({
@@ -110,6 +141,29 @@ export default class DavExplorerPane extends Component {
         });
     }
 
+    renderAvatarMenu = () => {
+        return <Popover 
+                    justifySelf="end"
+                    position={Position.BOTTOM_RIGHT}
+                    content={
+                    <Menu>
+                        <Menu.Group>
+                        <Menu.Item icon={InfoSignIcon} intent="success"><Badge color="green">{this.context.username}</Badge></Menu.Item>              
+                        <Menu.Item>{this.context.getClientUrl()}</Menu.Item>
+                        </Menu.Group>
+                        <Menu.Divider />
+                        <Menu.Group>
+                        <Menu.Item icon={LogOutIcon} intent="danger" onClick={() => {this.disconnect()}}>
+                            Disconnect
+                        </Menu.Item>
+                        </Menu.Group>
+                    </Menu>
+                    }
+                >
+                <Avatar name={this.context.username} size={32} marginLeft={15} marginRight={15} style={{cursor: 'pointer'}} justifySelf="end"/>
+            </Popover>
+    }
+
     render = () => {
 
         if (!this.context.connectionValid) {
@@ -120,20 +174,22 @@ export default class DavExplorerPane extends Component {
             return <h3>Loading...</h3>
         }
 
-        return <Pane display="grid" gridTemplateColumns="auto 4fr" height="100%">
-            <Pane background="#696f8c" elevation={2} padding={15}>
-                <MenuIcon size={32} color="#F4F6FA" onClick={() => {this.setState({ showMenu: true})}}/>
+        return <Pane display="grid" gridTemplateColumns="1fr 4fr" height="100%">
+            <Pane background="#696f8c" elevation={0} padding={15} display="grid" gridTemplateRows="auto" gridTemplateColumns="auto" overflowX="scroll">                
+                <Tree>
+                    {this.state.rootDirs.map((dir, index) => {
+                        return <TreeFolder key={`treefolder-${index}`} absolutePath={`/${dir.basename}`} basename={dir.basename} handleNavigate={this.navigateAbsolute} />
+                    })}
+                </Tree>
             </Pane>
 
-            <Pane gridTemplateRows="1fr auto">
-                <Pane background="tint2">
-                    <Heading size={600} marginTop={15}>
-                        <SearchInput placeholder="Search in your files..." />
-                    </Heading>
+            <Pane display="grid" gridTemplateRows="auto auto 1fr">
+                <Pane background="tint2" display="grid" gridTemplateColumns="1fr auto" paddingTop={15} paddingBottom={15} paddingLeft={15} justifySelf="stretch">
+                    <SearchInput placeholder="Search in your files..." justifySelf="stretch" />       
+                    {this.renderAvatarMenu()}
                 </Pane>
                 <DavToolBar currentDirectory={this.state.currentDirectory} 
-                            handleDisplayMode={this.changeDisplayMode} 
-                            handleDisconnect={this.disconnect} 
+                            handleDisplayMode={this.changeDisplayMode}
                             handleNavigate={this.navigateAbsolute} />
 
                 <DavDirectoryPane displayMode={this.state.displayMode} 
@@ -143,16 +199,6 @@ export default class DavExplorerPane extends Component {
                                 handleShowDetails={this.toggleFileDetails} />
                 
             </Pane>
-
-            <SideSheet id="side-menu"
-                position={Position.LEFT}
-                isShown={this.state.showMenu}
-                onCloseComplete={() => this.setState({ showMenu: false })}                
-                >
-                    <Pane height="100%" background="#696f8c" paddingTop={15}>
-                        <Heading size={600} color="#F4F6FA">My files</Heading>
-                    </Pane>
-            </SideSheet>
 
             <SideSheet id="side-details"
                 isShown={this.state.showDetails}
