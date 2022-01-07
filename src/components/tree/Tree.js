@@ -2,7 +2,7 @@ import { Component } from "react"
 
 const Tree = ({children}) => {
     return (
-    <div>{children}</div>
+    <div style={{paddingTop: '10px'}}>{children}</div>
     );
 } 
 

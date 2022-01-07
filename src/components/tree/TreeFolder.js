@@ -11,8 +11,7 @@ const styles = {
         justifyItems: 'start',
         gridTemplateColumns: 'auto auto 1fr',
         span: {
-          marginLeft: '5px',
-          color: 'white'
+          marginLeft: '5px'
         }
     },
     collapsibleOpen: {

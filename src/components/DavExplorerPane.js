@@ -1,7 +1,7 @@
 
 import { Component} from 'react';
 
-import { Pane, SideSheet, Heading, SearchInput, Position, Popover, Avatar, Menu, Badge } from 'evergreen-ui';
+import { Pane, SideSheet, Heading, SearchInput, Position, Popover, Avatar, Menu, Badge, RefreshIcon, Link, Text } from 'evergreen-ui';
 import { InfoSignIcon, LogOutIcon } from 'evergreen-ui';
 
 import { DavConfigurationContext } from '../AppSettings';
@@ -175,7 +175,13 @@ export default class DavExplorerPane extends Component {
         }
 
         return <Pane display="grid" gridTemplateColumns="1fr 4fr" height="100%">
-            <Pane background="#696f8c" elevation={0} padding={15} display="grid" gridTemplateRows="auto" gridTemplateColumns="auto" overflowX="scroll">                
+            <Pane background="blueTint" elevation={0} padding={15} display="grid" gridTemplateRows="auto auto 1fr" gridTemplateColumns="auto" overflowX="scroll">  
+                <Pane background="blueTint">
+                    <h5>My files</h5>
+                </Pane>
+                <Pane background="blueTint" elevation={0}>
+                    <Text size={400}>File manager</Text>
+                </Pane>
                 <Tree>
                     {this.state.rootDirs.map((dir, index) => {
                         return <TreeFolder key={`treefolder-${index}`} absolutePath={`/${dir.basename}`} basename={dir.basename} handleNavigate={this.navigateAbsolute} />
