@@ -42,9 +42,9 @@ export default class Folder extends RegularFile {
     }
 
     renderTable = () => {
-        return <Table.Row key={this.props.fileItem.basename} isSelectable justifyContent="space-between">
+        return <Table.Row key={this.props.fileItem.basename} isSelectable justifyContent="space-between" height={32}>
               <Table.TextCell flexGrow={3} textAlign="left">
-                  <Link href="#" onClick={(evt) => this.props.handleNavigate(this.props.fileItem.basename)}>
+                  <Link href="#" onClick={(evt) => this.props.handleNavigate(this.props.fileItem.basename)} borderBottom="none">
                   <FolderOpenIcon color="#F7D154"/>&nbsp;
                   {this.props.fileItem.basename}
                   </Link>

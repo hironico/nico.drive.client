@@ -61,9 +61,9 @@ export default class RegularFile extends Component {
     }
 
     renderTable = () => {
-        return <Table.Row key={this.props.fileItem.basename} isSelectable>
+        return <Table.Row key={this.props.fileItem.basename} isSelectable height={32}>
               <Table.TextCell flexGrow={3} textAlign="left">
-                  <Link href={this.context.davClient.getFileDownloadLink(this.props.fileItem.filename)} target="_blank">
+                  <Link href={this.context.davClient.getFileDownloadLink(this.props.fileItem.filename)} target="_blank" borderBottom="none">
                     <DocumentIcon />&nbsp;
                     {this.props.fileItem.basename}
                   </Link>

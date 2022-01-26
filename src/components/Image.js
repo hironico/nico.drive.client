@@ -104,9 +104,9 @@ export default class Image extends RegularFile {
             }        
         } 
 
-        return <Table.Row key={this.props.fileItem.basename} isSelectable justifyContent="space-between">
+        return <Table.Row key={this.props.fileItem.basename} isSelectable justifyContent="space-between" height={32}>
               <Table.TextCell flexGrow={3} textAlign="left">
-                  <Link href={this.context.davClient.getFileDownloadLink(this.props.fileItem.filename)} target="_blank">
+                  <Link href={this.context.davClient.getFileDownloadLink(this.props.fileItem.filename)} target="_blank" borderBottom="none">
                       <div style={{display: 'inline-flex'}}>
                       <div style={styleThumb}>&nbsp;</div>
                       <div>{this.props.fileItem.basename}</div>

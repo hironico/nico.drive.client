@@ -13,6 +13,9 @@ const defaultValue = {
     homeDirectory: '/hironico',
     currentDirectory: '/',
     supportedFormats: ['JPEG', 'JPG', 'PNG', 'WEBP', 'AVIF', 'TIFF', 'TIF', 'GIF', 'SVG', 'CR2'],
+    filter: '',
+    filterRegExp: new RegExp('.*', 'i'),
+    filterFileItems: (filter) => { },
     setDavClient: (client) => { },
     setConnectionValid: () => { },
     setShowConnectionDialog: (showConDlg) => { },
@@ -42,6 +45,9 @@ class DavConfigurationProvider extends Component {
             showConnectionDialog: false,
             homeDirectory: '/hironico',
             supportedFormats: ['JPEG', 'JPG', 'PNG', 'WEBP', 'AVIF', 'TIFF', 'GIF', 'SVG', 'CR2'],
+            filter: '',
+            filterRegExp: new RegExp('.*', 'i'),
+            filterFileItems: this.filterFileItems,
             setDavClient: this.setDavClient,
             setConnectionValid: this.setConnectionValid,
             setShowConnectionDialog: this.setShowConnectionDialog,
@@ -53,6 +59,14 @@ class DavConfigurationProvider extends Component {
             getBasePath: this.getBasePath,
             disconnect: this.disconnect
         }
+    }
+
+    filterFileItems = (value) => {
+        let valueStr = value === null || value === '' ? '.*' : value;
+        this.setState({
+            filter: value,
+            filterRegExp: new RegExp(valueStr, 'i')
+        });
     }
 
     setDavClient = (client, url) => {

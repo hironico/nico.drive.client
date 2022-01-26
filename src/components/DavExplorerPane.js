@@ -1,7 +1,7 @@
 
 import { Component} from 'react';
 
-import { Pane, SideSheet, Heading, SearchInput, Position, Popover, Avatar, Menu, Badge, RefreshIcon, Link, Text } from 'evergreen-ui';
+import { Pane, SideSheet, Heading, SearchInput, Position, Popover, Avatar, Menu, Badge, Spinner } from 'evergreen-ui';
 import { InfoSignIcon, LogOutIcon } from 'evergreen-ui';
 
 import { DavConfigurationContext } from '../AppSettings';
@@ -171,16 +171,19 @@ export default class DavExplorerPane extends Component {
         }
 
         if (!this.state.currentDirectory) {
-            return <h3>Loading...</h3>
+            return <Pane gridTemplateColumns="auto" gridTemplateColumns="auto">
+                <Spinner marginX="auto" marginTop={120} />
+                <Heading size={600} marginX="auto" marginTop={15}>Nico's Drive is loading...</Heading>
+          </Pane>
         }
 
         return <Pane display="grid" gridTemplateColumns="1fr 4fr" height="100%">
             <Pane background="blueTint" elevation={0} padding={15} display="grid" gridTemplateRows="auto auto 1fr" gridTemplateColumns="auto" overflowX="scroll">  
                 <Pane background="blueTint">
-                    <h5>My files</h5>
+                    <Heading size={900} color="neutral">My files</Heading>
                 </Pane>
-                <Pane background="blueTint" elevation={0}>
-                    <Text size={400}>File manager</Text>
+                <Pane background="blueTint" elevation={0} marginTop={15}>
+                    <Heading size={600} color="neutral">File manager</Heading>
                 </Pane>
                 <Tree>
                     {this.state.rootDirs.map((dir, index) => {
@@ -191,7 +194,7 @@ export default class DavExplorerPane extends Component {
 
             <Pane display="grid" gridTemplateRows="auto auto 1fr">
                 <Pane background="tint2" display="grid" gridTemplateColumns="1fr auto" paddingTop={15} paddingBottom={15} paddingLeft={15} justifySelf="stretch">
-                    <SearchInput placeholder="Search in your files..." justifySelf="stretch" />       
+                    <SearchInput placeholder="Search in your files..." justifySelf="stretch" onChange={(e) => this.context.filterFileItems(e.target.value)} value={this.context.filter}/>       
                     {this.renderAvatarMenu()}
                 </Pane>
                 <DavToolBar currentDirectory={this.state.currentDirectory} 

@@ -14,22 +14,6 @@ import { DavConfigurationContext } from '../AppSettings';
 export default class DavDirectoryPane extends Component {
     static contextType = DavConfigurationContext;
 
-    constructor () {
-        super();
-        this.state = {
-            filter: '',
-            filterRegExp: new RegExp('.*', 'i')
-        };
-    }
-
-    filterFileItems = (value) => {
-        let valueStr = value === null || value === '' ? '.*' : value;
-        this.setState({
-            filter: value,
-            filterRegExp: new RegExp(valueStr, 'i')
-        });
-    }
-
     /**
      * Ensure filter is cleared out before navigating to a new folder
      */
@@ -43,7 +27,7 @@ export default class DavDirectoryPane extends Component {
 
     renderFolders = () => {
         let folders = this.props.folders
-            .filter(folder => folder.basename.search(this.state.filterRegExp) !== -1)
+            .filter(folder => folder.basename.search(this.context.filterRegExp) !== -1)
             .map((directory, index) => {
             return <Folder key={'dir_' + index} 
                            fileItem={directory} 
@@ -56,7 +40,7 @@ export default class DavDirectoryPane extends Component {
 
     renderFiles = () => {
         let images = this.props.files
-            .filter(file => file.basename.search(this.state.filterRegExp) !== -1)
+            .filter(file => file.basename.search(this.context.filterRegExp) !== -1)
             .map((file, index) => {
             if (this.context.isImageFile(file.basename)) {
                 return <Image key={'file_' + index} 
@@ -82,8 +66,8 @@ export default class DavDirectoryPane extends Component {
 
     renderDirectoryContentsTable = () => {
         return <Table>
-            <Table.Head>
-                <Table.SearchHeaderCell placeholder="Search files..." flexGrow={3} onChange={(value) => this.filterFileItems(value)} value={this.state.filter} />                
+            <Table.Head height={32}>
+                <Table.TextHeaderCell textAlign="left" flexGrow={3}>Name</Table.TextHeaderCell>
                 <Table.TextHeaderCell textAlign="left">Size</Table.TextHeaderCell>
                 <Table.TextHeaderCell textAlign="left">Modified</Table.TextHeaderCell>
                 <Table.TextHeaderCell textAlign="right">Actions</Table.TextHeaderCell>
