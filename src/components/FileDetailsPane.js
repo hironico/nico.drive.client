@@ -301,7 +301,6 @@ export default class FileDetailsPane extends Component {
         // console.log('Render file details: \n' + JSON.stringify(this.props.fileItem));
 
         const downloadIcon = <DownloadIcon size={24} />
-        const infoIcon = <InfoSignIcon size={24} />
         
         return <Pane zIndex={1} flexShrink={0} elevation={0} backgroundColor="white">
             <Pane padding={16} borderBottom="muted">

@@ -13,27 +13,6 @@ import DavToolBar from './DavToolBar';
 
 import Tree from './tree/Tree';
 import TreeFolder from './tree/TreeFolder';
-import TreeFile from './tree/TreeFile';
-
-const structure = [
-    {
-      type: "folder",
-      name: "src",
-      childrens: [
-        {
-          type: "folder",
-          name: "Components",
-          childrens: [
-            { type: "file", name: "Modal.js" },
-            { type: "file", name: "Modal.css" }
-          ]
-        },
-        { type: "file", name: "index.js" },
-        { type: "file", name: "index.html" }
-      ]
-    },
-    { type: "file", name: "package.json" }
-  ];
 
 /**
  * The DAV Explorer Pane is the main component. It composes the page and has functions to interect with
@@ -171,7 +150,7 @@ export default class DavExplorerPane extends Component {
         }
 
         if (!this.state.currentDirectory) {
-            return <Pane gridTemplateColumns="auto" gridTemplateColumns="auto">
+            return <Pane gridTemplateColumns="auto">
                 <Spinner marginX="auto" marginTop={120} />
                 <Heading size={600} marginX="auto" marginTop={15}>Nico's Drive is loading...</Heading>
           </Pane>

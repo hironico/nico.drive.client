@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import { Dialog, Pane, TextInputField, Text, Paragraph, Button } from 'evergreen-ui';
+import { Dialog, Pane, TextInputField, Paragraph, Button } from 'evergreen-ui';
 import { DavConfigurationContext } from '../AppSettings';
 
 import { createClient, AuthType } from "webdav";
@@ -44,8 +44,6 @@ export default class LoginDialog extends Component {
             }
 
             const client = createClient(this.state.url, clientOptions);
-
-            const directoryItems = await client.getDirectoryContents('./');
 
             this.context.setDavClient(client, this.state.url);
 

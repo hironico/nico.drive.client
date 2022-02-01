@@ -1,4 +1,4 @@
-import { Component, useDebugValue } from "react"
+import { Component } from "react"
 import { Pane, Table } from "evergreen-ui";
 
 import Folder from './Folder';

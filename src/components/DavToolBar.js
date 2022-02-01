@@ -1,7 +1,7 @@
 import { Component, Fragment } from "react";
 
-import { Pane, Link, Menu, Popover, Badge, Avatar, Position, SearchInput } from "evergreen-ui";
-import { GridViewIcon, ListIcon, InfoSignIcon, LogOutIcon, MenuIcon } from "evergreen-ui";
+import { Pane, Link } from "evergreen-ui";
+import { GridViewIcon, ListIcon } from "evergreen-ui";
 
 import { DavConfigurationContext } from '../AppSettings';
 

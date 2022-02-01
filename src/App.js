@@ -1,8 +1,8 @@
 
 import { React, Component } from 'react';
-import { Heading, Pane } from 'evergreen-ui';
+import { Pane } from 'evergreen-ui';
 
-import logo from './logo.svg';
+// import logo from './logo.svg';
 import './App.css';
 
 import {DavConfigurationProvider} from './AppSettings';

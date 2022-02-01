@@ -1,7 +1,7 @@
 
-import React, {Component, useState} from 'react';
+import React, {Component} from 'react';
 
-import { Text, Link, PlusIcon, ChevronDownIcon, ChevronRightIcon, FolderCloseIcon } from 'evergreen-ui';
+import { Text, ChevronDownIcon, ChevronRightIcon, FolderCloseIcon } from 'evergreen-ui';
 import { Icon, FolderOpenIcon } from 'evergreen-ui';
 import { DavConfigurationContext } from '../../AppSettings';
 

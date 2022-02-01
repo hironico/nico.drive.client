@@ -1,6 +1,5 @@
 
 import { Card, Icon, Link, Pane, Text, InfoSignIcon, DownloadIcon, Table } from 'evergreen-ui';
-import { Component } from 'react';
 
 import RegularFile from './RegularFile';
 

@@ -8,9 +8,6 @@ import './WelcomePage.css';
 
 export default class WelcomePage extends Component {
     static contextType = DavConfigurationContext;
-    constructor() {
-        super();
-    }
 
     showLoginDialog = () => {
         this.context.setShowConnectionDialog(true);
@@ -19,7 +16,7 @@ export default class WelcomePage extends Component {
     render = () => {
         return <header id="header">
 				<div className="content">
-					<h1><a href="#">Nico's Drive</a></h1>
+					<h1><a href="/">Nico's Drive</a></h1>
 					<p>The private online storage solution.<br />
 					Backup your memories ... <strong>automatically!</strong><br />
                     Access your files anytime, anywhere, just like a shared drive,<br />

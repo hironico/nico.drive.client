@@ -28,7 +28,7 @@ const defaultValue = {
     disconnect: () => { }
 }
 
-const DavConfigurationContext = React.createContext({ connectionValid: false });
+const DavConfigurationContext = React.createContext(defaultValue);
 
 class DavConfigurationProvider extends Component {
 
