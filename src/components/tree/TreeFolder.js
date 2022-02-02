@@ -73,7 +73,7 @@ class TreeFolder extends Component {
 
   renderSubDirectories = () => {
     return this.state.subDirs.map((dir, index) => {
-      return <TreeFolder key={`${this.props.key}-${index}`} basename={dir.basename} absolutePath={`${this.props.absolutePath}/${dir.basename}`} handleNavigate={this.props.handleNavigate} />
+      return <TreeFolder key={`${this.props.id}-${index}`} basename={dir.basename} absolutePath={`${this.props.absolutePath}/${dir.basename}`} handleNavigate={this.props.handleNavigate} />
     });
   }
 

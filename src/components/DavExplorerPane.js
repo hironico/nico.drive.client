@@ -166,7 +166,7 @@ export default class DavExplorerPane extends Component {
                 </Pane>
                 <Tree>
                     {this.state.rootDirs.map((dir, index) => {
-                        return <TreeFolder key={`treefolder-${index}`} absolutePath={`/${dir.basename}`} basename={dir.basename} handleNavigate={this.navigateAbsolute} />
+                        return <TreeFolder key={`treefolder-${index}`} id={`treefolder-${index}`} absolutePath={`/${dir.basename}`} basename={dir.basename} handleNavigate={this.navigateAbsolute} />
                     })}
                 </Tree>
             </Pane>
