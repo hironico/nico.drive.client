@@ -30,7 +30,7 @@ To use the nico's drive web client to connect to another WebDAV server, see depl
 
 ## Getting started
 
-- Get the code from GetHub
+- Get the code from GitHub
 - npm install
 - npm run start
 

@@ -12,7 +12,8 @@ const styles = {
         gridTemplateColumns: 'auto auto 1fr',
         span: {
           marginLeft: '5px'
-        }
+        },
+        fontFamily: 'Lato'
     },
     collapsibleOpen: {
         height: 'auto',

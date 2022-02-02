@@ -7,8 +7,8 @@ export default class DavBreadCrumb extends Component {
     render = () => {
         let path = this.props.currentDirectory;
 
-        const chevronIcon = <ChevronRightIcon size={18} style={{ marginLeft: '5px', marginRight: '5px' }} />
-        const homeIcon = <HomeIcon size={18} style={{ marginLeft: '5px', marginRight: '5px' }} />
+        const chevronIcon = <ChevronRightIcon size={18} marginLeft={5} marginRight={5} />
+        const homeIcon = <HomeIcon size={18} marginLeft={5} marginRight={5} />
 
         let currentDirs = path === '/' ? [''] : path.split('/');
         let navDirs = [];
@@ -16,12 +16,12 @@ export default class DavBreadCrumb extends Component {
             const icon = index === 0 ? homeIcon : chevronIcon;
             navDirs.push(dir);
             const fullPath = navDirs.join('/');
-            return <Link href="#" style={{ display: 'flex', alignItems: 'center' }} key={index + 1} onClick={() => {                
+            return <Link href="#" display="flex" alignItems="center" borderBottom="none" key={index + 1} onClick={() => {                
                 this.props.handleNavigate(dir === '' ? '/' : fullPath);
             }}>{icon}{dir}</Link>
         });
 
-        return <Pane display="flex" padding={8} background="blueTint">
+        return <Pane display="flex" padding={8} background="tint2">
             {breadCrumb}
         </Pane>
     }

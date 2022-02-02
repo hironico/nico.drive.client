@@ -4,9 +4,16 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+// theming provided by this page: https://github.com/segmentio/evergreen/issues/542
+// see also: https://evergreen.segment.com/introduction/theming
+import { ThemeProvider } from 'evergreen-ui';
+import appTheme from './AppTheme';
+
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <ThemeProvider value={appTheme}>
+      <App />
+    </ThemeProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );

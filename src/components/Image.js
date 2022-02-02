@@ -79,10 +79,10 @@ export default class Image extends RegularFile {
                 flexDirection="column"
             > 
                 <div style={styleThumb}>&nbsp;</div>
-                <Pane display="inline-flex" alignItems="center" justifyContent="space-between" style={{width: '190px', height: '18px', margin: '5px'}}>
-                    <Link href="#" onClick={(evt) => {this.props.handleShowDetails(this.props.fileItem)}}><Icon icon={InfoSignIcon} color="info"/></Link>
-                    <Text style={{overflow: 'hidden', maxWidth: '155px', maxHeight: '24px'}}>{this.props.fileItem.basename}</Text>
-                    <Link href={this.context.davClient.getFileDownloadLink(this.props.fileItem.filename)} target="_blank"><DownloadIcon color="success"/></Link>
+                <Pane display="inline-flex" alignItems="center" justifyContent="space-between" width={190} height={18} margin={5}>
+                    <Link href="#" borderBottom="none" onClick={(evt) => {this.props.handleShowDetails(this.props.fileItem)}}><Icon icon={InfoSignIcon} color="info"/></Link>
+                    <Text overflow="hidden" maxWidth={155} maxHeigh={24}>{this.props.fileItem.basename}</Text>
+                    <Link href={this.context.davClient.getFileDownloadLink(this.props.fileItem.filename)} target="_blank" borderBottom="none"><DownloadIcon color="success"/></Link>
                 </Pane>
             </Card>
         );
@@ -110,15 +110,18 @@ export default class Image extends RegularFile {
                       <div style={styleThumb}>&nbsp;</div>
                       <div>{this.props.fileItem.basename}</div>
                       </div>                  
-                  </Link>
+                  </Link>                
+                </Table.TextCell>
+                <Table.TextCell textAlign="left">
+                    {this.renderMimeType(this.props.fileItem.mimeType)}
                 </Table.TextCell>
                 <Table.TextCell textAlign="left">
                     {this.renderFileItemSize()}
                 </Table.TextCell>
                 <Table.TextCell textAlign="left">
-                    {this.props.fileItem.lastmod}
+                    {this.renderHttpDate(this.props.fileItem.lastmod)}
                 </Table.TextCell>
-              <Table.TextCell flexGrow={1} textAlign="right">
+              <Table.TextCell textAlign="right">
                   <Link href="#" onClick={(evt) => {this.props.handleShowDetails(this.props.fileItem)}}><Icon icon={InfoSignIcon} color="info"/></Link>&nbsp;
                   <Link href={this.context.davClient.getFileDownloadLink(this.props.fileItem.filename)} target="_blank"><DownloadIcon color="success"/></Link>
               </Table.TextCell>

@@ -1,10 +1,49 @@
 
 import { Card, Icon, Pane, DocumentIcon, Link, Text, InfoSignIcon, DownloadIcon, Table } from 'evergreen-ui';
 import { Component } from 'react';
+import { DateTime } from 'luxon';
 import { DavConfigurationContext } from '../AppSettings';
+
 
 export default class RegularFile extends Component {
     static contextType = DavConfigurationContext;
+
+    _capitalize = (str) => {
+        const lower = str.toLowerCase();
+        return lower.charAt(0).toUpperCase() + lower.slice(1);
+    }
+
+    renderMimeType = (mimeType) => {
+        if (typeof mimeType === 'undefined') {
+            return 'File';
+        }
+
+        if (mimeType.endsWith('json')) {
+            return 'JSON';
+        }
+
+        if (mimeType.endsWith('xml')) {
+            return 'XML';
+        }
+
+        if (mimeType.startsWith('application/')) {
+            return 'File';
+        }
+
+        if (mimeType.startsWith('image/')) {
+            return this._capitalize(mimeType.substring(6));
+        }
+
+        if (mimeType.startsWith('text/')) {
+            return this._capitalize(mimeType.substring(5)) + ' Text';
+        }
+
+        return mimeType;
+    }
+
+    renderHttpDate = (httpDate) => {
+        return DateTime.fromHTTP(httpDate).toLocaleString(DateTime.DATETIME_SHORT_WITH_SECONDS);
+    }
 
     renderFileItemSize = () => {
         let unite = 'bytes';
@@ -52,9 +91,9 @@ export default class RegularFile extends Component {
                 </Pane>  
 
                 <Pane display="inline-flex" alignItems="center" justifyContent="space-between" style={{width: '190px', height: '18px', margin: '5px'}}>
-                    <Link href="#" onClick={(evt) => {this.props.handleShowDetails(this.props.fileItem)}}><Icon icon={InfoSignIcon} color="info"/></Link>
+                    <Link href="#" onClick={(evt) => {this.props.handleShowDetails(this.props.fileItem)}} borderBottom="none"><Icon icon={InfoSignIcon} color="info"/></Link>
                     <Text style={{overflow: 'hidden', maxWidth: '155px', maxHeight: '24px'}}>{this.props.fileItem.basename}</Text>
-                    <Link href={this.context.davClient.getFileDownloadLink(this.props.fileItem.filename)} target="_blank"><DownloadIcon color="success"/></Link>
+                    <Link href={this.context.davClient.getFileDownloadLink(this.props.fileItem.filename)} target="_blank" borderBottom="none"><DownloadIcon color="success"/></Link>
                 </Pane>
             </Card>
         );
@@ -69,14 +108,17 @@ export default class RegularFile extends Component {
                   </Link>
               </Table.TextCell>
               <Table.TextCell textAlign="left">
+                  {this.renderMimeType(this.props.fileItem.mime)}
+              </Table.TextCell>
+              <Table.TextCell textAlign="left">
                   {this.renderFileItemSize()}
               </Table.TextCell>
               <Table.TextCell textAlign="left">
-                  {this.props.fileItem.lastmod}
+                  {this.renderHttpDate(this.props.fileItem.lastmod)}
               </Table.TextCell>
-              <Table.TextCell flexGrow={1} textAlign="right">
-                <Link href="#" onClick={(evt) => {this.props.handleShowDetails(this.props.fileItem)}}><Icon icon={InfoSignIcon} color="info"/></Link>&nbsp;
-                <Link href={this.context.davClient.getFileDownloadLink(this.props.fileItem.filename)} target="_blank"><DownloadIcon color="success"/></Link>
+              <Table.TextCell textAlign="right">
+                <Link href="#" onClick={(evt) => {this.props.handleShowDetails(this.props.fileItem)}} borderBottom="none"><Icon icon={InfoSignIcon} color="info"/></Link>&nbsp;
+                <Link href={this.context.davClient.getFileDownloadLink(this.props.fileItem.filename)} target="_blank" borderBottom="none"><DownloadIcon color="success"/></Link>
               </Table.TextCell>
             </Table.Row>
     }

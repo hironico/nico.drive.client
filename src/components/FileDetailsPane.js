@@ -169,7 +169,7 @@ export default class FileDetailsPane extends Component {
 
     renderFileDetails = () => {
         return <Table marginTop={15}>
-            <Table.Head>
+            <Table.Head height={32}>
                 <Table.TextHeaderCell>
                     <Pane display="inline-flex" alignItems="center">
                         <InfoSignIcon />&nbsp;File information
@@ -180,15 +180,15 @@ export default class FileDetailsPane extends Component {
                 </Table.TextHeaderCell>
             </Table.Head>
             <Table.Body>
-                <Table.Row key="row_path">
+                <Table.Row key="row_path" height={32}>
                     <Table.TextCell>Path:</Table.TextCell>
                     <Table.TextCell>{this.props.fileItem.filename}</Table.TextCell>
                 </Table.Row>
-                <Table.Row>
+                <Table.Row height={32}>
                     <Table.TextCell key="row_modif">Last modif:</Table.TextCell>
                     <Table.TextCell>{this.props.fileItem.lastmod}</Table.TextCell>
                 </Table.Row>
-                <Table.Row>
+                <Table.Row height={32}>
                     <Table.TextCell key="row_size">Size:</Table.TextCell>
                     <Table.TextCell>{this.renderFileItemSize()}</Table.TextCell>
                 </Table.Row>
@@ -300,7 +300,7 @@ export default class FileDetailsPane extends Component {
     render = () => {
         // console.log('Render file details: \n' + JSON.stringify(this.props.fileItem));
 
-        const downloadIcon = <DownloadIcon size={24} />
+        const downloadIcon = <DownloadIcon size={24} marginRight={5}/>
         
         return <Pane zIndex={1} flexShrink={0} elevation={0} backgroundColor="white">
             <Pane padding={16} borderBottom="muted">
