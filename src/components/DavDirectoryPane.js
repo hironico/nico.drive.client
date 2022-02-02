@@ -67,11 +67,12 @@ export default class DavDirectoryPane extends Component {
     renderDirectoryContentsTable = () => {
         return <Table>
             <Table.Head height={32}>
-                <Table.TextHeaderCell textAlign="left" flexGrow={3}>Name</Table.TextHeaderCell>
+                <Table.TextHeaderCell textAlign="center" maxWidth={48}>&nbsp;</Table.TextHeaderCell>
+                <Table.TextHeaderCell textAlign="left">Name</Table.TextHeaderCell>
                 <Table.TextHeaderCell textAlign="left">Type</Table.TextHeaderCell>
                 <Table.TextHeaderCell textAlign="left">Size</Table.TextHeaderCell>
                 <Table.TextHeaderCell textAlign="left">Modified</Table.TextHeaderCell>
-                <Table.TextHeaderCell textAlign="right">Actions</Table.TextHeaderCell>
+                <Table.TextHeaderCell textAlign="center">Actions</Table.TextHeaderCell>
             </Table.Head>
         <Table.Body>
             {this.renderFolders()}

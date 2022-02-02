@@ -97,19 +97,19 @@ export default class Image extends RegularFile {
                 backgroundImage: imgUrl,
                 backgroundPosition: 'center',
                 backgroundSize: 'cover',
-                width: '16px',
-                height: '16px',
-                marginRight: '5px'
+                width: '24px',
+                height: '20px',
+                margin: '0px'
             }        
         } 
 
         return <Table.Row key={this.props.fileItem.basename} isSelectable justifyContent="space-between" height={32}>
-              <Table.TextCell flexGrow={3} textAlign="left">
+              <Table.TextCell textAlign="center" maxWidth={48}>
+                <div style={styleThumb}></div>
+              </Table.TextCell>
+              <Table.TextCell textAlign="left">
                   <Link href={this.context.davClient.getFileDownloadLink(this.props.fileItem.filename)} target="_blank" borderBottom="none">
-                      <div style={{display: 'inline-flex'}}>
-                      <div style={styleThumb}>&nbsp;</div>
-                      <div>{this.props.fileItem.basename}</div>
-                      </div>                  
+                      {this.props.fileItem.basename}
                   </Link>                
                 </Table.TextCell>
                 <Table.TextCell textAlign="left">
@@ -121,8 +121,8 @@ export default class Image extends RegularFile {
                 <Table.TextCell textAlign="left">
                     {this.renderHttpDate(this.props.fileItem.lastmod)}
                 </Table.TextCell>
-              <Table.TextCell textAlign="right">
-                  <Link href="#" onClick={(evt) => {this.props.handleShowDetails(this.props.fileItem)}}><Icon icon={InfoSignIcon} color="info"/></Link>&nbsp;
+              <Table.TextCell textAlign="center">
+                  <Link href="#" onClick={(evt) => {this.props.handleShowDetails(this.props.fileItem)}} marginRight={5}><Icon icon={InfoSignIcon} color="info"/></Link>&nbsp;
                   <Link href={this.context.davClient.getFileDownloadLink(this.props.fileItem.filename)} target="_blank"><DownloadIcon color="success"/></Link>
               </Table.TextCell>
             </Table.Row>

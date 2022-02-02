@@ -159,10 +159,10 @@ export default class DavExplorerPane extends Component {
         return <Pane display="grid" gridTemplateColumns="1fr 4fr" height="100%">
             <Pane background="blueTint" elevation={0} padding={15} display="grid" gridTemplateRows="auto auto 1fr" gridTemplateColumns="auto" overflowX="scroll">  
                 <Pane background="blueTint">
-                    <Heading size={900} color="neutral">My files</Heading>
+                    <Heading size={900} color="neutral" textAlign="left">My files</Heading>
                 </Pane>
-                <Pane background="blueTint" elevation={0} marginTop={15}>
-                    <Heading size={600} color="neutral">File manager</Heading>
+                <Pane background="blueTint" marginTop={15}>
+                    <Heading size={600} color="neutral" textAlign="left">File manager</Heading>
                 </Pane>
                 <Tree>
                     {this.state.rootDirs.map((dir, index) => {
@@ -172,8 +172,8 @@ export default class DavExplorerPane extends Component {
             </Pane>
 
             <Pane display="grid" gridTemplateRows="auto auto 1fr">
-                <Pane background="tint2" display="grid" gridTemplateColumns="1fr auto" paddingTop={15} paddingBottom={15} paddingLeft={15} justifySelf="stretch">
-                    <SearchInput placeholder="Search in your files..." justifySelf="stretch" onChange={(e) => this.context.filterFileItems(e.target.value)} value={this.context.filter}/>       
+                <Pane background="tint2" display="grid" gridTemplateColumns="1fr auto" paddingTop={15} paddingBottom={15} paddingLeft={15} justifyItems="stretch">
+                    <SearchInput placeholder="Search something..." width="75%" justifySelf="center" onChange={(e) => this.context.filterFileItems(e.target.value)} value={this.context.filter}/>       
                     {this.renderAvatarMenu()}
                 </Pane>
                 <DavToolBar currentDirectory={this.state.currentDirectory} 

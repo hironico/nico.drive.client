@@ -42,9 +42,11 @@ export default class Folder extends RegularFile {
 
     renderTable = () => {
         return <Table.Row key={this.props.fileItem.basename} isSelectable justifyContent="space-between" height={32}>
-              <Table.TextCell flexGrow={3} textAlign="left" paddingRight={0}>
-                  <Link href="#" onClick={(evt) => this.props.handleNavigate(this.props.fileItem.basename)} borderBottom="none">
-                  <FolderOpenIcon color="#F7D154"/>&nbsp;
+              <Table.TextCell textAlign="center" maxWidth={48}>
+                <FolderOpenIcon color="#F7D154" size={16}/>
+              </Table.TextCell>
+              <Table.TextCell textAlign="left">
+                  <Link href="#" onClick={(evt) => this.props.handleNavigate(this.props.fileItem.basename)} borderBottom="none">                  
                   {this.props.fileItem.basename}
                   </Link>
                 </Table.TextCell>
@@ -57,7 +59,7 @@ export default class Folder extends RegularFile {
                 <Table.TextCell textAlign="left">
                       {this.renderHttpDate(this.props.fileItem.lastmod)}
                 </Table.TextCell>
-                <Table.TextCell textAlign="right">
+                <Table.TextCell textAlign="center">
                     &nbsp;
                 </Table.TextCell>
             </Table.Row>

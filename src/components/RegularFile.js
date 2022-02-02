@@ -101,9 +101,11 @@ export default class RegularFile extends Component {
 
     renderTable = () => {
         return <Table.Row key={this.props.fileItem.basename} isSelectable height={32}>
-              <Table.TextCell flexGrow={3} textAlign="left">
-                  <Link href={this.context.davClient.getFileDownloadLink(this.props.fileItem.filename)} target="_blank" borderBottom="none">
-                    <DocumentIcon />&nbsp;
+            <Table.TextCell textAlign="center" maxWidth={48}>
+                <DocumentIcon size={16}/>
+            </Table.TextCell>
+              <Table.TextCell textAlign="left">
+                  <Link href={this.context.davClient.getFileDownloadLink(this.props.fileItem.filename)} target="_blank" borderBottom="none">                    
                     {this.props.fileItem.basename}
                   </Link>
               </Table.TextCell>
@@ -116,8 +118,8 @@ export default class RegularFile extends Component {
               <Table.TextCell textAlign="left">
                   {this.renderHttpDate(this.props.fileItem.lastmod)}
               </Table.TextCell>
-              <Table.TextCell textAlign="right">
-                <Link href="#" onClick={(evt) => {this.props.handleShowDetails(this.props.fileItem)}} borderBottom="none"><Icon icon={InfoSignIcon} color="info"/></Link>&nbsp;
+              <Table.TextCell textAlign="center">
+                <Link href="#" onClick={(evt) => {this.props.handleShowDetails(this.props.fileItem)}} borderBottom="none" marginRight={5}><Icon icon={InfoSignIcon} color="info"/></Link>&nbsp;
                 <Link href={this.context.davClient.getFileDownloadLink(this.props.fileItem.filename)} target="_blank" borderBottom="none"><DownloadIcon color="success"/></Link>
               </Table.TextCell>
             </Table.Row>
