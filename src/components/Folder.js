@@ -1,5 +1,5 @@
 
-import { Card, Icon, Text, Pane, FolderOpenIcon, Link, Table } from 'evergreen-ui';
+import { Card, Icon, Text, Pane, FolderCloseIcon, Link, Table } from 'evergreen-ui';
 
 import RegularFile from './RegularFile';
 
@@ -29,10 +29,10 @@ export default class Folder extends RegularFile {
             >   
                 <Link href="#" onClick={(evt) => this.props.handleNavigate(this.props.fileItem.basename)} borderBottom="none">             
                     <Pane style={styleThumb} background="tint2">
-                        <Icon icon={FolderOpenIcon} size={48} color="#F7D154" />
+                        <Icon icon={FolderCloseIcon} size={48} color="#F7D154" />
                     </Pane>
                     <Pane display="inline-flex" alignItems="center" justifyContent="center" width={190} height={18} margin={5}>
-                        <FolderOpenIcon color="#F7D154"/>
+                        <FolderCloseIcon color="#F7D154"/>
                         <Text overflow="hidden" maxWidth={155} maxHeight={24}>{this.props.fileItem.basename}</Text>                        
                     </Pane>                    
                 </Link>
@@ -43,7 +43,7 @@ export default class Folder extends RegularFile {
     renderTable = () => {
         return <Table.Row key={this.props.fileItem.basename} isSelectable justifyContent="space-between" height={32}>
               <Table.TextCell textAlign="center" maxWidth={48}>
-                <FolderOpenIcon color="#F7D154" size={16}/>
+                <FolderCloseIcon color="#F7D154" size={16}/>
               </Table.TextCell>
               <Table.TextCell textAlign="left">
                   <Link href="#" onClick={(evt) => this.props.handleNavigate(this.props.fileItem.basename)} borderBottom="none">                  

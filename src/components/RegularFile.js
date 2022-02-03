@@ -1,5 +1,5 @@
 
-import { Card, Icon, Pane, DocumentIcon, Link, Text, InfoSignIcon, DownloadIcon, Table } from 'evergreen-ui';
+import { Card, Icon, Pane, DocumentIcon, Link, Text, InfoSignIcon, DownloadIcon, MoreIcon, Table, Button, Position, Popover, Menu } from 'evergreen-ui';
 import { Component } from 'react';
 import { DateTime } from 'luxon';
 import { DavConfigurationContext } from '../AppSettings';
@@ -11,6 +11,11 @@ export default class RegularFile extends Component {
     _capitalize = (str) => {
         const lower = str.toLowerCase();
         return lower.charAt(0).toUpperCase() + lower.slice(1);
+    }
+
+    download = (fileItem) => {
+        const dlLink = this.context.davClient.getFileDownloadLink(fileItem.filename);
+        window.open(dlLink, '_blank');
     }
 
     renderMimeType = (mimeType) => {
@@ -85,44 +90,59 @@ export default class RegularFile extends Component {
                 justifyContent="center"
                 alignItems="center"
                 flexDirection="column"
-            >                
+            >
                 <Pane style={styleThumb} background="tint2">
                     <Icon icon={DocumentIcon} size={48} color="success" />
-                </Pane>  
+                </Pane>
 
-                <Pane display="inline-flex" alignItems="center" justifyContent="space-between" style={{width: '190px', height: '18px', margin: '5px'}}>
-                    <Link href="#" onClick={(evt) => {this.props.handleShowDetails(this.props.fileItem)}} borderBottom="none"><Icon icon={InfoSignIcon} color="info"/></Link>
-                    <Text style={{overflow: 'hidden', maxWidth: '155px', maxHeight: '24px'}}>{this.props.fileItem.basename}</Text>
-                    <Link href={this.context.davClient.getFileDownloadLink(this.props.fileItem.filename)} target="_blank" borderBottom="none"><DownloadIcon color="success"/></Link>
+                <Pane display="inline-flex" alignItems="center" justifyContent="space-between" style={{ width: '190px', height: '18px', margin: '5px' }}>
+                    <Link href="#" onClick={(evt) => { this.props.handleShowDetails(this.props.fileItem) }} borderBottom="none"><Icon icon={InfoSignIcon} color="info" /></Link>
+                    <Text style={{ overflow: 'hidden', maxWidth: '155px', maxHeight: '24px' }}>{this.props.fileItem.basename}</Text>
+                    <Link href={this.context.davClient.getFileDownloadLink(this.props.fileItem.filename)} target="_blank" borderBottom="none"><DownloadIcon color="success" /></Link>
                 </Pane>
             </Card>
         );
     }
 
+    renderActionMenu = () => {
+        return <Popover
+            position={Position.BOTTOM_RIGHT}
+            content={
+                <Menu>
+                    <Menu.Group>
+                        <Menu.Item icon={InfoSignIcon} intent="info" onSelect={() => { this.props.handleShowDetails(this.props.fileItem) }}>Details...</Menu.Item>
+                        <Menu.Item icon={DownloadIcon} intent="success" onSelect={() => { this.download(this.props.fileItem)} }>Download...</Menu.Item>
+                    </Menu.Group>
+                </Menu>
+            }            
+        >
+            <Button appearance="minimal" intent="none" boxShadow="none" border="none"><MoreIcon/></Button>
+        </Popover>
+    }
+
     renderTable = () => {
         return <Table.Row key={this.props.fileItem.basename} isSelectable height={32}>
             <Table.TextCell textAlign="center" maxWidth={48}>
-                <DocumentIcon size={16}/>
+                <DocumentIcon size={16} />
             </Table.TextCell>
-              <Table.TextCell textAlign="left">
-                  <Link href={this.context.davClient.getFileDownloadLink(this.props.fileItem.filename)} target="_blank" borderBottom="none">                    
+            <Table.TextCell textAlign="left">
+                <Link href={this.context.davClient.getFileDownloadLink(this.props.fileItem.filename)} target="_blank" borderBottom="none">
                     {this.props.fileItem.basename}
-                  </Link>
-              </Table.TextCell>
-              <Table.TextCell textAlign="left">
-                  {this.renderMimeType(this.props.fileItem.mime)}
-              </Table.TextCell>
-              <Table.TextCell textAlign="left">
-                  {this.renderFileItemSize()}
-              </Table.TextCell>
-              <Table.TextCell textAlign="left">
-                  {this.renderHttpDate(this.props.fileItem.lastmod)}
-              </Table.TextCell>
-              <Table.TextCell textAlign="center">
-                <Link href="#" onClick={(evt) => {this.props.handleShowDetails(this.props.fileItem)}} borderBottom="none" marginRight={5}><Icon icon={InfoSignIcon} color="info"/></Link>&nbsp;
-                <Link href={this.context.davClient.getFileDownloadLink(this.props.fileItem.filename)} target="_blank" borderBottom="none"><DownloadIcon color="success"/></Link>
-              </Table.TextCell>
-            </Table.Row>
+                </Link>
+            </Table.TextCell>
+            <Table.TextCell textAlign="left">
+                {this.renderMimeType(this.props.fileItem.mime)}
+            </Table.TextCell>
+            <Table.TextCell textAlign="left">
+                {this.renderFileItemSize()}
+            </Table.TextCell>
+            <Table.TextCell textAlign="left">
+                {this.renderHttpDate(this.props.fileItem.lastmod)}
+            </Table.TextCell>
+            <Table.TextCell textAlign="center">
+                {this.renderActionMenu()}
+            </Table.TextCell>
+        </Table.Row>
     }
 
     render = () => {

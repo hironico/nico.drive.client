@@ -122,8 +122,7 @@ export default class Image extends RegularFile {
                     {this.renderHttpDate(this.props.fileItem.lastmod)}
                 </Table.TextCell>
               <Table.TextCell textAlign="center">
-                  <Link href="#" onClick={(evt) => {this.props.handleShowDetails(this.props.fileItem)}} marginRight={5}><Icon icon={InfoSignIcon} color="info"/></Link>&nbsp;
-                  <Link href={this.context.davClient.getFileDownloadLink(this.props.fileItem.filename)} target="_blank"><DownloadIcon color="success"/></Link>
+                  {this.renderActionMenu()}
               </Table.TextCell>
             </Table.Row>
     }
