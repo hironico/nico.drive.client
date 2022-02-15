@@ -15,7 +15,7 @@ const defaultValue = {
     supportedFormats: ['JPEG', 'JPG', 'PNG', 'WEBP', 'AVIF', 'TIFF', 'TIF', 'GIF', 'SVG', 'CR2', 'DNG'],
     filter: '',
     filterRegExp: new RegExp('.*', 'i'),
-    filterFileItems: (filter) => { },
+    filterFileItems: (filter) => { },
     setDavClient: (client) => { },
     setConnectionValid: () => { },
     setShowConnectionDialog: (showConDlg) => { },
