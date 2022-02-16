@@ -9,22 +9,17 @@ const defaultValue = {
     password: 'changeme',
     davClient: null,
     connectionValid: false,
-    showConnectionDialog: false,
     homeDirectory: '/hironico',
-    currentDirectory: '/',
     supportedFormats: ['JPEG', 'JPG', 'PNG', 'WEBP', 'AVIF', 'TIFF', 'TIF', 'GIF', 'SVG', 'CR2', 'DNG'],
     filter: '',
     filterRegExp: new RegExp('.*', 'i'),
     filterFileItems: (filter) => { },
-    setDavClient: (client) => { },
-    setConnectionValid: () => { },
-    setShowConnectionDialog: (showConDlg) => { },
+    setDavClient: (client, url) => { },
     getClientUrl: () => { },
     getThumbApiUrl: () => { },
     getExifApiUrl: () => { },
     getMetadataApiUrl: () => { },
     isImageFile: () => { },
-    setCurrentDirectory: () => { },
     disconnect: () => { }
 }
 
@@ -49,8 +44,6 @@ class DavConfigurationProvider extends Component {
             filterRegExp: new RegExp('.*', 'i'),
             filterFileItems: this.filterFileItems,
             setDavClient: this.setDavClient,
-            setConnectionValid: this.setConnectionValid,
-            setShowConnectionDialog: this.setShowConnectionDialog,
             getClientUrl: this.getClientUrl,
             getThumbApiUrl: this.getThumbApiUrl,
             getExifApiUrl: this.getExifApiUrl,
@@ -83,26 +76,12 @@ class DavConfigurationProvider extends Component {
             davBaseUrl: client ? davBaseUrl : '',
             davWebContext: client ? davWebContext : '',
             homeDirectory: client ? homeDir : '',
-            connectionValid: client ? true : false,
-            showConnectionDialog: client ? false : true
-        });
-    }
-
-    setConnectionValid = (connectionValid) => {
-        this.setState({
-            connectionValid: connectionValid
+            connectionValid: client ? true : false
         });
     }
 
     disconnect = () => {
         this.setDavClient(null, null);
-    }
-
-    setShowConnectionDialog = (showConDialog) => {
-        console.log('Must set showConnectionDialog to : ' + showConDialog);
-        this.setState({
-            showConnectionDialog: showConDialog
-        });
     }
 
     getBasePath = () => {

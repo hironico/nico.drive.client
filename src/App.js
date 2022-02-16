@@ -5,10 +5,7 @@ import { Pane } from 'evergreen-ui';
 // import logo from './logo.svg';
 import './App.css';
 
-import {DavConfigurationProvider} from './AppSettings';
-
-import DavExplorerPane from './components/DavExplorerPane';
-import LoginDialog from './components/LoginDialog';
+import WelcomePage from './components/welcome-page/WelcomePage';
 
 class App extends Component {
 
@@ -16,10 +13,7 @@ class App extends Component {
     return (      
         <div className="App" height="100%">
           <Pane clearfix width="100%" height="100%">
-              <DavConfigurationProvider>
-                <LoginDialog />
-                <DavExplorerPane />
-              </DavConfigurationProvider>
+                <WelcomePage />
           </Pane>
         </div>      
     );

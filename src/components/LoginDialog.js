@@ -1,5 +1,6 @@
 import { Component } from 'react';
-import { Dialog, Pane, TextInputField, Paragraph, Button } from 'evergreen-ui';
+import { Navigate } from 'react-router';
+import { Pane, TextInputField, Paragraph, Button } from 'evergreen-ui';
 import { DavConfigurationContext } from '../AppSettings';
 
 import { createClient, AuthType } from "webdav";
@@ -15,13 +16,20 @@ export default class LoginDialog extends Component {
             password: '',
             url: '',
             errorMessage: '',
-            davContext: 'dav'
+            davContext: 'dav',
+            connectionSuccess: false
         }
     }
 
-    componentDidUpdate = () => {
+    componentDidUpdate = async () => {
         if (this.state.url === '') {
             this.buildUrl();
+        }
+
+        if (this.context.davClient !== null && this.context.connectionValid) {
+            this.setState({
+                connectionSuccess: true
+            });
         }
     }
 
@@ -36,7 +44,7 @@ export default class LoginDialog extends Component {
 
     testConnection = async () => {
         try {
-
+            console.info('Testing connection ...');
             const clientOptions = {
                 authType: AuthType.Basic,
                 username: this.state.username,
@@ -47,26 +55,14 @@ export default class LoginDialog extends Component {
 
             this.context.setDavClient(client, this.state.url);
 
-            // reset form in order not to have credentials after clicking logout
-            this.setState({
-                url: '',
-                username: '',
-                password: '',
-                errorMessage: ''
-            });
-
         } catch (error) {
-            console.error('Could not connect to webdav: ' + JSON.stringify(error));
-            this.context.setDavClient(null);
-            this.context.setConnectionValid(false);
+            console.error(`Could not connect to webdav: ${error}`);
+            this.context.setDavClient(null, '',null);
             this.setState({
-                errorMessage: 'Something went wrong while connecting. Check your credentiuals and try again.'
-            });
-        } finally {
-            this.setState({
+                errorMessage: 'Something went wrong while connecting. Check your credentiuals and try again.',
                 isLoading: false
             });
-        }
+        } 
     }
 
     componentDidMount = () => {
@@ -80,13 +76,9 @@ export default class LoginDialog extends Component {
 
     onConfirm = () => {
         this.setState({ 
-            isLoading: true            
+            isLoading: true,
+            connectionSuccess: false            
         }, () => this.testConnection());
-    }
-
-    onCloseComplete = () => {
-        this.context.setShowConnectionDialog(false);
-        this.setState({ isLoading: false, errorMessage: '' });
     }
 
     onTxtLoginChange = (evt) => {
@@ -98,22 +90,16 @@ export default class LoginDialog extends Component {
     }
 
     renderDialog = () => {
-        return <Dialog
-            isShown={this.context.showConnectionDialog}
-            title="WebDAV Connection setup..."
-            onCloseComplete={() => this.onCloseComplete()}
-            isConfirmLoading={this.state.isLoading}
-            onConfirm={(close) => this.onConfirm(close)}           
-            hasFooter={false}
-        >
-            <Pane display="grid" gridTemplateColumns="auto">
+        return <Pane display="grid" gridTemplateColumns="auto" margin={160} padding={20} elevation={1}>
                     <TextInputField id="txt-login" 
+                                    disabled={this.state.isLoading}
                                     value={this.state.username} 
                                     onChange={this.onTxtLoginChange}
                                     placeholder="Login name..." 
                                     label="Login:"/>
 
                     <TextInputField id="txt-password" 
+                                    disabled={this.state.isLoading}
                                     type="password" 
                                     value={this.state.password} 
                                     onChange={e => this.setState({ password: e.target.value })}
@@ -121,6 +107,7 @@ export default class LoginDialog extends Component {
                                     label="Password:"/>
 
                     <TextInputField id="txt-url" 
+                                    disabled={this.state.isLoading}
                                     value={this.state.url} 
                                     onChange={e => this.setState({ url: e.target.value })}
                                     placeholder="WebDAV URL..."
@@ -131,11 +118,12 @@ export default class LoginDialog extends Component {
                         {this.state.isLoading ? 'Please wait...' : 'Connect'}
                         </Button>
                     </Pane>
-            </Pane>          
-        </Dialog>
+            </Pane>
     }
 
     render = () => {
-        return this.renderDialog();
+        // if we have a dav client properly configured then must go to the explorer;
+        // to login again we éust log out first !
+        return (this.state.connectionSuccess) ? <Navigate to='/explorer' /> : this.renderDialog();
     }
 }

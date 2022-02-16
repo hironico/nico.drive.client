@@ -7,12 +7,27 @@ import reportWebVitals from './reportWebVitals';
 // theming provided by this page: https://github.com/segmentio/evergreen/issues/542
 // see also: https://evergreen.segment.com/introduction/theming
 import { ThemeProvider } from 'evergreen-ui';
+import { BrowserRouter } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router';
+
 import appTheme from './AppTheme';
+import {DavConfigurationProvider} from './AppSettings';
+import LoginDialog from './components/LoginDialog';
+import DavExplorerPane from './components/DavExplorerPane';
 
 ReactDOM.render(
   <React.StrictMode>
-    <ThemeProvider value={appTheme}>
-      <App />
+    <ThemeProvider value={appTheme}>      
+    <DavConfigurationProvider>
+      <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<App />} />
+        <Route path="login" element={<LoginDialog />} />
+        <Route path="explorer" element={<DavExplorerPane />} />
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+      </BrowserRouter>
+      </DavConfigurationProvider>
     </ThemeProvider>
   </React.StrictMode>,
   document.getElementById('root')

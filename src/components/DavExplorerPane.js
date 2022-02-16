@@ -6,13 +6,13 @@ import { InfoSignIcon, LogOutIcon } from 'evergreen-ui';
 
 import { DavConfigurationContext } from '../AppSettings';
 
-import WelcomePage from './welcome-page/WelcomePage';
 import FileDetailsPane from './FileDetailsPane';
 import DavDirectoryPane from './DavDirectoryPane';
 import DavToolBar from './DavToolBar';
 
 import Tree from './tree/Tree';
 import TreeFolder from './tree/TreeFolder';
+import { Navigate } from 'react-router';
 
 /**
  * The DAV Explorer Pane is the main component. It composes the page and has functions to interect with
@@ -25,6 +25,8 @@ export default class DavExplorerPane extends Component {
     constructor() {
         super();
 
+        console.log('DavExplorerPane constrcutor...');
+
         this.state = {
             currentDirectory: null,
             directories: [],
@@ -35,23 +37,32 @@ export default class DavExplorerPane extends Component {
         }
     }
 
+    componentDidMount = async () => {
+        console.info('Dav Explorer Component did mount. Loading initial directory contents...');
+        this.setState({
+            currentDirectory: '/'
+        });
+    }
+
     componentDidUpdate = () => {
-        if (this.context.connectionValid && this.context.davClient !== null && this.state.currentDirectory === null) {
-            this.setState({
-                currentDirectory: '/'
-            }, () => {
-                this.getDirectoryContents();
-            });
+        console.info('DavExplorerPane did update');
+        if (this.context.connectionValid && this.context.davClient !== null) {
+            this.getDirectoryContents();
+        }else {
+            console.error('DavExplorerPane didUpdate with invalid connection');
         }
     }
     
     getDirectoryContents = async () => {
-
         let dirs = [];
         let files = [];
 
         if (this.context.connectionValid) {
+            console.log(`Loading directory contents of ${this.state.currentDirectory} with null client? ${this.context.davClient === null}`);
             const directoryItems = await this.context.davClient.getDirectoryContents(this.state.currentDirectory);
+
+            console.log('Got directory items...');
+
             dirs = directoryItems.filter(item => { return item.type === 'directory' });
             files = directoryItems.filter(item => { return item.type === 'file' });
 
@@ -60,13 +71,15 @@ export default class DavExplorerPane extends Component {
                     rootDirs: dirs
                 });
             }
+        } else {
+            console.error('Cannot get directory contents since connectin is not valid.');
         }
 
         this.setState({
             directories: dirs,
             files: files
         }, () => {
-            console.log(`${dirs.length} directories and ${files.length} files from ${this.state.currentDirectory}`);
+            console.debug(`${dirs.length} directories and ${files.length} files from ${this.state.currentDirectory}`);
         });
     }
 
@@ -145,14 +158,14 @@ export default class DavExplorerPane extends Component {
 
     render = () => {
 
-        if (!this.context.connectionValid) {
-            return <WelcomePage />
+        if (!this.context || !this.context.connectionValid) {
+            return <Navigate to="/login" />
         }
 
         if (!this.state.currentDirectory) {
             return <Pane gridTemplateColumns="auto">
                 <Spinner marginX="auto" marginTop={120} />
-                <Heading size={600} marginX="auto" marginTop={15}>Nico's Drive is loading...</Heading>
+                <Heading size={600} marginX="auto" marginTop={15} textAlign="center">Nico's Drive is loading...</Heading>
           </Pane>
         }
 
