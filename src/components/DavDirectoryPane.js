@@ -1,5 +1,5 @@
 import { Component } from "react"
-import { Pane, Table } from "evergreen-ui";
+import { EmptyState, Pane, Spinner, Table } from "evergreen-ui";
 
 import Folder from './Folder';
 import Image from './Image';
@@ -64,6 +64,24 @@ export default class DavDirectoryPane extends Component {
             </Pane>
     }
 
+    renderTableBodyLoading = () => {
+        return <EmptyState
+            background="light"
+            title="Loading..."
+            orientation="horizontal"
+            icon={<Spinner color="#C1C4D6" />}
+            iconBgColor="#EDEFF5"
+            description="This can take some time depending of the number of folders and files contained in this directory."
+        />
+    }
+
+    renderTableBody = () => {
+        return <>
+            {this.renderFolders()}
+            {this.renderFiles()}
+        </>
+    }
+
     renderDirectoryContentsTable = () => {
         return <Table>
             <Table.Head height={32}>
@@ -75,8 +93,7 @@ export default class DavDirectoryPane extends Component {
                 <Table.TextHeaderCell textAlign="center">Actions</Table.TextHeaderCell>
             </Table.Head>
         <Table.Body>
-            {this.renderFolders()}
-            {this.renderFiles()}
+            { this.props.loading ? this.renderTableBodyLoading() : this.renderTableBody() }
         </Table.Body>
       </Table>
     }

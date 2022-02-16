@@ -33,35 +33,33 @@ export default class DavExplorerPane extends Component {
             files: [],
             rootDirs: [],
             showDetails: false,            
-            displayMode: 'table'
+            displayMode: 'table',
+            loading: false
         }
     }
 
-    componentDidMount = async () => {
-        console.info('Dav Explorer Component did mount. Loading initial directory contents...');
+    componentDidMount = () => {
+        console.info('Dav Explorer Component did mount. setting current directory to /...');
+        if (this.state.currentDirectory === null) {
+            this.setState({
+                currentDirectory: '/',
+                loading: true
+            }, () => this.doGetDirectoryContents());
+        }
+    }
+
+    getDirectoryContents = () => {
         this.setState({
-            currentDirectory: '/'
-        });
-    }
-
-    componentDidUpdate = () => {
-        console.info('DavExplorerPane did update');
-        if (this.context.connectionValid && this.context.davClient !== null) {
-            this.getDirectoryContents();
-        }else {
-            console.error('DavExplorerPane didUpdate with invalid connection');
-        }
+            loading: true
+        }, () => this.doGetDirectoryContents());
     }
     
-    getDirectoryContents = async () => {
+    doGetDirectoryContents = async () => {
         let dirs = [];
         let files = [];
 
         if (this.context.connectionValid) {
-            console.log(`Loading directory contents of ${this.state.currentDirectory} with null client? ${this.context.davClient === null}`);
             const directoryItems = await this.context.davClient.getDirectoryContents(this.state.currentDirectory);
-
-            console.log('Got directory items...');
 
             dirs = directoryItems.filter(item => { return item.type === 'directory' });
             files = directoryItems.filter(item => { return item.type === 'file' });
@@ -77,9 +75,8 @@ export default class DavExplorerPane extends Component {
 
         this.setState({
             directories: dirs,
-            files: files
-        }, () => {
-            console.debug(`${dirs.length} directories and ${files.length} files from ${this.state.currentDirectory}`);
+            files: files,
+            loading: false
         });
     }
 
@@ -196,6 +193,7 @@ export default class DavExplorerPane extends Component {
                 <DavDirectoryPane displayMode={this.state.displayMode} 
                                 folders={this.state.directories} 
                                 files={this.state.files}
+                                loading={this.state.loading}
                                 handleNavigate={this.navigate} 
                                 handleShowDetails={this.toggleFileDetails} />
                 
