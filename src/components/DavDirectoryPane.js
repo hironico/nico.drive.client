@@ -57,14 +57,7 @@ export default class DavDirectoryPane extends Component {
         return images;
     }  
 
-    renderDirectoryContentsGrid = () => {
-        return <Pane display="flex" flexWrap="wrap" justifyContent="space-evenly" background="overlay">
-                {this.renderFolders()}
-                {this.renderFiles()}
-            </Pane>
-    }
-
-    renderTableBodyLoading = () => {
+    renderLoadingState = () => {
         return <EmptyState
             background="light"
             title="Loading..."
@@ -75,11 +68,17 @@ export default class DavDirectoryPane extends Component {
         />
     }
 
-    renderTableBody = () => {
+    renderFoldersAndFiles = () => {
         return <>
             {this.renderFolders()}
             {this.renderFiles()}
         </>
+    }
+
+    renderDirectoryContentsGrid = () => {
+        return <Pane display="flex" flexWrap="wrap" justifyContent="space-evenly" background="overlay">
+                 { this.props.loading ? this.renderLoadingState() : this.renderFoldersAndFiles() }
+            </Pane>
     }
 
     renderDirectoryContentsTable = () => {
@@ -93,7 +92,7 @@ export default class DavDirectoryPane extends Component {
                 <Table.TextHeaderCell textAlign="center">Actions</Table.TextHeaderCell>
             </Table.Head>
         <Table.Body>
-            { this.props.loading ? this.renderTableBodyLoading() : this.renderTableBody() }
+            { this.props.loading ? this.renderLoadingState() : this.renderFoldersAndFiles() }
         </Table.Body>
       </Table>
     }
