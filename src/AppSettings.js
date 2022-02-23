@@ -63,7 +63,7 @@ class DavConfigurationProvider extends Component {
     }
 
     setDavClient = (client, url) => {
-        const urlValid = (typeof url !== 'undefined' && url !== null);
+        const urlValid = (typeof url !== 'undefined' && url !== null && '' !== url);
         const uri = urlValid ? new URL(url) : null;
         const davBaseUrl = uri ? `${uri.protocol}//${uri.host}` : '';
         let pathTab = uri ? uri.pathname.split('/') : '';
