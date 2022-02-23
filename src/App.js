@@ -1,22 +1,34 @@
 
 import { React, Component } from 'react';
-import { Pane } from 'evergreen-ui';
 
-// import logo from './logo.svg';
-import './App.css';
+import appTheme from './AppTheme';
+import {DavConfigurationProvider} from './AppSettings';
 
+import { ThemeProvider } from 'evergreen-ui';
+import { BrowserRouter } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router';
+
+import LoginView from './views/LoginView';
+import DavExplorerView from './views/DavExplorerView';
 import WelcomePage from './components/welcome-page/WelcomePage';
 
-class App extends Component {
+// theming provided by this page: https://github.com/segmentio/evergreen/issues/542
+// see also: https://evergreen.segment.com/introduction/theming
 
+class App extends Component {
   render = () => {
-    return (      
-        <div className="App" height="100%">
-          <Pane clearfix width="100%" height="100%">
-                <WelcomePage />
-          </Pane>
-        </div>      
-    );
+    return <ThemeProvider value={appTheme}>      
+      <DavConfigurationProvider>
+        <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<WelcomePage />} />
+          <Route path="login" element={<LoginView />} />
+          <Route path="explorer" element={<DavExplorerView />} />
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
+        </BrowserRouter>
+        </DavConfigurationProvider>
+    </ThemeProvider>
   }
 }
 

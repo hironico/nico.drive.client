@@ -1,25 +1,24 @@
 
-import { Component} from 'react';
+import { Component } from 'react';
 
-import { Pane, SideSheet, Heading, SearchInput, Position, Popover, Avatar, Menu, Badge, Spinner } from 'evergreen-ui';
-import { InfoSignIcon, LogOutIcon } from 'evergreen-ui';
+import { Pane, SideSheet, Heading, Spinner } from 'evergreen-ui';
 
 import { DavConfigurationContext } from '../AppSettings';
 
-import FileDetailsPane from './FileDetailsPane';
-import DavDirectoryPane from './DavDirectoryPane';
-import DavToolBar from './DavToolBar';
+import DavHeader from '../components/DavHeader';
+import FileDetailsPane from '../components/FileDetailsPane';
+import DavDirectoryPane from '../components/DavDirectoryPane';
+import DavToolBar from '../components/DavToolBar';
 
-import Tree from './tree/Tree';
-import TreeFolder from './tree/TreeFolder';
 import { Navigate } from 'react-router';
+import DavSideBar from '../components/DavSideBar';
 
 /**
- * The DAV Explorer Pane is the main component. It composes the page and has functions to interect with
+ * The DAV Explorer Pane is the main view component. It composes the page and has functions to interact with
  * the DAV Client. It uses sub components such as DavToolBar and DavDirectoryPane to render things returned 
  * by the DavClient.
  */
-export default class DavExplorerPane extends Component {
+export default class DavExplorerView extends Component {
     static contextType = DavConfigurationContext;
 
     constructor() {
@@ -32,7 +31,7 @@ export default class DavExplorerPane extends Component {
             directories: [],
             files: [],
             rootDirs: [],
-            showDetails: false,            
+            showDetails: false,
             displayMode: 'table',
             loading: false
         }
@@ -53,7 +52,7 @@ export default class DavExplorerPane extends Component {
             loading: true
         }, () => this.doGetDirectoryContents());
     }
-    
+
     doGetDirectoryContents = async () => {
         let dirs = [];
         let files = [];
@@ -120,37 +119,10 @@ export default class DavExplorerPane extends Component {
         });
     }
 
-    disconnect = () => {
-        this.context.disconnect();
-    }
-
     changeDisplayMode = (displayMode) => {
         this.setState({
             displayMode: displayMode
         });
-    }
-
-    renderAvatarMenu = () => {
-        return <Popover 
-                    justifySelf="end"
-                    position={Position.BOTTOM_RIGHT}
-                    content={
-                    <Menu>
-                        <Menu.Group>
-                        <Menu.Item icon={InfoSignIcon} intent="success"><Badge color="green">{this.context.username}</Badge></Menu.Item>              
-                        <Menu.Item>{this.context.getClientUrl()}</Menu.Item>
-                        </Menu.Group>
-                        <Menu.Divider />
-                        <Menu.Group>
-                        <Menu.Item icon={LogOutIcon} intent="danger" onClick={() => {this.disconnect()}}>
-                            Disconnect
-                        </Menu.Item>
-                        </Menu.Group>
-                    </Menu>
-                    }
-                >
-                <Avatar name={this.context.username} size={32} marginLeft={15} marginRight={15} style={{cursor: 'pointer'}} justifySelf="end"/>
-            </Popover>
     }
 
     render = () => {
@@ -163,40 +135,26 @@ export default class DavExplorerPane extends Component {
             return <Pane gridTemplateColumns="auto">
                 <Spinner marginX="auto" marginTop={120} />
                 <Heading size={600} marginX="auto" marginTop={15} textAlign="center">Nico's Drive is loading...</Heading>
-          </Pane>
+            </Pane>
         }
 
-        return <Pane display="grid" gridTemplateColumns="1fr 4fr" height="100%">
-            <Pane background="blueTint" elevation={0} padding={15} display="grid" gridTemplateRows="auto auto 1fr" gridTemplateColumns="auto" overflowX="scroll">  
-                <Pane background="blueTint">
-                    <Heading size={900} color="neutral" textAlign="left">My files</Heading>
-                </Pane>
-                <Pane background="blueTint" marginTop={15}>
-                    <Heading size={600} color="neutral" textAlign="left">File manager</Heading>
-                </Pane>
-                <Tree>
-                    {this.state.rootDirs.map((dir, index) => {
-                        return <TreeFolder key={`treefolder-${index}`} id={`treefolder-${index}`} absolutePath={`/${dir.basename}`} basename={dir.basename} handleNavigate={this.navigateAbsolute} />
-                    })}
-                </Tree>
-            </Pane>
+        return <Pane display="grid" gridTemplateColumns="1fr 4fr" height="100vh" maxHeight="100vh" overflow="hidden">
+            <DavSideBar rootDirs={this.state.rootDirs} handleNavigate={this.navigateAbsolute} />
 
-            <Pane display="grid" gridTemplateRows="auto auto 1fr">
-                <Pane background="tint2" display="grid" gridTemplateColumns="1fr auto" paddingTop={15} paddingBottom={15} paddingLeft={15} justifyItems="stretch">
-                    <SearchInput placeholder="Search something..." width="75%" justifySelf="center" onChange={(e) => this.context.filterFileItems(e.target.value)} value={this.context.filter}/>       
-                    {this.renderAvatarMenu()}
-                </Pane>
-                <DavToolBar currentDirectory={this.state.currentDirectory} 
-                            handleDisplayMode={this.changeDisplayMode}
-                            handleNavigate={this.navigateAbsolute} />
+            <Pane display="grid" gridTemplateRows="auto auto 1fr" height="100%" overflowY="scroll">
+                <DavHeader />
 
-                <DavDirectoryPane displayMode={this.state.displayMode} 
-                                folders={this.state.directories} 
-                                files={this.state.files}
-                                loading={this.state.loading}
-                                handleNavigate={this.navigate} 
-                                handleShowDetails={this.toggleFileDetails} />
-                
+                <DavToolBar currentDirectory={this.state.currentDirectory}
+                    handleDisplayMode={this.changeDisplayMode}
+                    handleNavigate={this.navigateAbsolute} />
+
+                <DavDirectoryPane displayMode={this.state.displayMode}
+                    folders={this.state.directories}
+                    files={this.state.files}
+                    loading={this.state.loading}
+                    handleNavigate={this.navigate}
+                    handleShowDetails={this.toggleFileDetails} />
+
             </Pane>
 
             <SideSheet id="side-details"
