@@ -1,5 +1,6 @@
 
 import { Component } from 'react';
+import { Navigate } from 'react-router';
 
 import { Pane, SideSheet, Heading, Spinner } from 'evergreen-ui';
 
@@ -9,8 +10,6 @@ import DavHeader from '../components/DavHeader';
 import FileDetailsPane from '../components/FileDetailsPane';
 import DavDirectoryPane from '../components/DavDirectoryPane';
 import DavToolBar from '../components/DavToolBar';
-
-import { Navigate } from 'react-router';
 import DavSideBar from '../components/DavSideBar';
 
 /**
@@ -145,6 +144,7 @@ export default class DavExplorerView extends Component {
                 <DavHeader />
 
                 <DavToolBar currentDirectory={this.state.currentDirectory}
+                    displayMode={this.state.displayMode} 
                     handleDisplayMode={this.changeDisplayMode}
                     handleNavigate={this.navigateAbsolute} />
 

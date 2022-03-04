@@ -11,14 +11,14 @@ import React from "react";
 export default class DavToolBar extends Component {
     static contextType = DavConfigurationContext;
 
-    renderDisplayTools = () => {
+    renderDisplayTools = () => {        
         return <Fragment>
-            <Link href="#" style={{ display: 'flex', alignItems: 'center' }} onClick={(evt) => this.props.handleDisplayMode('grid')}>
-                <GridViewIcon size={18} style={{ marginLeft: '5px', marginRight: '5px' }} />
+            <Link href="#" display="flex" alignItems="center" onClick={(evt) => this.props.handleDisplayMode('grid')} >
+                <GridViewIcon size={18} marginLeft={5} marginRight={5} color={this.props.displayMode === 'grid' ? 'gray600' : 'blue600'} />
             </Link>
             &nbsp;
-            <Link href="#" style={{ display: 'flex', alignItems: 'center' }} onClick={(evt) => this.props.handleDisplayMode('table')}>
-                <ListIcon size={18} style={{ marginLeft: '5px', marginRight: '5px' }} />
+            <Link href="#" display="flex" alignItems="center" onClick={(evt) => this.props.handleDisplayMode('table')} >
+                <ListIcon size={18} marginLeft={5} marginRight={5} color={this.props.displayMode === 'table' ? 'gray600' : 'blue600'} />
             </Link>            
         </Fragment>
     }
