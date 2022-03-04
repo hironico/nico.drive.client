@@ -81,10 +81,6 @@ export default class DavDirectoryPane extends Component {
     }
 
     renderFoldersAndFiles = () => {
-        // if (typeof this.props.directories === 'undefined' || typeof this.props.files === 'undefined') {
-        //     return this.renderEmptyState();
-        // }
-
         if (this.props.folders.length === 0 && this.props.files.length === 0) {
             return this.renderEmptyState();
         }
