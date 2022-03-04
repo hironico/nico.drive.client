@@ -32,7 +32,7 @@ export default class DavExplorerView extends Component {
             rootDirs: [],
             showDetails: false,
             displayMode: 'table',
-            loading: false
+            loading: true
         }
     }
 

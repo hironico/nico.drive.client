@@ -1,5 +1,6 @@
 import { Component } from "react"
-import { EmptyState, Pane, Spinner, Table } from "evergreen-ui";
+import { EmptyState, Pane, Table } from "evergreen-ui";
+import { Spinner, SearchIcon } from "evergreen-ui";
 
 import Folder from './Folder';
 import Image from './Image';
@@ -68,7 +69,26 @@ export default class DavDirectoryPane extends Component {
         />
     }
 
+    renderEmptyState = () => {
+        return <EmptyState
+            background="light"
+            title="Empty directory !"
+            orientation="horizontal"
+            icon={<SearchIcon color="#C1C4D6" />}
+            iconBgColor="#EDEFF5"
+            description="It's lonely here... Upload some file here!"
+        />
+    }
+
     renderFoldersAndFiles = () => {
+        // if (typeof this.props.directories === 'undefined' || typeof this.props.files === 'undefined') {
+        //     return this.renderEmptyState();
+        // }
+
+        if (this.props.folders.length === 0 && this.props.files.length === 0) {
+            return this.renderEmptyState();
+        }
+
         return <>
             {this.renderFolders()}
             {this.renderFiles()}
