@@ -15,6 +15,41 @@ import { DavConfigurationContext } from '../AppSettings';
 export default class DavDirectoryPane extends Component {
     static contextType = DavConfigurationContext;
 
+    constructor() {
+        super();
+        this.state = {
+            files: [],
+            folders: [],
+            currentRegExp: ''
+        }
+    }
+
+    componentDidUpdate = (prevProps) => {
+        // if the folders and files have changed we need to filter them out. If not, we do not change anything.
+        // same for the filter expression : if it changed, then refilter and update
+        let shouldUpdateState = false;
+
+        let folders = this.state.folders;
+        if (prevProps.folders !== this.props.folders || this.state.currentRegExp !== this.context.filterRegExp) {
+            folders = this.props.folders.filter(folder => folder.basename.search(this.context.filterRegExp) !== -1);
+            shouldUpdateState = true;
+        }
+
+        let files = this.state.files;
+        if (prevProps.files !== this.props.files || this.state.currentRegExp !== this.context.filterRegExp) {
+            files = this.props.files.filter(file => file.basename.search(this.context.filterRegExp) !== -1);
+            shouldUpdateState = true;
+        }        
+
+        if (shouldUpdateState) {
+            this.setState({
+                folders: folders,
+                files: files,
+                currentRegExp: this.context.filterRegExp
+            });
+        }        
+    }
+
     /**
      * Ensure filter is cleared out before navigating to a new folder
      */
@@ -27,8 +62,7 @@ export default class DavDirectoryPane extends Component {
     }
 
     renderFolders = () => {
-        let folders = this.props.folders
-            .filter(folder => folder.basename.search(this.context.filterRegExp) !== -1)
+        return this.state.folders
             .map((directory, index) => {
             return <Folder key={'dir_' + index} 
                            fileItem={directory} 
@@ -36,12 +70,10 @@ export default class DavDirectoryPane extends Component {
                            handleNavigate={this.navigate} 
                            handleShowDetails={this.props.handleShowDetails} />
         });
-        return folders;
     }
 
     renderFiles = () => {
-        let images = this.props.files
-            .filter(file => file.basename.search(this.context.filterRegExp) !== -1)
+        return this.state.files
             .map((file, index) => {
             if (this.context.isImageFile(file.basename)) {
                 return <Image key={'file_' + index} 
@@ -55,7 +87,6 @@ export default class DavDirectoryPane extends Component {
                                     handleShowDetails={this.props.handleShowDetails} />
             }
         });
-        return images;
     }  
 
     renderLoadingState = () => {
@@ -69,10 +100,21 @@ export default class DavDirectoryPane extends Component {
         />
     }
 
+    renderNothingFound = () => {
+        return <EmptyState
+            background="dark"
+            title="Not found!"
+            orientation="horizontal"
+            icon={<SearchIcon color="#C1C4D6" />}
+            iconBgColor="#EDEFF5"
+            description="Nothing matches your search terms. Try something less restrictive?"
+        />
+    }
+
     renderEmptyState = () => {
         return <EmptyState
             background="light"
-            title="Empty directory !"
+            title="Empty directory!"
             orientation="horizontal"
             icon={<SearchIcon color="#C1C4D6" />}
             iconBgColor="#EDEFF5"
@@ -81,8 +123,8 @@ export default class DavDirectoryPane extends Component {
     }
 
     renderFoldersAndFiles = () => {
-        if (this.props.folders.length === 0 && this.props.files.length === 0) {
-            return this.renderEmptyState();
+        if (this.state.folders.length === 0 && this.state.files.length === 0) {
+            return this.context.filter === '' ? this.renderEmptyState() : this.renderNothingFound();
         }
 
         return <>
