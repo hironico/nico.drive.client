@@ -23,8 +23,6 @@ export default class DavExplorerView extends Component {
     constructor() {
         super();
 
-        console.log('DavExplorerPane constrcutor...');
-
         this.state = {
             currentDirectory: null,
             directories: [],
@@ -37,7 +35,6 @@ export default class DavExplorerView extends Component {
     }
 
     componentDidMount = () => {
-        console.info('Dav Explorer Component did mount. setting current directory to /...');
         if (this.state.currentDirectory === null) {
             this.setState({
                 currentDirectory: '/',

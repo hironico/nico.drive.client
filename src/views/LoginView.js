@@ -1,6 +1,6 @@
 import { Component } from 'react';
 import { Navigate } from 'react-router';
-import { Pane, TextInputField, Paragraph, Button, Heading, Text, Alert } from 'evergreen-ui';
+import { Pane, TextInputField, Paragraph, Button, Heading, Text, Alert, LogInIcon } from 'evergreen-ui';
 import { DavConfigurationContext } from '../AppSettings';
 
 import { createClient, AuthType } from "webdav";
@@ -126,7 +126,7 @@ export default class LoginView extends Component {
                 label="WebDAV base URL:" />
             <Pane>
                 {this.renderErrorMessage()}
-                <Button is="div" marginTop={16} onClick={() => this.onConfirm()} disabled={this.state.isLoading} appearance="primary" intent="success">
+                <Button is="div" marginTop={16} iconBefore={LogInIcon} appearance="primary" intent="success" onClick={() => this.onConfirm()} disabled={this.state.isLoading}>
                     {this.state.isLoading ? 'Please wait...' : 'Connect'}
                 </Button>
                 <Paragraph textAlign="right">

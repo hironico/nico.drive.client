@@ -1,4 +1,4 @@
-import { Component, Fragment } from "react";
+import React, { Component, Fragment } from "react";
 
 import { Pane, Link } from "evergreen-ui";
 import { GridViewIcon, ListIcon } from "evergreen-ui";
@@ -6,10 +6,21 @@ import { GridViewIcon, ListIcon } from "evergreen-ui";
 import { DavConfigurationContext } from '../AppSettings';
 
 import DavBreadCrumb from "./DavBreadCrumb";
-import React from "react";
+import DavUploadButton from "./DavUploadButton";
 
 export default class DavToolBar extends Component {
     static contextType = DavConfigurationContext;
+
+    createDirectory = (name) => {
+        // use this :
+        // await client.createDirectory("/data/system/storage");
+    }
+
+    renderFolderTools = () => {
+        return <>
+            <DavUploadButton currentDirectory={this.props.currentDirectory} handleNavigate={this.props.handleNavigate}/>
+        </>
+    }
 
     renderDisplayTools = () => {        
         return <Fragment>
@@ -24,10 +35,11 @@ export default class DavToolBar extends Component {
     }
 
     render = () => {
-        return <Pane zIndex={1} flexShrink={0} background="tint2" display="grid" gridTemplateColumns="auto 1fr">                                
+        return <Pane zIndex={1} flexShrink={0} background="tint2" display="grid" gridTemplateColumns="auto 1fr" paddingBottom={10}>                                
                 <DavBreadCrumb handleNavigate={this.props.handleNavigate} currentDirectory={this.props.currentDirectory} />
                 <Pane justifySelf="end" display="inline-flex" alignItems="center">
-                   {this.renderDisplayTools()}
+                    {this.renderFolderTools()}
+                    {this.renderDisplayTools()}
                 </Pane>
             </Pane>
     }
