@@ -7,6 +7,7 @@ import { DavConfigurationContext } from '../AppSettings';
 
 import DavBreadCrumb from "./DavBreadCrumb";
 import DavUploadButton from "./DavUploadButton";
+import DavNewFolderButton from "./DavNewFolderButton";
 
 export default class DavToolBar extends Component {
     static contextType = DavConfigurationContext;
@@ -19,6 +20,7 @@ export default class DavToolBar extends Component {
     renderFolderTools = () => {
         return <>
             <DavUploadButton currentDirectory={this.props.currentDirectory} handleNavigate={this.props.handleNavigate}/>
+            <DavNewFolderButton currentDirectory={this.props.currentDirectory} handleNavigate={this.props.handleNavigate} />
         </>
     }
 
