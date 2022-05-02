@@ -2,25 +2,25 @@ import React, { Component } from "react";
 import { AuthType } from "webdav";
 
 const defaultValue = {
-    davBaseUrl: 'http://localhost:8080',
-    davWebContext: '/dav',
     authType: AuthType.Basic,
-    username: 'hironico',
-    password: 'changeme',
+    username: '',
     davClient: null,
+    davBaseUrl: null,
+    davApiBaseUrl: null,
+    davHomeDirectory: null, 
     connectionValid: false,
-    homeDirectory: '/hironico',
     supportedFormats: ['JPEG', 'JPG', 'PNG', 'WEBP', 'AVIF', 'TIFF', 'TIF', 'GIF', 'SVG', 'CR2', 'DNG'],
     filter: '',
     filterRegExp: new RegExp('.*', 'i'),
     filterFileItems: (filter) => { },
-    setDavClient: (client, url) => { },
-    getClientUrl: () => { },
+    setDavClient: (client, davBaseUrl) => { },
     getThumbApiUrl: () => { },
     getExifApiUrl: () => { },
     getMetadataApiUrl: () => { },
+    getAuthUrl: () => { },
     isImageFile: () => { },
-    disconnect: () => { }
+    disconnect: () => { },
+    getUserRootDirectories: () => { }
 }
 
 const DavConfigurationContext = React.createContext(defaultValue);
@@ -30,26 +30,24 @@ class DavConfigurationProvider extends Component {
     constructor() {
         super();
         this.state = {
-            davBaseUrl: 'http://localhost:8080',
-            davWebContext: '/dav',
             authType: AuthType.Basic,
-            username: 'hironico',
-            password: 'hironico',
+            username: '',
             davClient: null,
+            davBaseUrl: null,
+            davApiBaseUrl: null,
+            davHomeDirectory: null,            
             connectionValid: false,
             showConnectionDialog: false,
-            homeDirectory: '/hironico',
             supportedFormats: ['JPEG', 'JPG', 'PNG', 'WEBP', 'AVIF', 'TIFF', 'GIF', 'SVG', 'CR2', 'DNG'],
             filter: '',
             filterRegExp: new RegExp('.*', 'i'),
             filterFileItems: this.filterFileItems,
             setDavClient: this.setDavClient,
-            getClientUrl: this.getClientUrl,
             getThumbApiUrl: this.getThumbApiUrl,
             getExifApiUrl: this.getExifApiUrl,
             getMetadataApiUrl: this.getMetadataApiUrl,
+            getAuthUrl: this.getAuthUrl,
             isImageFile: this.isImageFile,
-            getBasePath: this.getBasePath,
             disconnect: this.disconnect
         }
     }
@@ -62,46 +60,42 @@ class DavConfigurationProvider extends Component {
         });
     }
 
-    setDavClient = (client, url) => {
-        const urlValid = (typeof url !== 'undefined' && url !== null && '' !== url);
-        const uri = urlValid ? new URL(url) : null;
-        const davBaseUrl = uri ? `${uri.protocol}//${uri.host}` : '';
-        let pathTab = uri ? uri.pathname.split('/') : '';
-        const davWebContext = uri ? `/${pathTab[0]}` : '';
-        pathTab = uri ? pathTab.splice(0, 1) : [];
-        const homeDir = uri ? pathTab.join('/') : '';
+    setDavClient = (client, davBaseUrl, username) => {
+
+        const davBaseUri = client ? new URL(davBaseUrl) : null;
+        const proto = client ? davBaseUri.protocol : null;
+        const host = client ? davBaseUri.hostname : null;
+        const port = client ? davBaseUri.port : null;
+
+        const davApiBaseUrl = `${proto}://${host}:${port}`;
 
         this.setState({
             davClient: client,
-            davBaseUrl: client ? davBaseUrl : '',
-            davWebContext: client ? davWebContext : '',
-            homeDirectory: client ? homeDir : '',
-            connectionValid: client ? true : false
+            davBaseUrl: davBaseUrl,
+            davApiBaseUrl: davApiBaseUrl,
+            connectionValid: client ? true : false,
+            username: client ? username : ''
         });
     }
 
     disconnect = () => {
-        this.setDavClient(null, null);
-    }
-
-    getBasePath = () => {
-        return `${this.state.davWebContext}${this.state.homeDirectory}`;
-    }
-
-    getClientUrl = () => {
-        return `${this.state.davBaseUrl}${this.state.davWebContext}`;
+        this.setDavClient(null);
     }
 
     getThumbApiUrl = () => {
-        return `${this.state.davBaseUrl}/thumb`;
+        return `${this.state.davApiBaseUrl}/thumb`;
     }
 
     getExifApiUrl = () => {
-        return `${this.state.davBaseUrl}/meta/exif`;
+        return `${this.state.davApiBaseUrl}/meta/exif`;
     }
 
     getMetadataApiUrl = () => {
-        return `${this.state.davBaseUrl}/meta/xmp`;
+        return `${this.state.davApiBaseUrl}/meta/xmp`;
+    }
+
+    getAuthUrl = () => {
+        return `${this.state.davApiBaseUrl}/auth`;
     }
 
     isImageFile = (filename) => {

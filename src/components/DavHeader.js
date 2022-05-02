@@ -22,7 +22,7 @@ class DavHeader extends Component {
                     <Menu>
                         <Menu.Group>
                             <Menu.Item icon={InfoSignIcon} intent="success"><Badge color="green">{this.context.username}</Badge></Menu.Item>
-                            <Menu.Item>{this.context.getClientUrl()}</Menu.Item>
+                            <Menu.Item>{this.context.davBaseUrl}</Menu.Item>
                         </Menu.Group>
                         <Menu.Divider />
                         <Menu.Group>
