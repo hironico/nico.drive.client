@@ -1,5 +1,7 @@
-import { Button, Heading, InfoSignIcon, Pane, Table, DownloadIcon, Tablist, Tab, TagInput } from 'evergreen-ui';
-import { Fragment, Component } from 'react';
+import { Button, Heading, InfoSignIcon, Pane, Table, Tablist, Tab, TagInput, EmptyState } from 'evergreen-ui';
+import { DownloadIcon, SearchIcon } from 'evergreen-ui';
+
+import { Component } from 'react';
 
 import RatingPane from './RatingPane';
 
@@ -35,7 +37,12 @@ export default class FileDetailsPane extends Component {
     loadImageInformation = () => {
         const metaUrl = this.context.getExifApiUrl();
 
+        const paths = this.context.davBaseUrl.split('/');
+        const homeDir = `/${paths[paths.length - 1]}`;
+
         const exifRequest = {
+            "username": this.context.username,
+            "homeDir": homeDir,
             "filename": this.props.fileItem.filename
         }
 
@@ -64,7 +71,12 @@ export default class FileDetailsPane extends Component {
     loadMetaDataInformation = () => {
         const metaUrl = this.context.getMetadataApiUrl();
 
+        const paths = this.context.davBaseUrl.split('/');
+        const homeDir = `/${paths[paths.length - 1]}`;
+
         const metadataRequest = {
+            "username": this.context.username,
+            "homeDir": homeDir,
             "filename": this.props.fileItem.filename,
             "raw": false
         }
@@ -197,19 +209,20 @@ export default class FileDetailsPane extends Component {
     }
 
     renderImageDetails = () => {
+        let rows;
         if (typeof this.state.imageData.image === 'undefined') {
-            return <Fragment>&nbsp;</Fragment>
+            rows = this.renderEmptyDetails('No image information has been found.');
+        } else {
+                rows = Object.keys(this.state.imageData.image).map((key, index) => {
+                return <Table.Row key={index} height={32}>
+                    <Table.TextCell>{key}</Table.TextCell>
+                    <Table.TextCell>{this.state.imageData.image[key]}</Table.TextCell>
+                </Table.Row>
+            });
         }
 
-        let rows = Object.keys(this.state.imageData.image).map((key, index) => {
-            return <Table.Row key={index}>
-                <Table.TextCell>{key}</Table.TextCell>
-                <Table.TextCell>{this.state.imageData.image[key]}</Table.TextCell>
-            </Table.Row>
-        });
-
         return <Table marginTop={15}>
-            <Table.Head>
+            <Table.Head height={32}>
                 <Table.TextHeaderCell>
                     <Pane display="inline-flex" alignItems="center">
                         <InfoSignIcon />&nbsp;Image information
@@ -226,19 +239,20 @@ export default class FileDetailsPane extends Component {
     }
 
     renderMetadataDetails = () => {
-        if (typeof this.state.metadata === 'undefined') {
-            return <Fragment>&nbsp;</Fragment>
+        let rows;
+        if (typeof this.state.metadata === 'undefined' || Object.keys(this.state.metadata).length === 0) {
+            rows = this.renderEmptyDetails('Metedata details are not available.')
+        } else {
+            rows = Object.keys(this.state.metadata).map((key, index) => {
+                return <Table.Row key={`meta-${index}`} height={32}>
+                    <Table.TextCell>{key}</Table.TextCell>
+                    <Table.TextCell>{this.state.metadata[key]}</Table.TextCell>
+                </Table.Row>
+            });
         }
 
-        let rows = Object.keys(this.state.metadata).map((key, index) => {
-            return <Table.Row key={`meta-${index}`}>
-                <Table.TextCell>{key}</Table.TextCell>
-                <Table.TextCell>{this.state.metadata[key]}</Table.TextCell>
-            </Table.Row>
-        });
-
         return <Table marginTop={15}>
-            <Table.Head>
+            <Table.Head height={32}>
                 <Table.TextHeaderCell>
                     <Pane display="inline-flex" alignItems="center">
                         <InfoSignIcon />&nbsp;Metadata information
@@ -252,6 +266,17 @@ export default class FileDetailsPane extends Component {
                 {rows}
             </Table.Body>
         </Table>
+    }
+
+    renderEmptyDetails = (message) => {
+        return <EmptyState
+            background="dark"
+            title="Not found!"
+            orientation="horizontal"
+            icon={<SearchIcon color="#C1C4D6" />}
+            iconBgColor="#EDEFF5"
+            description={message}
+        />
     }
 
     renderTags = () => {

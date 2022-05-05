@@ -22,7 +22,12 @@ export default class Image extends RegularFile {
     }
 
     generateThumb = () => {
+        const paths = this.context.davBaseUrl.split('/');
+        const homeDir = `/${paths[paths.length - 1]}`;
+
         const req = {
+            "username": this.context.username,
+            "homeDir": homeDir,
             "filename": this.props.fileItem.filename
         }
 

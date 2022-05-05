@@ -67,7 +67,7 @@ class DavConfigurationProvider extends Component {
         const host = client ? davBaseUri.hostname : null;
         const port = client ? davBaseUri.port : null;
 
-        const davApiBaseUrl = `${proto}://${host}:${port}`;
+        const davApiBaseUrl = `${proto}//${host}:${port}`;
 
         this.setState({
             davClient: client,
