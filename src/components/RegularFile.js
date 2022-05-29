@@ -1,5 +1,5 @@
 
-import { Card, Icon, Pane, DocumentIcon, Link, Text, InfoSignIcon, DownloadIcon, MoreIcon, Table, Button, Position, Popover, Menu } from 'evergreen-ui';
+import { Card, Icon, Pane, DocumentIcon, Link, Text, InfoSignIcon, DownloadIcon, MoreIcon, Table, Button, Position, Popover, Menu, DeleteIcon } from 'evergreen-ui';
 import { Component } from 'react';
 import { DateTime } from 'luxon';
 import { DavConfigurationContext } from '../AppSettings';
@@ -112,6 +112,9 @@ export default class RegularFile extends Component {
                     <Menu.Group>
                         <Menu.Item icon={InfoSignIcon} intent="info" onSelect={() => { this.props.handleShowDetails(this.props.fileItem) }}>Details...</Menu.Item>
                         <Menu.Item icon={DownloadIcon} intent="success" onSelect={() => { this.download(this.props.fileItem)} }>Download...</Menu.Item>
+                    </Menu.Group>
+                    <Menu.Group>
+                        <Menu.Item icon={DeleteIcon} intent="danger" onSelect={() => { this.props.handleDelete(this.props.fileItem)} }>Delete</Menu.Item>
                     </Menu.Group>
                 </Menu>
             }            

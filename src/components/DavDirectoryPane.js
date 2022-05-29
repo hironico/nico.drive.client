@@ -1,5 +1,5 @@
 import { Component } from "react"
-import { EmptyState, Pane, Table } from "evergreen-ui";
+import { EmptyState, Pane, Table, Dialog, Text, Button } from "evergreen-ui";
 import { Spinner, SearchIcon } from "evergreen-ui";
 
 import Folder from './Folder';
@@ -20,7 +20,9 @@ export default class DavDirectoryPane extends Component {
         this.state = {
             files: [],
             folders: [],
-            currentRegExp: ''
+            currentRegExp: '',
+            isDeleteDialogShown: false,
+            fileItemToDelete: null
         }
     }
 
@@ -61,6 +63,26 @@ export default class DavDirectoryPane extends Component {
         );
     }
 
+    /**
+     * Handles the file item delete click on each displayed file in this directory pane.
+     * This function sets the file item to delete and shows the confirm dialog to delete the file item.
+     * @param fileItem to delete
+     */
+    delete = (fileItem) => {
+        this.setState({
+            isDeleteDialogShown: true,
+            fileItemToDelete: fileItem
+        });
+    }
+
+    doDelete = () => {
+        this.setState({
+            isDeleteDialogShown: false
+        }, () => {
+            this.props.handleDeleteFileItem(this.state.fileItemToDelete)
+        });
+    }
+
     renderFolders = () => {
         return this.state.folders
             .map((directory, index) => {
@@ -68,7 +90,8 @@ export default class DavDirectoryPane extends Component {
                            fileItem={directory} 
                            displayMode={this.props.displayMode}
                            handleNavigate={this.navigate} 
-                           handleShowDetails={this.props.handleShowDetails} />
+                           handleShowDetails={this.props.handleShowDetails}
+                           handleDelete={this.delete} />
         });
     }
 
@@ -79,12 +102,14 @@ export default class DavDirectoryPane extends Component {
                 return <Image key={'file_' + index} 
                               fileItem={file}
                               displayMode={this.props.displayMode}
-                              handleShowDetails={this.props.handleShowDetails} />
+                              handleShowDetails={this.props.handleShowDetails} 
+                              handleDelete={this.delete} />
             } else {
                 return <RegularFile key={'file_' + index} 
                                     fileItem={file}
                                     displayMode={this.props.displayMode} 
-                                    handleShowDetails={this.props.handleShowDetails} />
+                                    handleShowDetails={this.props.handleShowDetails} 
+                                    handleDelete={this.delete} />
             }
         });
     }  
@@ -155,6 +180,27 @@ export default class DavDirectoryPane extends Component {
       </Table>
     }
 
+    renderDeleteConfirmDialog = () => {
+        return <Dialog
+                isShown={this.state.isDeleteDialogShown}
+                title="Warning: please confirm..."
+                intent="danger"
+                onCloseComplete={() => this.setState({isDeleteDialogShown: false})}
+                hasFooter={false}
+            >
+                <Text>
+                    Are you sure you want to delete this file? <br />
+                    {this.state.fileItemToDelete === null ? 'null' : this.state.fileItemToDelete.filename}
+                </Text>
+                <br />
+                <Text intent="danger" appearance="primary">This cannot be undone.</Text>
+                <Pane width="100%" display="flex" justifyContent="right" marginTop={15}>
+                    <Button is="div" marginLeft={0} marginRight={12} appearance="default" intent="none" onClick={(evt) => this.setState({isDeleteDialogShown: false})}>Cancel</Button>
+                    <Button is="div" marginLeft={12} marginRight={0} appearance="primary" intent="danger" onClick={(evt) => this.doDelete()}>Confirm delete</Button>
+                </Pane>
+            </Dialog>
+    }
+
     render = () => {
         let directoryContents;
         switch (this.props.displayMode) {
@@ -172,6 +218,9 @@ export default class DavDirectoryPane extends Component {
                 break;
         }
 
-        return directoryContents;
+        return <>
+            {this.renderDeleteConfirmDialog()}
+            {directoryContents}
+        </>;
     }
 }

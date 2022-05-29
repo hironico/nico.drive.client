@@ -121,6 +121,11 @@ export default class DavExplorerView extends Component {
         });
     }
 
+    deleteFileItem = (fileItem) => {
+        this.context.davClient.deleteFile(fileItem.filename)
+        .then(this.getDirectoryContents());
+    }
+
     render = () => {
 
         if (!this.context || !this.context.connectionValid) {
@@ -149,6 +154,7 @@ export default class DavExplorerView extends Component {
                     folders={this.state.directories}
                     files={this.state.files}
                     loading={this.state.loading}
+                    handleDeleteFileItem={this.deleteFileItem}
                     handleNavigate={this.navigate}
                     handleShowDetails={this.toggleFileDetails} />
 

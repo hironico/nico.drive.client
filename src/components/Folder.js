@@ -57,10 +57,10 @@ export default class Folder extends RegularFile {
                     &nbsp;                    
                 </Table.TextCell>
                 <Table.TextCell textAlign="left">
-                      {this.renderHttpDate(this.props.fileItem.lastmod)}
+                    {this.renderHttpDate(this.props.fileItem.lastmod)}
                 </Table.TextCell>
                 <Table.TextCell textAlign="center">
-                    &nbsp;
+                    {this.renderActionMenu()}
                 </Table.TextCell>
             </Table.Row>
     }
