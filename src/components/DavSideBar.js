@@ -16,7 +16,7 @@ class DavSideBar extends Component {
             </Pane>
             <Tree>
                 {this.props.rootDirs.map((dir, index) => {
-                    return <TreeFolder key={`treefolder-${index}`} id={`treefolder-${index}`} absolutePath={`/${dir.basename}`} basename={dir.basename} handleNavigate={this.props.handleNavigate} />
+                    return <TreeFolder key={`treefolder-${index}`} id={`treefolder-${index}`} absolutePath={`/${dir.basename}`} basename={dir.basename} handleNavigate={this.props.handleNavigate} currentDirectory={this.props.currentDirectory} />
                 })}
             </Tree>
         </Pane>

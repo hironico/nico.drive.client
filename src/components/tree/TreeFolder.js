@@ -38,6 +38,29 @@ class TreeFolder extends Component {
     }
   }
 
+  componentDidUpdate = (prevProps, prevState, snapshot) => {
+    if (this.props.currentDirectory === null || typeof this.props.currentDirectory === 'undefined') {
+      return;
+    }
+    
+    // detect a current directory change
+    if (prevProps.currentDirectory !== this.props.currentDirectory) {
+      // detect if we jumped into this tree folder directory to refresh its contents
+      // that may have changed folowing a directory create or delete operation but only if we are 'open' state
+      if (this.props.currentDirectory === this.props.absolutePath && this.state.isOpen) {
+        this.getDirectoryContents();
+      } else {
+        // if we create a folder and jumped into that new folder, we want to refresh the parent folder as well
+        // to show the newly created folder.
+        const lastIndex = this.props.currentDirectory.lastIndexOf('/');
+        const parentFolder = this.props.currentDirectory.substring(0, lastIndex);
+        if (this.props.absolutePath === parentFolder && this.state.isOpen) {
+          this.getDirectoryContents();
+        }
+      }
+    }
+  }
+
   getDirectoryContents = async () => {
     let dirs = [];
 
@@ -74,7 +97,7 @@ class TreeFolder extends Component {
 
   renderSubDirectories = () => {
     return this.state.subDirs.map((dir, index) => {
-      return <TreeFolder key={`${this.props.id}-${index}`} basename={dir.basename} absolutePath={`${this.props.absolutePath}/${dir.basename}`} handleNavigate={this.props.handleNavigate} />
+      return <TreeFolder key={`${this.props.id}-${index}`} basename={dir.basename} absolutePath={`${this.props.absolutePath}/${dir.basename}`} handleNavigate={this.props.handleNavigate} currentDirectory={this.props.currentDirectory}/>
     });
   }
 
