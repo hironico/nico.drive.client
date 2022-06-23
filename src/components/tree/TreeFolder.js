@@ -58,7 +58,7 @@ class TreeFolder extends Component {
           this.getDirectoryContents();
         }
       }
-    }
+    } 
   }
 
   getDirectoryContents = async () => {
