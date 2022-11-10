@@ -38,7 +38,7 @@ class DavConfigurationProvider extends Component {
             davHomeDirectory: null,            
             connectionValid: false,
             showConnectionDialog: false,
-            supportedFormats: ['JPEG', 'JPG', 'PNG', 'WEBP', 'AVIF', 'TIFF', 'GIF', 'SVG', 'CR2', 'DNG'],
+            supportedFormats: ['JPEG', 'JPG', 'PNG', 'WEBP', 'AVIF', 'TIFF', 'GIF', 'SVG', 'CR2', 'CR3', 'DNG'],
             filter: '',
             filterRegExp: new RegExp('.*', 'i'),
             filterFileItems: this.filterFileItems,
