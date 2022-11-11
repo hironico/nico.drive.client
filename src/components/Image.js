@@ -1,5 +1,6 @@
 
-import { Card, Icon, Link, Pane, Text, InfoSignIcon, DownloadIcon, Table } from 'evergreen-ui';
+import { Card, Link, Pane, Text, Table, Spinner } from 'evergreen-ui';
+import { Icon, InfoSignIcon, DownloadIcon } from 'evergreen-ui';
 
 import RegularFile from './RegularFile';
 
@@ -57,20 +58,26 @@ export default class Image extends RegularFile {
         .catch(err => console.log(`Could not generate thumb for file ${this.props.fileItem.filename}\nReason: ${err}`));
     }
 
-    renderGrid = () => {
-        let styleThumb = {};
+    renderGridThumb = () => {        
         if (this.state.thumb !== null) {
             const imgUrl = 'url(' + this.state.thumb + ')';
-            styleThumb = {
+            const styleThumb = {
                 backgroundImage: imgUrl,
                 backgroundPosition: 'center',
                 backgroundSize: 'cover',
                 width: '200px',
                 height: '200px',
                 marginTop: '-15px'
-            }        
-        }        
+            }             
+            return <div style={styleThumb}>&nbsp;</div>
+        } else {
+            return <Pane display="flex" alignItems="center" justifyContent="center" height={200}>
+                       <Spinner />
+                   </Pane>
+        } 
+    }
 
+    renderGrid = () => {
         return (
             <Card
                 elevation={2}
@@ -83,7 +90,7 @@ export default class Image extends RegularFile {
                 alignItems="center"
                 flexDirection="column"
             > 
-                <div style={styleThumb}>&nbsp;</div>
+                {this.renderGridThumb()}
                 <Pane display="inline-flex" alignItems="center" justifyContent="space-between" width={190} height={18} margin={5}>
                     <Link href="#" borderBottom="none" onClick={(evt) => {this.props.handleShowDetails(this.props.fileItem)}}><Icon icon={InfoSignIcon} color="info"/></Link>
                     <Text overflow="hidden" maxWidth={155} maxHeigh={24}>{this.props.fileItem.basename}</Text>
@@ -93,24 +100,32 @@ export default class Image extends RegularFile {
         );
     }
 
-    renderTable = () => {
-
-        let styleThumb = {};
+    renderTableThumb = () => {
         if (this.state.thumb !== null) {
             const imgUrl = 'url(' + this.state.thumb + ')';
-            styleThumb = {
+            const styleThumb = {
                 backgroundImage: imgUrl,
                 backgroundPosition: 'center',
                 backgroundSize: 'cover',
                 width: '24px',
                 height: '20px',
                 margin: '0px'
-            }        
-        } 
+            }
+            return <div style={styleThumb}>&nbsp;</div>
+        } else {
+            return <Pane display="flex" alignItems="center" justifyContent="center" height={24} width={24} padding={0} margin={0}>
+                       <Spinner height={16} width={16} />
+                   </Pane>
+        }
+    }
+
+    renderTable = () => {
+
+        
 
         return <Table.Row key={this.props.fileItem.basename} isSelectable justifyContent="space-between" height={32}>
               <Table.TextCell textAlign="center" maxWidth={48}>
-                <div style={styleThumb}></div>
+                {this.renderTableThumb()}
               </Table.TextCell>
               <Table.TextCell textAlign="left">
                   <Link href={this.context.davClient.getFileDownloadLink(this.props.fileItem.filename)} target="_blank" borderBottom="none">
