@@ -32,7 +32,6 @@ export default class Folder extends RegularFile {
                         <Icon icon={FolderCloseIcon} size={48} color="#F7D154" />
                     </Pane>
                     <Pane display="inline-flex" alignItems="center" justifyContent="center" width={190} height={18} margin={5}>
-                        <FolderCloseIcon color="#F7D154"/>
                         <Text overflow="hidden" maxWidth={155} maxHeight={24}>{this.props.fileItem.basename}</Text>                        
                     </Pane>                    
                 </Link>
