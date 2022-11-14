@@ -14,7 +14,11 @@ export default class LoginView extends Component {
 
     constructor() {
         super();
-        const url = `${window.location.protocol}//${window.location.hostname}:${window.location.port}/`;
+        let url = `${window.location.protocol}//${window.location.hostname}:${window.location.port}/`;
+
+        if (url === 'http://localhost:3000/') {
+            url = 'http://localhost:8080/';
+        }
 
         this.state = {
             isLoading: false,
