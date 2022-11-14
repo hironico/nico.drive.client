@@ -1,6 +1,5 @@
 
-import { Card, Link, Pane, Text, Table, Spinner } from 'evergreen-ui';
-import { Icon, InfoSignIcon, DownloadIcon } from 'evergreen-ui';
+import { Card, Link, Pane, Table, Spinner } from 'evergreen-ui';
 
 import RegularFile from './RegularFile';
 
@@ -91,11 +90,7 @@ export default class Image extends RegularFile {
                 flexDirection="column"
             > 
                 {this.renderGridThumb()}
-                <Pane display="inline-flex" alignItems="center" justifyContent="space-between" width={190} height={18} margin={5}>
-                    <Link href="#" borderBottom="none" onClick={(evt) => {this.props.handleShowDetails(this.props.fileItem)}}><Icon icon={InfoSignIcon} color="info"/></Link>
-                    <Text overflow="hidden" maxWidth={155} maxHeigh={24}>{this.props.fileItem.basename}</Text>
-                    <Link href={this.context.davClient.getFileDownloadLink(this.props.fileItem.filename)} target="_blank" borderBottom="none"><DownloadIcon color="success"/></Link>
-                </Pane>
+                {this.renderGridLabel()}
             </Card>
         );
     }
@@ -120,9 +115,6 @@ export default class Image extends RegularFile {
     }
 
     renderTable = () => {
-
-        
-
         return <Table.Row key={this.props.fileItem.basename} isSelectable justifyContent="space-between" height={32}>
               <Table.TextCell textAlign="center" maxWidth={48}>
                 {this.renderTableThumb()}

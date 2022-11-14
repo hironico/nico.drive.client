@@ -69,6 +69,13 @@ export default class RegularFile extends Component {
         return `${taille} ${unite}`;
     }
 
+    renderGridLabel = () => {
+        return <Pane display="inline-flex" alignItems="center" justifyContent="space-between" width={190} height={18} margin={5}>
+                <Text overflow="hidden" maxWidth={155} maxHeigh={24}>{this.props.fileItem.basename}</Text>
+                {this.renderActionMenu()}
+            </Pane>
+    }
+
     renderGrid = () => {
         let styleThumb = {
             width: '200px',
@@ -95,11 +102,7 @@ export default class RegularFile extends Component {
                     <Icon icon={DocumentIcon} size={48} color="success" />
                 </Pane>
 
-                <Pane display="inline-flex" alignItems="center" justifyContent="space-between" style={{ width: '190px', height: '18px', margin: '5px' }}>
-                    <Link href="#" onClick={(evt) => { this.props.handleShowDetails(this.props.fileItem) }} borderBottom="none"><Icon icon={InfoSignIcon} color="info" /></Link>
-                    <Text style={{ overflow: 'hidden', maxWidth: '155px', maxHeight: '24px' }}>{this.props.fileItem.basename}</Text>
-                    <Link href={this.context.davClient.getFileDownloadLink(this.props.fileItem.filename)} target="_blank" borderBottom="none"><DownloadIcon color="success" /></Link>
-                </Pane>
+                {this.renderGridLabel()}
             </Card>
         );
     }
@@ -119,7 +122,7 @@ export default class RegularFile extends Component {
                 </Menu>
             }            
         >
-            <Button appearance="minimal" intent="none" boxShadow="none" border="none"><MoreIcon/></Button>
+            <Button appearance="minimal" intent="none" boxShadow="none" border="none" marginTop={5} marginRight={0} marginBottom={5} marginLeft={0} maxHeight={24} maxWidth={24} padding={0} width={24} height={24}><MoreIcon size={16}/></Button>
         </Popover>
     }
 
