@@ -25,6 +25,8 @@ export default class Image extends RegularFile {
         const paths = this.context.davBaseUrl.split('/');
         const homeDir = `/${paths[paths.length - 1]}`;
 
+        const authHeader = this.context.davClient.getHeaders()['Authorization']; 
+
         const req = {
             "username": this.context.username,
             "homeDir": homeDir,
@@ -36,7 +38,8 @@ export default class Image extends RegularFile {
             method: 'POST',
             body: JSON.stringify(req),
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': authHeader
             }
         })
         .then(res => res.blob())

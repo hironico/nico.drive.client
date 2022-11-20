@@ -46,11 +46,14 @@ export default class FileDetailsPane extends Component {
             "filename": this.props.fileItem.filename
         }
 
+        const authHeader = this.context.davClient.getHeaders()['Authorization'];
+
         fetch(metaUrl, {
             method: 'POST',
             body: JSON.stringify(exifRequest),
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': authHeader
             }
         })
             .then(res => res.json())
@@ -80,12 +83,15 @@ export default class FileDetailsPane extends Component {
             "filename": this.props.fileItem.filename,
             "raw": false
         }
+        
+        const authHeader = this.context.davClient.getHeaders()['Authorization'];
 
         fetch(metaUrl, {
             method: 'POST',
             body: JSON.stringify(metadataRequest),
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': authHeader
             }
         })
             .then(res => res.json())
