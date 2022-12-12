@@ -25,36 +25,17 @@ export default class LoginView extends Component {
             username: '',
             password: '',
             url: url,
-            userRootDirs: [],
-            selectedRootDir: '',
             errorMessage: '',
-            davContext: 'dav',
-            connectionSuccess: false
+            davContext: 'dav'
         }
     }
 
     componentDidMount = () => { 
         this.setState({
-            errorMessage: '', 
+            errorMessage: ''
         });
     }
 
-    componentDidUpdate = (prevProps, prevState) => {
-
-        if (prevState.username !== this.state.username) {
-            this.fetchUserRootDirectories();
-        }
-
-        if (prevState.url !== this.state.url) {
-            this.fetchUserRootDirectories();
-        }
-
-        if (this.context.davClient !== null && this.context.connectionValid) {
-            this.setState({
-                connectionSuccess: true
-            });
-        }
-    }
 
     fetchUserRootDirectories = () => {
 
@@ -63,69 +44,72 @@ export default class LoginView extends Component {
         }
 
         // console.log(`Fetching user root directories for user: ${this.state.username}`);
+        const buf = Buffer.from(`${this.state.username}:${this.state.password}`, 'UTF8');
+        const authCreds = buf.toString('base64');
+        const authHeader = `Basic ${authCreds}`;
 
         const fetchOptions = { 
             method: 'GET',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': authHeader
             }
         };
 
         const fetchUrl = `${this.state.url}auth/whois/${this.state.username}`;
         // console.log(`Fetching from: ${fetchUrl}`);
 
-        return fetch(fetchUrl, fetchOptions)
+        fetch(fetchUrl, fetchOptions)
         .then(res => {            
             // console.log(`Received user root dirs : ${JSON.stringify(res)}`);
             return res.json()
         })
         .then(userInfo => {
-            // console.log(`Found user info for: ${this.state.username}`);            
-            this.setState({
-                userRootDirs: userInfo.rootDirs,
-                errorMessage: ''
+            // console.log(`Found user info for: ${this.state.username}`);
+
+            // now configuring app context to store user root dirs list and configure a client for each of them
+            
+            const clientOptions = {
+                authType: AuthType.Basic,
+                username: this.state.username,
+                password: this.state.password
+            }
+
+            const davBaseUrl = `${this.state.url}${this.state.davContext}`;
+
+            const userDirectories = userInfo.rootDirs.map(dir => {
+                const clientUrl = `${davBaseUrl}/${this.state.username}${dir}`;
+                const davClient = createClient(clientUrl, clientOptions);
+                const userDirectory = {
+                    name: dir,
+                    url: clientUrl,
+                    davClient: davClient
+                }
+                return userDirectory;
             });
-            return userInfo.rootDirs;
+
+            this.setState({
+                errorMessage: '',
+                isLoading: false
+            }, () => {
+                this.context.setUserInfo(userInfo);
+                this.context.setUserRootDirectories(userDirectories);
+                this.context.setDavBaseUrl(davBaseUrl, this.state.username);
+                this.context.setConnectionValid(true);
+            });
         })
         .catch(error => {
             console.log(`Error while fetching user's root directories: ${error}`)
             this.setState({
-                userRootDirs: [],
                 errorMessage: 'Error while fetching your directories: check your username or the server URL.'
             });
         })
     }
 
-    testConnection = async () => {
-        console.info('Testing connection ...');
-        const clientOptions = {
-            authType: AuthType.Basic,
-            username: this.state.username,
-            password: this.state.password
-        }
-
-        const clientUrl = `${this.state.url}${this.state.davContext}/${this.state.username}${this.state.selectedRootDir}`;
-
-        const client = createClient(clientUrl, clientOptions);
-        client.getDirectoryContents('/')
-            .then(contents => {
-                this.context.setDavClient(client, clientUrl, this.state.username);
-            }).catch(error => {
-                console.info(`Could not connect to webdav: ${error}`);
-                this.context.setDavClient(null, '');
-                this.setState({
-                    errorMessage: 'Something went wrong while connecting. Check your credentials and try again.',
-                    isLoading: false,
-                    connectionSuccess: false
-                });
-            });        
-    }
-
     onConfirm = () => {
         this.setState({
             isLoading: true,
-            connectionSuccess: false
-        }, () => this.testConnection());
+        }, () => this.fetchUserRootDirectories());
     }
 
     onTxtLoginChange = (evt) => {
@@ -137,7 +121,6 @@ export default class LoginView extends Component {
     isLoginButtonDisabled = () => {
         return null === this.state.username || '' === this.state.username
                 || null === this.state.password || '' === this.state.password
-                || '' === this.state.selectedRootDir 
                 || '' !== this.state.errorMessage 
                 || '' === this.state.url
                 || this.state.isLoading;
@@ -171,15 +154,6 @@ export default class LoginView extends Component {
                 label="Password:"
                 autoComplete='current-password' />
 
-            <Label>Online drive to connect to:</Label>
-            <Combobox
-                items={this.state.userRootDirs}
-                onChange={selected => this.setState({selectedRootDir: selected})}
-                placeholder="Select one online drive..."
-                marginBottom={20}
-                label="Online drive to connect to:"
-            />
-
             <TextInputField id="txt-url"
                 disabled={this.state.isLoading}
                 value={this.state.url}
@@ -190,7 +164,7 @@ export default class LoginView extends Component {
 
             <Pane>
                 {this.renderErrorMessage()}
-                <Button is="div" marginTop={16} iconBefore={LogInIcon} appearance="primary" intent="success" onClick={() => this.onConfirm()} disabled={this.isLoginButtonDisabled()}>
+                <Button is="div" marginTop={16} iconBefore={LogInIcon} appearance="primary" intent="success" onClick={() => this.onConfirm()} disabled={this.isLoginButtonDisabled()} isLoading={this.state.isLoading}>
                     {this.state.isLoading ? 'Please wait...' : 'Connect'}
                 </Button>
                 <Paragraph textAlign="right">
@@ -204,6 +178,6 @@ export default class LoginView extends Component {
     render = () => {
         // if we have a dav client properly configured then must go to the explorer;
         // to login again we must log out first !
-        return (this.state.connectionSuccess) ? <Navigate to='/explorer' /> : this.renderLoginForm();
+        return (this.context.connectionValid) ? <Navigate to='/explorer' /> : this.renderLoginForm();
     }
 }

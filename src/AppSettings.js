@@ -1,26 +1,41 @@
 import React, { Component } from "react";
 import { AuthType } from "webdav";
 
+const noOpFunc = () => {};
+
 const defaultValue = {
     authType: AuthType.Basic,
     username: '',
-    davClient: null,
+    userInfo: {},
+    setUserInfo: noOpFunc,
+
     davBaseUrl: null,
-    davApiBaseUrl: null,
-    davHomeDirectory: null, 
-    connectionValid: false,
-    supportedFormats: ['JPEG', 'JPG', 'PNG', 'WEBP', 'AVIF', 'TIFF', 'TIF', 'GIF', 'SVG', 'CR2', 'DNG'],
+    davApiBaseUrl: null, 
+    setDavBaseUrl: noOpFunc,
+    
+    supportedFormats: ['JPEG', 'JPG', 'PNG', 'WEBP', 'AVIF', 'TIFF', 'GIF', 'SVG', 'CR2', 'CR3', 'DNG'],
+    isImageFile: noOpFunc,
+
     filter: '',
     filterRegExp: new RegExp('.*', 'i'),
-    filterFileItems: (filter) => { },
-    setDavClient: (client, davBaseUrl) => { },
-    getThumbApiUrl: () => { },
-    getExifApiUrl: () => { },
-    getMetadataApiUrl: () => { },
-    getAuthUrl: () => { },
-    isImageFile: () => { },
-    disconnect: () => { },
-    getUserRootDirectories: () => { }
+    filterFileItems: noOpFunc,
+    
+    getThumbApiUrl: noOpFunc,
+    getExifApiUrl: noOpFunc,
+    getMetadataApiUrl: noOpFunc,
+    getAuthUrl: noOpFunc,
+    
+    connectionValid: false,
+    setConnectionValid: noOpFunc,
+
+    userRootDirectories: [],
+    setUserRootDirectories: noOpFunc,
+
+    selectedUserRootDirectory: null,
+    setSelectedUserRootDirectory: noOpFunc,
+
+    showConnectionDialog: false,
+    disconnect: noOpFunc
 }
 
 const DavConfigurationContext = React.createContext(defaultValue);
@@ -32,24 +47,72 @@ class DavConfigurationProvider extends Component {
         this.state = {
             authType: AuthType.Basic,
             username: '',
-            davClient: null,
+            userInfo: {},
+            setUserInfo: this.setUserInfo,
+
             davBaseUrl: null,
-            davApiBaseUrl: null,
-            davHomeDirectory: null,            
-            connectionValid: false,
-            showConnectionDialog: false,
+            davApiBaseUrl: null, 
+            setDavBaseUrl: this.setDavBaseUrl,
+            
             supportedFormats: ['JPEG', 'JPG', 'PNG', 'WEBP', 'AVIF', 'TIFF', 'GIF', 'SVG', 'CR2', 'CR3', 'DNG'],
+            isImageFile: this.isImageFile,
+
             filter: '',
             filterRegExp: new RegExp('.*', 'i'),
             filterFileItems: this.filterFileItems,
-            setDavClient: this.setDavClient,
+            
             getThumbApiUrl: this.getThumbApiUrl,
             getExifApiUrl: this.getExifApiUrl,
             getMetadataApiUrl: this.getMetadataApiUrl,
             getAuthUrl: this.getAuthUrl,
-            isImageFile: this.isImageFile,
+            
+            connectionValid: false,
+            setConnectionValid: this.setConnectionValid,
+
+            userRootDirectories: [],
+            setUserRootDirectories: this.setUserRootDirectories,
+
+            selectedUserRootDirectory: null,
+            setSelectedUserRootDirectory: this.setSelectedUserRootDirectory,
+
+            showConnectionDialog: false,
             disconnect: this.disconnect
         }
+    }
+
+    setUserInfo = (info) => {
+        this.setState({
+            userInfo: info
+        });
+    }
+
+    setConnectionValid = (validity) => { 
+        this.setState({
+            connectionValid: validity
+        });
+    }
+
+    setUserRootDirectories = (rootDirs) => {
+        this.setState({
+            selectedUserRootDirectory: rootDirs[0],
+            userRootDirectories: rootDirs
+        });
+    }
+
+    setSelectedUserRootDirectory = (oneRootDir) => {
+        this.setState({
+            selectedUserRootDirectory: oneRootDir
+        });
+    }
+
+    disconnect = () => {
+        this.setState({
+            selectedUserRootDirectory: null,
+            userRootDirectories: [],
+            connectionValid: false,
+            showConnectionDialog: true,
+            username: ''
+        });
     }
 
     filterFileItems = (value) => {
@@ -60,27 +123,26 @@ class DavConfigurationProvider extends Component {
         });
     }
 
-    setDavClient = (client, davBaseUrl, username) => {
+    setDavBaseUrl = (davBaseUrl, username) => {
 
-        const davBaseUri = client ? new URL(davBaseUrl) : null;
-        const proto = client ? davBaseUri.protocol : null;
-        const host = client ? davBaseUri.hostname : null;
-        const port = client ? davBaseUri.port : null;
+        const davBaseUri =  new URL(davBaseUrl);
+        const proto =  davBaseUri.protocol;
+        const host =  davBaseUri.hostname;
+        const port =  davBaseUri.port;
 
         const davApiBaseUrl = `${proto}//${host}:${port}`;
 
+        console.log(`DavBaseUrl = ${davBaseUrl}`);
+        console.log(`DavApiBaseUrl = ${davApiBaseUrl}`);
+
         this.setState({
-            davClient: client,
             davBaseUrl: davBaseUrl,
             davApiBaseUrl: davApiBaseUrl,
-            connectionValid: client ? true : false,
-            username: client ? username : ''
+            username: username
         });
     }
 
-    disconnect = () => {
-        this.setDavClient(null);
-    }
+    
 
     getThumbApiUrl = () => {
         return `${this.state.davApiBaseUrl}/thumb`;

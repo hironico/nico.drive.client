@@ -28,25 +28,22 @@ export default class FileDetailsPane extends Component {
     getDownloadLink = () => {        
         if (!this.context.connectionValid) {
             // console.log('davClient is undefined in context. Cannot download file.');
-            return;
+            return null;
         }
 
-        return this.context.davClient.getFileDownloadLink(this.props.fileItem.filename);
+        return this.context.selectedUserRootDirectory.davClient.getFileDownloadLink(this.props.fileItem.filename);
     }
 
     loadImageInformation = () => {
         const metaUrl = this.context.getExifApiUrl();
 
-        const paths = this.context.davBaseUrl.split('/');
-        const homeDir = `/${paths[paths.length - 1]}`;
-
         const exifRequest = {
             "username": this.context.username,
-            "homeDir": homeDir,
+            "homeDir": this.context.selectedUserRootDirectory.name,
             "filename": this.props.fileItem.filename
         }
 
-        const authHeader = this.context.davClient.getHeaders()['Authorization'];
+        const authHeader = this.context.selectedUserRootDirectory.davClient.getHeaders()['Authorization'];
 
         fetch(metaUrl, {
             method: 'POST',
@@ -56,17 +53,26 @@ export default class FileDetailsPane extends Component {
                 'Authorization': authHeader
             }
         })
-            .then(res => res.json())
-            .then(res => {
-                // console.log('Received exif for this file: ' + JSON.stringify(res));
+            .then(res => res.status === 200 ? res.json() : { message : `${res.status} : ${res}`})
+            .then(exifInfo => {
+                console.log(`Received image data info: `);
+                console.log(exifInfo);
+
+                exifInfo.exif.ExifVersion = exifInfo.exif.ExifVersion.data;
+
+                const data = {
+                    image: exifInfo.image,
+                    exif: exifInfo.exif,
+                    gps: exifInfo.gps,
+                    makernote: exifInfo.makernote,
+                    thumbnail: exifInfo.thumbnail
+                }
+
                 this.setState({
-                    imageData: res
+                    imageData: data
                 });
             }).catch(err => {
                 console.log('Error while reading exif data: ' + err);
-                this.setState({
-                    metadata: { tags: '' }
-                });
             });
     }
 
@@ -74,17 +80,14 @@ export default class FileDetailsPane extends Component {
     loadMetaDataInformation = () => {
         const metaUrl = this.context.getMetadataApiUrl();
 
-        const paths = this.context.davBaseUrl.split('/');
-        const homeDir = `/${paths[paths.length - 1]}`;
-
         const metadataRequest = {
             "username": this.context.username,
-            "homeDir": homeDir,
+            "homeDir": this.context.selectedUserRootDirectory.name,
             "filename": this.props.fileItem.filename,
             "raw": false
         }
         
-        const authHeader = this.context.davClient.getHeaders()['Authorization'];
+        const authHeader = this.context.selectedUserRootDirectory.davClient.getHeaders()['Authorization'];
 
         fetch(metaUrl, {
             method: 'POST',
@@ -94,21 +97,13 @@ export default class FileDetailsPane extends Component {
                 'Authorization': authHeader
             }
         })
-            .then(res => res.json())
+            .then(res => res.status === 200 ? res.json() : { message : `${res.status} : ${res}`})
             .then(res => {
-                /*
-                console.log('Received metadata for this file: ' + JSON.stringify(res));
-                console.log('Tags are: ' + res.tags);
-                */
-
                 this.setState({
                     metadata: res
                 });
             }).catch(err => {
                 console.log('Error while reading metadata: ' + err);
-                this.setState({
-                    metadata: { tags: '' }
-                });
             });
     }
 
@@ -214,24 +209,24 @@ export default class FileDetailsPane extends Component {
         </Table>
     }
 
-    renderImageDetails = () => {
+    renderImageCategoryDetails = (category, categoryName) => {
         let rows;
-        if (typeof this.state.imageData.image === 'undefined') {
+        if (typeof category === 'undefined') {
             rows = this.renderEmptyDetails('No image information has been found.');
         } else {
-                rows = Object.keys(this.state.imageData.image).map((key, index) => {
+            rows = Object.keys(category).map((key, index) => {
                 return <Table.Row key={index} height={32}>
                     <Table.TextCell>{key}</Table.TextCell>
-                    <Table.TextCell>{this.state.imageData.image[key]}</Table.TextCell>
+                    <Table.TextCell>{category[key]}</Table.TextCell>
                 </Table.Row>
             });
         }
 
-        return <Table marginTop={15}>
+        return <Table marginTop={15} key={categoryName}>
             <Table.Head height={32}>
                 <Table.TextHeaderCell>
                     <Pane display="inline-flex" alignItems="center">
-                        <InfoSignIcon />&nbsp;Image information
+                        <InfoSignIcon />&nbsp;{categoryName}
                     </Pane>
                 </Table.TextHeaderCell>
                 <Table.TextHeaderCell>
@@ -242,6 +237,18 @@ export default class FileDetailsPane extends Component {
                 {rows}
             </Table.Body>
         </Table>
+    }
+
+    renderImageDetails() {
+        if ( typeof this.state.imageData === 'undefined') {
+            return this.renderEmptyDetails('Image data is not available.');
+        } else {
+            const tables = Object.keys(this.state.imageData).map((key, index) => {
+                return this.renderImageCategoryDetails(this.state.imageData[key], key);
+            });
+
+            return <div>{tables}</div>
+        }
     }
 
     renderMetadataDetails = () => {
@@ -291,7 +298,7 @@ export default class FileDetailsPane extends Component {
             return <div>&nbsp;</div>
         }
 
-        let placeholder = 'Loading tags info...';
+        let placeholder = 'No tag has been found';
         let tags = [];
         if (this.state.metadata) {            
             if (typeof this.state.metadata.tags !== 'undefined') {
@@ -299,7 +306,7 @@ export default class FileDetailsPane extends Component {
                     tags = this.state.metadata.tags.split(',');
                 } 
             }
-            placeholder = tags.length === 0 ? 'No tags for this image' : '';
+            placeholder = tags.length === 0 ? 'No tag for this image' : '';
         }
 
         return <TagInput

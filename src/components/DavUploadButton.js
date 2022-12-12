@@ -34,7 +34,7 @@ export default class DavUploadButton extends Component {
                 contentLength: file.size
             }
 
-            this.context.davClient.putFileContents(targetFileName, file, uploadOption)
+            this.context.selectedUserRootDirectory.davClient.putFileContents(targetFileName, file, uploadOption)
             .then(result => {
                 if (!result) {
                     toaster.danger(`File upload problem for ${targetFileName}`);

@@ -14,7 +14,7 @@ export default class RegularFile extends Component {
     }
 
     download = (fileItem) => {
-        const dlLink = this.context.davClient.getFileDownloadLink(fileItem.filename);
+        const dlLink = this.context.selectedUserRootDirectory.davClient.getFileDownloadLink(fileItem.filename);
         window.open(dlLink, '_blank');
     }
 
@@ -71,7 +71,7 @@ export default class RegularFile extends Component {
 
     renderGridLabel = () => {
         return <Pane display="inline-flex" alignItems="center" justifyContent="space-between" width={190} height={18} margin={5}>
-                <Text overflow="hidden" maxWidth={155} maxHeigh={24}>{this.props.fileItem.basename}</Text>
+                <Text overflow="hidden" maxWidth={155} maxHeight={24}>{this.props.fileItem.basename}</Text>
                 {this.renderActionMenu()}
             </Pane>
     }
@@ -132,7 +132,7 @@ export default class RegularFile extends Component {
                 <DocumentIcon size={16} />
             </Table.TextCell>
             <Table.TextCell textAlign="left">
-                <Link href={this.context.davClient.getFileDownloadLink(this.props.fileItem.filename)} target="_blank" borderBottom="none">
+                <Link href={this.context.selectedUserRootDirectory.davClient.getFileDownloadLink(this.props.fileItem.filename)} target="_blank" borderBottom="none">
                     {this.props.fileItem.basename}
                 </Link>
             </Table.TextCell>

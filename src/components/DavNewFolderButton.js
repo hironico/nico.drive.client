@@ -16,7 +16,7 @@ export default class DavNewFolderButton extends Component {
 
     createFolder = async () => {
         const newDir = `${this.props.currentDirectory}/${this.state.newFolderName}`;
-        await this.context.davClient.createDirectory(newDir);
+        await this.context.selectedUserRootDirectory.davClient.createDirectory(newDir);
         this.setState({
             newFolderName: '',
             popoverShown: false

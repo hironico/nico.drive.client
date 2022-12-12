@@ -54,7 +54,7 @@ export default class DavExplorerView extends Component {
         let files = [];
 
         if (this.context.connectionValid) {
-            const directoryItems = await this.context.davClient.getDirectoryContents(this.state.currentDirectory);
+            const directoryItems = await this.context.selectedUserRootDirectory.davClient.getDirectoryContents(this.state.currentDirectory);
 
             dirs = directoryItems.filter(item => { return item.type === 'directory' });
             files = directoryItems.filter(item => { return item.type === 'file' });
@@ -65,7 +65,7 @@ export default class DavExplorerView extends Component {
                 });
             }
         } else {
-            console.error('Cannot get directory contents since connectin is not valid.');
+            console.error('Cannot get directory contents since connection is not valid.');
         }
 
         this.setState({
@@ -122,7 +122,7 @@ export default class DavExplorerView extends Component {
     }
 
     deleteFileItem = (fileItem) => {
-        this.context.davClient.deleteFile(fileItem.filename)
+        this.context.selectedUserRootDirectory.davClient.deleteFile(fileItem.filename)
         .then(this.getDirectoryContents());
     }
 

@@ -22,14 +22,11 @@ export default class Image extends RegularFile {
     }
 
     generateThumb = () => {
-        const paths = this.context.davBaseUrl.split('/');
-        const homeDir = `/${paths[paths.length - 1]}`;
-
-        const authHeader = this.context.davClient.getHeaders()['Authorization']; 
+        const authHeader = this.context.selectedUserRootDirectory.davClient.getHeaders()['Authorization']; 
 
         const req = {
             "username": this.context.username,
-            "homeDir": homeDir,
+            "homeDir": this.context.selectedUserRootDirectory.name,
             "filename": this.props.fileItem.filename
         }
 
@@ -123,7 +120,7 @@ export default class Image extends RegularFile {
                 {this.renderTableThumb()}
               </Table.TextCell>
               <Table.TextCell textAlign="left">
-                  <Link href={this.context.davClient.getFileDownloadLink(this.props.fileItem.filename)} target="_blank" borderBottom="none">
+                  <Link href={this.context.selectedUserRootDirectory.davClient.getFileDownloadLink(this.props.fileItem.filename)} target="_blank" borderBottom="none">
                       {this.props.fileItem.basename}
                   </Link>                
                 </Table.TextCell>

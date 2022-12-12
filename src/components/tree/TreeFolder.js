@@ -65,7 +65,7 @@ class TreeFolder extends Component {
     let dirs = [];
 
     if (this.context.connectionValid) {
-        const directoryItems = await this.context.davClient.getDirectoryContents(this.props.absolutePath);
+        const directoryItems = await this.context.selectedUserRootDirectory.davClient.getDirectoryContents(this.props.absolutePath);
         dirs = directoryItems.filter(item => { return item.type === 'directory' });
 
         this.setState({
