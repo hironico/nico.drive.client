@@ -53,27 +53,25 @@ export default class FileDetailsPane extends Component {
                 'Authorization': authHeader
             }
         })
-            .then(res => res.status === 200 ? res.json() : { message : `${res.status} : ${res}`})
-            .then(exifInfo => {
-                console.log(`Received image data info: `);
-                console.log(exifInfo);
+        .then(res => res.status === 200 ? res.json() : { message : `${res.status} : ${res}`})
+        .then(exifInfo => {
 
-                exifInfo.exif.ExifVersion = exifInfo.exif.ExifVersion.data;
+            exifInfo.exif.ExifVersion = exifInfo.exif.ExifVersion.data;
 
-                const data = {
-                    image: exifInfo.image,
-                    exif: exifInfo.exif,
-                    gps: exifInfo.gps,
-                    makernote: exifInfo.makernote,
-                    thumbnail: exifInfo.thumbnail
-                }
+            const data = {
+                image: exifInfo.image,
+                exif: exifInfo.exif,
+                gps: exifInfo.gps,
+                makernote: exifInfo.makernote,
+                thumbnail: exifInfo.thumbnail
+            }
 
-                this.setState({
-                    imageData: data
-                });
-            }).catch(err => {
-                console.log('Error while reading exif data: ' + err);
+            this.setState({
+                imageData: data
             });
+        }).catch(err => {
+            console.log('Error while reading exif data: ' + err);
+        });
     }
 
 
@@ -97,14 +95,14 @@ export default class FileDetailsPane extends Component {
                 'Authorization': authHeader
             }
         })
-            .then(res => res.status === 200 ? res.json() : { message : `${res.status} : ${res}`})
-            .then(res => {
-                this.setState({
-                    metadata: res
-                });
-            }).catch(err => {
-                console.log('Error while reading metadata: ' + err);
+        .then(res => res.status === 200 ? res.json() : { message : `${res.status} : ${res}`})
+        .then(res => {
+            this.setState({
+                metadata: res
             });
+        }).catch(err => {
+            console.log('Error while reading metadata: ' + err);
+        });
     }
 
     renderFileItemSize = () => {
