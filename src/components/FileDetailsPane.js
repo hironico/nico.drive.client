@@ -56,7 +56,11 @@ export default class FileDetailsPane extends Component {
         .then(res => res.status === 200 ? res.json() : { message : `${res.status} : ${res}`})
         .then(exifInfo => {
 
-            exifInfo.exif.ExifVersion = exifInfo.exif.ExifVersion.data;
+            exifInfo.exif = this.cleanProperties(exifInfo.exif);
+            exifInfo.image = this.cleanProperties(exifInfo.image);
+            exifInfo.gps = this.cleanProperties(exifInfo.gps);
+            exifInfo.makerNote = this.cleanProperties(exifInfo.makerNote);
+            exifInfo.thumbNail = this.cleanProperties(exifInfo.thumbnail);
 
             const data = {
                 image: exifInfo.image,
@@ -72,6 +76,37 @@ export default class FileDetailsPane extends Component {
         }).catch(err => {
             console.log('Error while reading exif data: ' + err);
         });
+    }
+
+    cleanProperties = (data) => {
+        for (const dataKey in data) {
+            let dataValue = data[dataKey];
+            if (this.isObject(dataValue)) {
+                if (this.isBufferDataObject(dataValue)) {
+                    data[dataKey] = this.getBufferDataOBjectValue(dataValue);
+                } else {
+                    console.log(`${dataKey} is an object with unrecognized structure. Replacing with string.`);
+                    data[dataKey] = '' + JSON.stringify(dataValue);
+                }
+            }
+        }
+
+        return data;
+    }
+
+    isObject = (variable) => {
+        return typeof variable === 'object' &&
+                !Array.isArray(variable) &&
+                variable !== null;
+    }
+
+    isBufferDataObject = (variable) => {
+        // console.log(`Type is: ${variable.type} and isArayy = ${Array.isArray(variable.data)}`);
+        return variable.type === 'Buffer' && Array.isArray(variable.data);
+    }
+
+    getBufferDataOBjectValue = (variable) => {
+        return String.fromCodePoint(...variable.data);
     }
 
 
@@ -95,7 +130,7 @@ export default class FileDetailsPane extends Component {
                 'Authorization': authHeader
             }
         })
-        .then(res => res.status === 200 ? res.json() : { message : `${res.status} : ${res}`})
+        .then(res => res.status === 200 ? res.json() : {})
         .then(res => {
             this.setState({
                 metadata: res
@@ -210,7 +245,7 @@ export default class FileDetailsPane extends Component {
     renderImageCategoryDetails = (category, categoryName) => {
         let rows;
         if (typeof category === 'undefined') {
-            rows = this.renderEmptyDetails('No image information has been found.');
+            rows = this.renderEmptyDetails(`No ${categoryName} information has been found.`);
         } else {
             rows = Object.keys(category).map((key, index) => {
                 return <Table.Row key={index} height={32}>
