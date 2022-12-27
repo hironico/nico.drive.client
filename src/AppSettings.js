@@ -99,9 +99,13 @@ class DavConfigurationProvider extends Component {
         });
     }
 
-    setSelectedUserRootDirectory = (oneRootDir) => {
+    setSelectedUserRootDirectory = (oneRootDir, callback) => {
         this.setState({
             selectedUserRootDirectory: oneRootDir
+        }, () => {
+            if (callback) {
+                callback();
+            }
         });
     }
 

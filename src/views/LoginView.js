@@ -1,6 +1,6 @@
 import { Component } from 'react';
 import { Navigate } from 'react-router';
-import { Pane, TextInputField, Paragraph, Button, Heading, Text, Alert, LogInIcon, Combobox, Label } from 'evergreen-ui';
+import { Pane, TextInputField, Paragraph, Button, Heading, Text, Alert, LogInIcon } from 'evergreen-ui';
 import { DavConfigurationContext } from '../AppSettings';
 
 import { createClient, AuthType } from "webdav";
