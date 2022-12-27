@@ -61,17 +61,21 @@ class TreeFolder extends Component {
     } 
   }
 
-  getDirectoryContents = async () => {
+  getDirectoryContents = () => {
+    this.setState({
+      subDirs: []
+    }, () => this.doGetDirectoryContents());    
+  }
+
+  doGetDirectoryContents = async () => {
     let dirs = [];
-
     if (this.context.connectionValid) {
-        const directoryItems = await this.context.selectedUserRootDirectory.davClient.getDirectoryContents(this.props.absolutePath);
-        dirs = directoryItems.filter(item => { return item.type === 'directory' });
-
-        this.setState({
-          subDirs: dirs
-        });
+      const directoryItems = await this.context.selectedUserRootDirectory.davClient.getDirectoryContents(this.props.absolutePath);
+      dirs = directoryItems.filter(item => { return item.type === 'directory' });      
     }
+    this.setState({
+      subDirs: dirs
+    });
   }
 
   handleToggle = (evt) => {
@@ -85,11 +89,10 @@ class TreeFolder extends Component {
   }
 
   handleClick = (evt) => {
-    if (this.state.subDirs.length === 0) {
-      this.getDirectoryContents();
+    if (this.state.subDirs.length === 0) {      
       this.setState({
         isOpen: true
-      });
+      }, () => this.getDirectoryContents());
     }
 
     this.props.handleNavigate(this.props.absolutePath);
