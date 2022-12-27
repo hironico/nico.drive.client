@@ -45,7 +45,7 @@ export default class DavExplorerView extends Component {
 
     getDirectoryContents = () => {
         this.setState({
-            loading: true
+            loading: true            
         }, () => this.doGetDirectoryContents());
     }
 
@@ -139,7 +139,7 @@ export default class DavExplorerView extends Component {
             </Pane>
         }
 
-        return <Pane display="grid" gridTemplateColumns="1fr 4fr" height="100vh" maxHeight="100vh" overflow="hidden">
+        return <Pane display="grid" gridTemplateColumns="1fr 5fr" height="100vh" maxHeight="100vh" overflow="hidden">
             <DavSideBar rootDirs={this.state.rootDirs} handleNavigate={this.navigateAbsolute} currentDirectory={this.state.currentDirectory} />
 
             <Pane display="grid" gridTemplateRows="auto auto 1fr" height="100%" overflowY="scroll">
