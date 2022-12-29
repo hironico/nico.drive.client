@@ -1,6 +1,6 @@
 
 import { Component } from "react";
-import { Pane, Heading, Combobox, EmptyState, Spinner } from 'evergreen-ui';
+import { Pane, Heading, Combobox } from 'evergreen-ui';
 
 import Tree from './tree/Tree';
 
