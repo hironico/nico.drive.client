@@ -151,6 +151,10 @@ export default class RegularFile extends Component {
         </Table.Row>
     }
 
+    renderPhoto = () => {
+        return <Text>Regular file does not support ptoho display mode yet.</Text>
+    }
+
     render = () => {
         switch (this.props.displayMode) {
             case 'grid':
@@ -158,6 +162,9 @@ export default class RegularFile extends Component {
 
             case 'table':
                 return this.renderTable();
+
+            case 'photo':
+                return this.renderPhoto();
 
             default:
                 console.log(`Invalid display mode: ${this.props.displayMode}. Using grid as a default.`);

@@ -7,6 +7,7 @@ import Image from './Image';
 import RegularFile from "./RegularFile";
 
 import { DavConfigurationContext } from '../AppSettings';
+import DavPhotoViewPane from "./DavPhotoViewPane";
 
 /**
  * Component to display the directory content (based on two props : folders and files) either by displaying a list of files 
@@ -20,6 +21,7 @@ export default class DavDirectoryPane extends Component {
         this.state = {
             files: [],
             folders: [],
+            photos: [],
             currentRegExp: '',
             isDeleteDialogShown: false,
             fileItemToDelete: null
@@ -38,8 +40,10 @@ export default class DavDirectoryPane extends Component {
         }
 
         let files = this.state.files;
+        let photos = this.state.photos;
         if (prevProps.files !== this.props.files || this.state.currentRegExp !== this.context.filterRegExp) {
             files = this.props.files.filter(file => file.basename.search(this.context.filterRegExp) !== -1);
+            photos = files.filter(file => this.context.isImageFile(file.basename));
             shouldUpdateState = true;
         }        
 
@@ -47,6 +51,7 @@ export default class DavDirectoryPane extends Component {
             this.setState({
                 folders: folders,
                 files: files,
+                photos: photos,
                 currentRegExp: this.context.filterRegExp
             });
         }        
@@ -158,6 +163,12 @@ export default class DavDirectoryPane extends Component {
         </>
     }
 
+    renderPhotosOnly = () => {
+        return <DavPhotoViewPane fileItems={this.state.photos} 
+                                 handleShowDetails={this.props.handleShowDetails} 
+                                 handleDelete={this.delete} />
+    }
+
     renderDirectoryContentsGrid = () => {
         return <Pane display="flex" flexWrap="wrap" justifyContent="space-evenly" background="overlay">
                  { this.props.loading ? this.renderLoadingState() : this.renderFoldersAndFiles() }
@@ -178,6 +189,12 @@ export default class DavDirectoryPane extends Component {
             { this.props.loading ? this.renderLoadingState() : this.renderFoldersAndFiles() }
         </Table.Body>
       </Table>
+    }
+
+    renderDirectoryContentsPhoto = () => {
+        return <Pane display="grid" gridTemplateColumns="auto" gridTemplateRows="auto" background="overlay">
+            { this.props.loading ? this.renderLoadingState() : this.renderPhotosOnly() }            
+        </Pane>
     }
 
     renderDeleteConfirmDialog = () => {
@@ -210,6 +227,10 @@ export default class DavDirectoryPane extends Component {
 
             case 'table':
                 directoryContents = this.renderDirectoryContentsTable();
+                break;
+
+            case 'photo':
+                directoryContents = this.renderDirectoryContentsPhoto();
                 break;
 
             default:

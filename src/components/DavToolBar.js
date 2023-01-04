@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from "react";
 
-import { Pane, Link } from "evergreen-ui";
+import { Pane, Link, FullscreenIcon } from "evergreen-ui";
 import { GridViewIcon, ListIcon } from "evergreen-ui";
 
 import { DavConfigurationContext } from '../AppSettings';
@@ -26,12 +26,15 @@ export default class DavToolBar extends Component {
 
     renderDisplayTools = () => {        
         return <Fragment>
+            <Link href="#" display="flex" alignItems="center" onClick={(evt) => this.props.handleDisplayMode('photo')} >
+                <FullscreenIcon size={18} marginLeft={5} marginRight={5} color={this.props.displayMode !== 'photo' ? 'gray600' : 'blue600'} />
+            </Link>
             <Link href="#" display="flex" alignItems="center" onClick={(evt) => this.props.handleDisplayMode('grid')} >
-                <GridViewIcon size={18} marginLeft={5} marginRight={5} color={this.props.displayMode === 'grid' ? 'gray600' : 'blue600'} />
+                <GridViewIcon size={18} marginLeft={5} marginRight={5} color={this.props.displayMode !== 'grid' ? 'gray600' : 'blue600'} />
             </Link>
             &nbsp;
             <Link href="#" display="flex" alignItems="center" onClick={(evt) => this.props.handleDisplayMode('table')} >
-                <ListIcon size={18} marginLeft={5} marginRight={5} color={this.props.displayMode === 'table' ? 'gray600' : 'blue600'} />
+                <ListIcon size={18} marginLeft={5} marginRight={5} color={this.props.displayMode !== 'table' ? 'gray600' : 'blue600'} />
             </Link>            
         </Fragment>
     }
