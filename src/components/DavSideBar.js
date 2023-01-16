@@ -1,10 +1,12 @@
 
 import { Component } from "react";
-import { Pane, Heading, Combobox } from 'evergreen-ui';
+import { Pane, Heading } from 'evergreen-ui';
 
 import Tree from './tree/Tree';
+import DavRootSelector from "./DavRootSelector";
 
 import { DavConfigurationContext } from '../AppSettings';
+
 
 class DavSideBar extends Component {
     static contextType = DavConfigurationContext;
@@ -16,41 +18,18 @@ class DavSideBar extends Component {
         }
     }
 
-    changeCurrentDir = () => {
-        this.setState({
-            rootDirLoading: false
-        }, () => {
-            this.props.handleNavigate('/');
-        });        
-    }
-
-    changeUserRootDirectory = (newRootDir) => {
-        this.setState({
-            rootDirLoading: true
-        }, () => {
-            this.context.setSelectedUserRootDirectory(newRootDir, this.changeCurrentDir());
-        });        
-    }
-
     render = () => {
-        return <Pane background="blueTint" elevation={0} padding={15} display="grid" gridTemplateRows="auto auto auto 1fr" gridTemplateColumns="auto" overflowX="scroll" height="100%">  
+        return <Pane className="davsidebar" background="blueTint" elevation={0} minWidth={170}>
             <Pane background="blueTint">
-                <Heading size={900} color="neutral" textAlign="left">My files</Heading>
+                <Heading size={900} color="neutral" textAlign="left">Nico's drive</Heading>
             </Pane>
             <Pane background="blueTint" marginTop={15}>
-                <Heading size={600} color="neutral" textAlign="left">File manager</Heading>
+                <Heading size={600} color="neutral" textAlign="left">My drives:</Heading>
             </Pane>
-            <Pane display="grid" gridTemplateColumns="1fr" width="100%">
-                <Combobox
-                    openOnFocus
-                    initialSelectedItem={this.context.selectedUserRootDirectory}
-                    items={this.context.userRootDirectories}
-                    itemToString={item => (item ? item.name : '')}
-                    onChange={selected => this.changeUserRootDirectory(selected)}
-                    width="100%"
-                />
-            </Pane>
-            <Tree key={this.context.selectedUserRootDirectory.name} rootDirs={this.props.rootDirs} handleNavigate={this.props.handleNavigate} currentDirectory={this.props.currentDirectory} />
+            <DavRootSelector handleNavigate={this.props.handleNavigate} width="100%" />
+            <Pane display="grid" gridTemplateColumns="1fr" width="100%" overflowX="scroll" marginTop={15}>
+                <Tree key={this.context.selectedUserRootDirectory.name} rootDirs={this.props.rootDirs} handleNavigate={this.props.handleNavigate} currentDirectory={this.props.currentDirectory} />    
+            </Pane>            
         </Pane>
     }
 }

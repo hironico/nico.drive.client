@@ -5,6 +5,8 @@ import RegularFile from './RegularFile';
 
 import { DavConfigurationContext } from '../AppSettings';
 
+import '../views/DavExplorerView.css';
+
 export default class Image extends RegularFile {
     static contextType = DavConfigurationContext;
 
@@ -165,13 +167,13 @@ export default class Image extends RegularFile {
                       {this.props.fileItem.basename}
                   </Link>                
                 </Table.TextCell>
-                <Table.TextCell textAlign="left">
+                <Table.TextCell className="tablecell" textAlign="left">
                     {this.renderMimeType(this.props.fileItem.mimeType)}
                 </Table.TextCell>
-                <Table.TextCell textAlign="left">
+                <Table.TextCell className="tablecell" textAlign="left">
                     {this.renderFileItemSize()}
                 </Table.TextCell>
-                <Table.TextCell textAlign="left">
+                <Table.TextCell className="tablecell" textAlign="left">
                     {this.renderHttpDate(this.props.fileItem.lastmod)}
                 </Table.TextCell>
               <Table.TextCell textAlign="center">

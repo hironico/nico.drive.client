@@ -4,6 +4,7 @@ import { Component } from 'react';
 import { DateTime } from 'luxon';
 import { DavConfigurationContext } from '../AppSettings';
 
+import '../views/DavExplorerView.css';
 
 export default class RegularFile extends Component {
     static contextType = DavConfigurationContext;
@@ -136,13 +137,13 @@ export default class RegularFile extends Component {
                     {this.props.fileItem.basename}
                 </Link>
             </Table.TextCell>
-            <Table.TextCell textAlign="left">
+            <Table.TextCell className="tablecell" textAlign="left">
                 {this.renderMimeType(this.props.fileItem.mime)}
             </Table.TextCell>
-            <Table.TextCell textAlign="left">
+            <Table.TextCell className="tablecell" textAlign="left">
                 {this.renderFileItemSize()}
             </Table.TextCell>
-            <Table.TextCell textAlign="left">
+            <Table.TextCell className="tablecell" textAlign="left">
                 {this.renderHttpDate(this.props.fileItem.lastmod)}
             </Table.TextCell>
             <Table.TextCell textAlign="center">

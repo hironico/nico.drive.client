@@ -2,6 +2,8 @@ import { Component } from "react";
 import { ChevronRightIcon, HomeIcon } from 'evergreen-ui';
 import { Pane, Link } from 'evergreen-ui';
 
+import '../views/DavExplorerView.css';
+
 export default class DavBreadCrumb extends Component {
 
     render = () => {
@@ -21,7 +23,7 @@ export default class DavBreadCrumb extends Component {
             }}>{icon}{dir}</Link>
         });
 
-        return <Pane display="flex" padding={8} background="tint2">
+        return <Pane className="davbreadcrumb" display="flex" padding={8} background="tint2">
             {breadCrumb}
         </Pane>
     }

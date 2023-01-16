@@ -12,6 +12,8 @@ import DavDirectoryPane from '../components/DavDirectoryPane';
 import DavToolBar from '../components/DavToolBar';
 import DavSideBar from '../components/DavSideBar';
 
+import './DavExplorerView.css';
+
 /**
  * The DAV Explorer Pane is the main view component. It composes the page and has functions to interact with
  * the DAV Client. It uses sub components such as DavToolBar and DavDirectoryPane to render things returned 
@@ -132,18 +134,18 @@ export default class DavExplorerView extends Component {
             return <Navigate to="/login" />
         }
 
-        if (!this.state.currentDirectory) {
+        if (this.state.currentDirectory === null || !this.state.currentDirectory) {
             return <Pane gridTemplateColumns="auto">
                 <Spinner marginX="auto" marginTop={120} />
                 <Heading size={600} marginX="auto" marginTop={15} textAlign="center">Nico's Drive is loading...</Heading>
             </Pane>
         }
 
-        return <Pane display="grid" gridTemplateColumns="1fr 5fr" height="100vh" maxHeight="100vh" overflow="hidden">
+        return <Pane className="davexplorerview">
             <DavSideBar rootDirs={this.state.rootDirs} handleNavigate={this.navigateAbsolute} currentDirectory={this.state.currentDirectory} />
 
             <Pane display="grid" gridTemplateRows="auto auto 1fr" height="100%" overflowY="scroll">
-                <DavHeader />
+                <DavHeader handleNavigate={this.navigateAbsolute} />
 
                 <DavToolBar currentDirectory={this.state.currentDirectory}
                     displayMode={this.state.displayMode} 

@@ -8,6 +8,7 @@ import { DavConfigurationContext } from '../AppSettings';
 import DavBreadCrumb from "./DavBreadCrumb";
 import DavUploadButton from "./DavUploadButton";
 import DavNewFolderButton from "./DavNewFolderButton";
+import DavBreadCrumbMenu from "./DavBreadCrumbMenu";
 
 export default class DavToolBar extends Component {
     static contextType = DavConfigurationContext;
@@ -42,6 +43,8 @@ export default class DavToolBar extends Component {
     render = () => {
         return <Pane zIndex={1} flexShrink={0} background="tint2" display="grid" gridTemplateColumns="auto 1fr" paddingBottom={10}>                                
                 <DavBreadCrumb handleNavigate={this.props.handleNavigate} currentDirectory={this.props.currentDirectory} />
+                <DavBreadCrumbMenu handleNavigate={this.props.handleNavigate} currentDirectory={this.props.currentDirectory} />
+
                 <Pane justifySelf="end" display="inline-flex" alignItems="center">
                     {this.renderFolderTools()}
                     {this.renderDisplayTools()}

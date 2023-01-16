@@ -1,0 +1,50 @@
+.davexplorerview {
+  display: grid;
+  grid-template-columns: 1fr;
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden
+}
+
+.davsidebar {    
+    padding: 15px;
+    display: none;
+    grid-template-rows: auto auto auto 1fr;
+    grid-template-columns: auto;
+    overflow-x: scroll;
+    height: 100%;
+}
+
+.tablecell {
+  display: none
+}
+
+.davbreadcrumb {  
+  display: none
+}
+
+@media screen and (min-width: 900px) {
+  .davsidebar {
+    display: grid
+  }
+
+  .davexplorerview {
+    grid-template-columns: 1fr 5fr;
+  }
+
+  .tablecell {
+    display: flex
+  }
+
+  .davbreadcrumbmenu {
+    display: none
+  }
+
+  .davbreadcrumb {
+    display: flex
+  }
+
+  .largehidden {
+    display: none;
+  }
+}

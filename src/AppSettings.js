@@ -33,6 +33,7 @@ const defaultValue = {
 
     selectedUserRootDirectory: null,
     setSelectedUserRootDirectory: noOpFunc,
+    getSelectedUserRootDirectoryIndex: noOpFunc,
 
     showConnectionDialog: false,
     disconnect: noOpFunc
@@ -74,6 +75,7 @@ class DavConfigurationProvider extends Component {
 
             selectedUserRootDirectory: null,
             setSelectedUserRootDirectory: this.setSelectedUserRootDirectory,
+            getSelectedUserRootDirectoryIndex: this.getSelectedUserRootDirectoryIndex,
 
             showConnectionDialog: false,
             disconnect: this.disconnect
@@ -107,6 +109,23 @@ class DavConfigurationProvider extends Component {
                 callback();
             }
         });
+    }
+
+    getSelectedUserRootDirectoryIndex = () => {
+        if (typeof this.state.selectedUserRootDirectory === 'undefined' || this.state.selectedUserRootDirectory === null) {
+            return -1;
+        }
+        if (typeof this.state.userRootDirectories === 'undefined' || this.state.userRootDirectories === null) {
+            return -1
+        }
+
+        for(let index = 0; index < this.state.userRootDirectories.length; index++) {
+            if (this.state.userRootDirectories[index].name === this.state.selectedUserRootDirectory.name) {
+                return index;
+            }
+        }
+
+        return -1;
     }
 
     disconnect = () => {

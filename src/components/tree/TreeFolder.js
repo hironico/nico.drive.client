@@ -18,12 +18,12 @@ const styles = {
     collapsibleOpen: {
         height: 'auto',
         overflow: 'hidden',
-        paddingLeft: '20px'
+        paddingLeft: '10px'
     },
     collapsibleClosed: {
         height: '0px',
         overflow: 'hidden',
-        paddingLeft: '20px'
+        paddingLeft: '10px'
     }
   }
 

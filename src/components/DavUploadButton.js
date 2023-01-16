@@ -1,6 +1,6 @@
 import { Component } from "react";
 
-import { Button, Text, toaster } from "evergreen-ui";
+import { Button, IconButton, Text, toaster } from "evergreen-ui";
 import { UploadIcon, Spinner } from "evergreen-ui";
 
 import { DavConfigurationContext } from '../AppSettings';
@@ -68,7 +68,7 @@ export default class DavUploadButton extends Component {
         }
         return <>
             {status}
-            <Button is="div" marginLeft={12} marginRight={12} iconBefore={UploadIcon} appearance="primary" intent="success" onClick={(evt) => this.uploadFile()}>Upload</Button>
+            <IconButton is="div" marginLeft={6} marginRight={6} icon={UploadIcon} appearance="primary" intent="success" onClick={(evt) => this.uploadFile()} />
         </>        
     }
 }
