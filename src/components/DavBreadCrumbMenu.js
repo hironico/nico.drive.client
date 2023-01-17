@@ -1,4 +1,4 @@
-import {  DoubleChevronDownIcon, HomeIcon, IconButton, majorScale, Menu, NestIcon, Popover, Position } from "evergreen-ui";
+import {  DoubleChevronDownIcon, HomeIcon, IconButton, Menu, NestIcon, Popover, Position } from "evergreen-ui";
 import { React, Component } from "react";
 
 import '../views/DavExplorerView.css';
@@ -41,7 +41,7 @@ export default class DavBreadCrumbMenu extends Component {
                 </Menu>
             )}
         >
-            <IconButton className="davbreadcrumbmenu" icon={DoubleChevronDownIcon} margin={majorScale(2)}></IconButton>
+            <IconButton className="davbreadcrumbmenu" icon={DoubleChevronDownIcon} margin={12}></IconButton>
         </Popover>
     }
 }

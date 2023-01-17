@@ -1,10 +1,12 @@
 import { Component } from 'react';
-import { DoubleChevronLeftIcon, DoubleChevronRightIcon, SearchIcon, InfoSignIcon, DownloadIcon, DeleteIcon, ChevronDownIcon } from 'evergreen-ui';
+import { DoubleChevronLeftIcon, DoubleChevronRightIcon, SearchIcon, InfoSignIcon, DownloadIcon, DeleteIcon, ChevronDownIcon, CrossIcon } from 'evergreen-ui';
 import { Pane, Text, EmptyState, Link, Popover, Menu, Button, Position } from 'evergreen-ui';
 
 import Image from './Image';
 
 import { DavConfigurationContext } from '../AppSettings';
+
+import '../views/DavExplorerView.css';
 
 export default class DavPhotoViewPane extends Component {
     static contextType = DavConfigurationContext;
@@ -51,6 +53,12 @@ export default class DavPhotoViewPane extends Component {
         }
     }
 
+    handleClose = () => {
+        if (this.props.handleDisplayMode) {
+            this.props.handleDisplayMode('table');
+        }
+    }
+
     renderActionMenu = () => {
         const fileItem = this.props.fileItems[this.state.currentFileItemIndex];
         return <Popover
@@ -67,9 +75,8 @@ export default class DavPhotoViewPane extends Component {
                 </Menu>
             }            
         >
-            <Button intent="none" appearance="default">                
+            <Button intent="none" appearance="default" iconAfter={ChevronDownIcon}>                
                 <Text>{this.props.fileItems[this.state.currentFileItemIndex].basename} (File {this.state.currentFileItemIndex + 1} / {this.props.fileItems.length})</Text>
-                <ChevronDownIcon size={16} marginLeft={10} />
             </Button>
         </Popover>
     }
@@ -86,13 +93,18 @@ export default class DavPhotoViewPane extends Component {
                     />
         }
 
-        return <Pane display="grid" gridTemplateColumns="auto 1fr auto" gridTemplateRows="auto 1fr" height="auto" background='black'>
-            <Pane background="black" padding={15} gridColumnStart="span 3" justifySelf="center" alignSelf="center">                
+        return <Pane className="davphotoviewpane">
+            <Pane background="black" padding={10} gridColumnStart="span 2" justifySelf="center" alignSelf="center">
                 {this.renderActionMenu()}
+            </Pane>
+            <Pane background="black" padding={10} justifySelf="right" alignSelf="center">
+                <Link onClick={this.handleClose} textDecoration="none">
+                    <CrossIcon className="davphotoviewicon" />
+                </Link>
             </Pane>
             <Pane background="black" padding={10} justifySelf="center" alignSelf="center">
                 <Link onClick={this.handlePreviousPhoto} textDecoration="none">
-                    <DoubleChevronLeftIcon size={64} color='white'/>
+                    <DoubleChevronLeftIcon className="davphotoviewicon" />
                 </Link>                        
             </Pane>
             <Pane background="black" width="auto" height="auto" >
@@ -100,7 +112,7 @@ export default class DavPhotoViewPane extends Component {
             </Pane>
             <Pane background="black" padding={10} justifySelf="center" alignSelf="center">
                 <Link onClick={this.handleNextPhoto} textDecoration="none">
-                    <DoubleChevronRightIcon size={64} color="white"/>
+                    <DoubleChevronRightIcon className="davphotoviewicon" />
                 </Link>                          
             </Pane>                    
         </Pane>

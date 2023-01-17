@@ -23,6 +23,25 @@
   display: none
 }
 
+.davphotoviewpane {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  grid-template-rows: auto 1fr;
+  height: 100vh;
+  width: 100vw;
+  background: black;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  z-index: 4;
+}
+
+.davphotoviewicon {
+  width: 16px;
+  height: 16px;
+  color: #d8dae5;
+}
+
 @media screen and (min-width: 900px) {
   .davsidebar {
     display: grid
@@ -46,5 +65,10 @@
 
   .largehidden {
     display: none;
+  }
+
+  .davphotoviewicon {
+    width: 36px;
+    height: 36px;
   }
 }

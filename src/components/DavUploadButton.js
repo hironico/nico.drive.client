@@ -1,6 +1,6 @@
 import { Component } from "react";
 
-import { Button, IconButton, Text, toaster } from "evergreen-ui";
+import { IconButton, Text, toaster } from "evergreen-ui";
 import { UploadIcon, Spinner } from "evergreen-ui";
 
 import { DavConfigurationContext } from '../AppSettings';

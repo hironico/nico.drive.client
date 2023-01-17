@@ -106,7 +106,7 @@ export default class Image extends RegularFile {
             const styleThumb = {
                 backgroundImage: imgUrl,
                 backgroundPosition: 'center',
-                backgroundSize: 'cover',
+                backgroundSize: 'cover',                
                 width: '200px',
                 height: '200px',
                 marginTop: '-15px'
@@ -188,7 +188,7 @@ export default class Image extends RegularFile {
             const styleThumb = {
                 backgroundImage: imgUrl,
                 backgroundPosition: 'center',
-                backgroundSize: '100% auto',
+                backgroundSize: 'contain',
                 backgroundRepeat: 'no-repeat',
                 width: '100%',
                 height: '100%'

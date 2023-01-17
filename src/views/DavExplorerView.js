@@ -158,7 +158,8 @@ export default class DavExplorerView extends Component {
                     loading={this.state.loading}
                     handleDeleteFileItem={this.deleteFileItem}
                     handleNavigate={this.navigate}
-                    handleShowDetails={this.toggleFileDetails} />
+                    handleShowDetails={this.toggleFileDetails}
+                    handleDisplayMode={this.changeDisplayMode} />
 
             </Pane>
 

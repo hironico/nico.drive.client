@@ -166,7 +166,8 @@ export default class DavDirectoryPane extends Component {
     renderPhotosOnly = () => {
         return <DavPhotoViewPane fileItems={this.state.photos} 
                                  handleShowDetails={this.props.handleShowDetails} 
-                                 handleDelete={this.delete} />
+                                 handleDelete={this.delete} 
+                                 handleDisplayMode={this.props.handleDisplayMode}/>
     }
 
     renderDirectoryContentsGrid = () => {
