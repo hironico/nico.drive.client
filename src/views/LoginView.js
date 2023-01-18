@@ -1,10 +1,12 @@
 import { Component } from 'react';
 import { Navigate } from 'react-router';
 import { Buffer } from 'buffer';
-import { Pane, TextInputField, Paragraph, Button, Heading, Text, Alert, LogInIcon } from 'evergreen-ui';
+import { Pane, TextInputField, Paragraph, Button, Heading, Text, LogInIcon, toaster } from 'evergreen-ui';
 import { DavConfigurationContext } from '../AppSettings';
 
 import { createClient, AuthType } from "webdav";
+
+import './LoginView.css';
 
 /**
  * The login view displays the credentials input controls and authenticate the user against 
@@ -100,16 +102,19 @@ export default class LoginView extends Component {
             });
         })
         .catch(error => {
-            console.log(`Error while fetching user's root directories: ${error}`)
+            console.log(`Login error: cannot fetch user's root directories: ${error}`)
             this.setState({
-                errorMessage: 'Error while fetching your directories: check your username or the server URL.'
-            });
+                errorMessage: 'Incorrect login / password.',
+                isLoading: false,
+                password: ''
+            }, () => toaster.danger(this.state.errorMessage));
         })
     }
 
     onConfirm = () => {
         this.setState({
             isLoading: true,
+            errorMessage: ''
         }, () => this.fetchUserRootDirectories());
     }
 
@@ -122,56 +127,50 @@ export default class LoginView extends Component {
     isLoginButtonDisabled = () => {
         return null === this.state.username || '' === this.state.username
                 || null === this.state.password || '' === this.state.password
-                || '' !== this.state.errorMessage 
                 || '' === this.state.url
                 || this.state.isLoading;
     }
 
-    renderErrorMessage = () => {
-        return (this.state.errorMessage !== '') ? <Alert intent="danger">{this.state.errorMessage}</Alert> : <></>;
-    }
-
     renderLoginForm = () => {
-        return <Pane display="grid" gridTemplateColumns="auto" margin={160} padding={20} elevation={1}>
-            <Pane marginTop={-20} marginLeft={-20} marginRight={-20} marginBottom={40} padding={10} background="tint2" elevation={1}>
+        return <Pane className='loginviewpane' elevation={1}>
+            <Pane marginBottom={20} padding={10} background="tint2" elevation={1}>
                 <Heading is="h2" textAlign="center" textShadow="initial">Welcome to Nico's Drive</Heading>
             </Pane>
 
             <form>
-            <TextInputField id="txt-login"
-                disabled={this.state.isLoading}
-                value={this.state.username}
-                onChange={this.onTxtLoginChange}
-                placeholder="Login name..."
-                label="Login:"
-                autoComplete='username' />
+                <TextInputField id="txt-login"
+                    disabled={this.state.isLoading}
+                    value={this.state.username}
+                    onChange={this.onTxtLoginChange}
+                    placeholder="Login name..."
+                    label="Login:"
+                    autoComplete='username' />
 
-            <TextInputField id="txt-password"
-                disabled={this.state.isLoading}
-                type="password"
-                value={this.state.password}
-                onChange={e => this.setState({ password: e.target.value })}
-                placeholder="Password..."
-                label="Password:"
-                autoComplete='current-password' />
+                <TextInputField id="txt-password"
+                    disabled={this.state.isLoading}
+                    type="password"
+                    value={this.state.password}
+                    onChange={e => this.setState({ password: e.target.value })}
+                    placeholder="Password..."
+                    label="Password:"
+                    autoComplete='current-password' />
 
-            <TextInputField id="txt-url"
-                disabled={this.state.isLoading}
-                value={this.state.url}
-                onChange={e => this.setState({ url: e.target.value })}
-                placeholder="Server url..."
-                label="Base server URL:"
-                description="Advanced users only." />
+                <TextInputField id="txt-url"
+                    disabled={this.state.isLoading}
+                    value={this.state.url}
+                    onChange={e => this.setState({ url: e.target.value })}
+                    placeholder="Server url..."
+                    label="Base server URL:"
+                    description="Advanced users only." />
 
-            <Pane>
-                {this.renderErrorMessage()}
-                <Button is="div" marginTop={16} iconBefore={LogInIcon} appearance="primary" intent="success" onClick={() => this.onConfirm()} disabled={this.isLoginButtonDisabled()} isLoading={this.state.isLoading}>
-                    {this.state.isLoading ? 'Please wait...' : 'Connect'}
-                </Button>
-                <Paragraph textAlign="right">
-                    <Text>Not a member ? Just kindly ask... :)</Text>
-                </Paragraph>
-            </Pane>
+                <Pane display="grid" gridTemplateColumns="auto 1fr" gridTemplateRows="auto 1fr" marginTop={-5}>                    
+                    <Button  alignSelf="center" is="div" iconBefore={LogInIcon} appearance="primary" intent="success" onClick={() => this.onConfirm()} disabled={this.isLoginButtonDisabled()} isLoading={this.state.isLoading}>
+                        {this.state.isLoading ? 'Please wait...' : 'Connect'}
+                    </Button>
+                    <Paragraph textAlign="right" alignSelf="end" justifySelf="end">
+                        <Text>Not a member ? Just kindly ask... :)</Text>
+                    </Paragraph>
+                </Pane>
             </form>
         </Pane>
     }
