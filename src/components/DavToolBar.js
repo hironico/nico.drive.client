@@ -41,7 +41,7 @@ export default class DavToolBar extends Component {
     }
 
     render = () => {
-        return <Pane zIndex={1} flexShrink={0} background="tint2" display="grid" gridTemplateColumns="auto 1fr" paddingBottom={10}>                                
+        return <Pane zIndex={1} flexShrink={0} background="tint2" display="grid" gridTemplateColumns="1fr auto" paddingBottom={10}>                                
                 <DavBreadCrumb handleNavigate={this.props.handleNavigate} currentDirectory={this.props.currentDirectory} />
                 <DavBreadCrumbMenu handleNavigate={this.props.handleNavigate} currentDirectory={this.props.currentDirectory} />
 
