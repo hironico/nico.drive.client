@@ -1,4 +1,4 @@
-import {  DoubleChevronDownIcon, HomeIcon, IconButton, Menu, NestIcon, Popover, Position } from "evergreen-ui";
+import {  ArrowLeftIcon, CaretDownIcon, HomeIcon, IconButton, Link, Menu, NestIcon, Pane, Popover, Position } from "evergreen-ui";
 import { React, Component } from "react";
 
 import '../views/DavExplorerView.css';
@@ -6,8 +6,28 @@ import '../views/DavExplorerView.css';
 export default class DavBreadCrumbMenu extends Component {    
 
     handleNavigateTo = (close, path) => {
-        close();
+        if (close !== null) {
+            close();
+        }
         this.props.handleNavigate(path);
+    }
+
+    handleNavigateParent = () => {
+        const path = this.props.currentDirectory;
+        let currentDirs = path === '/' ? ['Home'] : path.split('/');
+
+        if (currentDirs.length < 2) {
+            return;
+        }
+
+        if (currentDirs.length === 2) {
+            this.handleNavigateTo(null, '/');
+            return;
+        }
+
+        currentDirs.pop();
+        const parentPath = currentDirs.join('/');
+        this.handleNavigateTo(null, parentPath);
     }
 
     renderMenuItems = (close) => {
@@ -29,8 +49,12 @@ export default class DavBreadCrumbMenu extends Component {
         return menuItems;       
     }
 
-    render = () => {
-        return <Popover
+    renderMenu = () => {
+        const path = this.props.currentDirectory;
+        const currentDirs = path === '/' ? ['Home'] : path.split('/');
+        // replacing spaces by non breakable spaces of the last directory : .replace(/\s/gu, '\u00a0')
+        const currentFolder = currentDirs[currentDirs.length - 1];
+        return <Popover        
             position={Position.BOTTOM_LEFT}
             content={({ close }) => (
                 <Menu>
@@ -41,7 +65,14 @@ export default class DavBreadCrumbMenu extends Component {
                 </Menu>
             )}
         >
-            <IconButton className="davbreadcrumbmenu" icon={DoubleChevronDownIcon} margin={12}></IconButton>
+            <Link href="#" alignSelf="center" borderBottom="none" overflow="hidden" textOverflow="ellipsis" whiteSpace="nowrap"><CaretDownIcon />&nbsp;{currentFolder}</Link>
         </Popover>
+    }
+
+    render = () => {
+        return <Pane className="davbreadcrumbmenu" display="grid" gridTemplateColumns="auto 1fr" width="100%">
+            <IconButton onClick={() => this.handleNavigateParent()} alignSelf="center" icon={ArrowLeftIcon} marginLeft={12} marginRight={5}></IconButton>
+            {this.renderMenu()}
+        </Pane>
     }
 }
