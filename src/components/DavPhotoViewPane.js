@@ -98,12 +98,12 @@ export default class DavPhotoViewPane extends Component {
                 {this.renderActionMenu()}
             </Pane>
             <Pane background="black" padding={10} justifySelf="right" alignSelf="center">
-                <Link onClick={this.handleClose} textDecoration="none">
+                <Link onClick={this.handleClose} href="#" borderBottom="none">
                     <CrossIcon className="davphotoviewicon" />
                 </Link>
             </Pane>
             <Pane background="black" padding={10} justifySelf="center" alignSelf="center">
-                <Link onClick={this.handlePreviousPhoto} textDecoration="none">
+                <Link onClick={this.handlePreviousPhoto} href="#" borderBottom="none">
                     <DoubleChevronLeftIcon className="davphotoviewicon" />
                 </Link>                        
             </Pane>
@@ -111,7 +111,7 @@ export default class DavPhotoViewPane extends Component {
                 <Image displayMode='photo' fileItem={this.props.fileItems[this.state.currentFileItemIndex]} />
             </Pane>
             <Pane background="black" padding={10} justifySelf="center" alignSelf="center">
-                <Link onClick={this.handleNextPhoto} textDecoration="none">
+                <Link onClick={this.handleNextPhoto} href="#" borderBottom="none">
                     <DoubleChevronRightIcon className="davphotoviewicon" />
                 </Link>                          
             </Pane>                    
