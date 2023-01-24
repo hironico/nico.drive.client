@@ -1,7 +1,7 @@
 
 import React, {Component} from 'react';
 
-import { Text, ChevronDownIcon, ChevronRightIcon, FolderCloseIcon } from 'evergreen-ui';
+import { Text, ChevronDownIcon, ChevronRightIcon, FolderCloseIcon, Pane } from 'evergreen-ui';
 import { Icon, FolderOpenIcon } from 'evergreen-ui';
 import { DavConfigurationContext } from '../../AppSettings';
 
@@ -11,7 +11,8 @@ const styles = {
         justifyItems: 'start',
         gridTemplateColumns: 'auto auto 1fr',
         span: {
-          marginLeft: '5px'
+          marginLeft: '5px',
+          whiteSpace: 'nowrap'
         },
         fontFamily: 'Lato'
     },
@@ -108,19 +109,20 @@ class TreeFolder extends Component {
     
     const plusIcon = this.state.isOpen ? ChevronDownIcon : ChevronRightIcon;
     const folderIcon = this.state.isOpen ? FolderOpenIcon : FolderCloseIcon;
+    const nonBreakableBaseName = this.props.basename.replace(/\s/gu, '\u00a0');
 
-    return <div>
+    return <Pane>
               <div style={styles.folderLabel}>
                 <Icon onClick={this.handleToggle} icon={plusIcon} size={16} marginRight="10" cursor="pointer"/>
                 <div style={styles.folderLabel} onClick={this.handleClick}>
                   <Icon icon={folderIcon} size={16} color="#F7D154" cursor="pointer"/>
-                  <Text style={styles.folderLabel.span} cursor="pointer">{this.props.basename}</Text>
+                  <Text style={styles.folderLabel.span} cursor="pointer">{nonBreakableBaseName}</Text>
                 </div>
               </div>
               <div style={this.state.isOpen ? styles.collapsibleOpen : styles.collapsibleClosed}>
                 {this.renderSubDirectories()}
               </div>
-            </div>
+            </Pane>
   }
 }
 
