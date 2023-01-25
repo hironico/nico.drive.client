@@ -87,7 +87,6 @@ export default class DavExplorerView extends Component {
                 directories: []
             }
         }, () => {
-            console.log(`Navigated to ${newDir}, now get directory contents...`);
             this.getDirectoryContents();
         });
     }
@@ -100,7 +99,6 @@ export default class DavExplorerView extends Component {
                 directories: []
             }
         }, () => {
-            console.log(`Absolute navigated to ${absolutePath}, now get directory contents...`);
             this.getDirectoryContents();
         });
     }
