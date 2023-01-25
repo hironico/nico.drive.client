@@ -6,6 +6,17 @@ import '../views/DavExplorerView.css';
 
 export default class DavBreadCrumb extends Component {
 
+    componentDidUpdate = (prevProps, prevState) => {
+        if (prevProps.currentDirectory !== this.props.currentDirectory) {
+            this.scrollLeft();
+        }
+    }
+
+    scrollLeft = () => {
+        const breadcrumb = document.getElementById("davbreadcrumb");
+        breadcrumb.scrollLeft = breadcrumb.scrollWidth;
+    }
+
     render = () => {
         let path = this.props.currentDirectory;
 
@@ -23,7 +34,7 @@ export default class DavBreadCrumb extends Component {
             }}>{icon}{dir}</Link>
         });
 
-        return <Pane className="davbreadcrumb" display="flex" padding={8} background="tint2">
+        return <Pane id="davbreadcrumb" className="davbreadcrumb" display="flex" padding={8} background="tint2" whiteSpace="nowrap" overflowX="scroll" textAlign="right" alignContent="right">
             {breadCrumb}
         </Pane>
     }
