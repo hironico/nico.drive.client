@@ -1,5 +1,5 @@
 
-import { Card, Icon, Pane, DocumentIcon, Link, Text, InfoSignIcon, DownloadIcon, MoreIcon, Table, Button, Position, Popover, Menu, DeleteIcon } from 'evergreen-ui';
+import { Card, Icon, Pane, DocumentIcon, Link, Text, InfoSignIcon, DownloadIcon, MoreIcon, Table, Button, Position, Popover, Menu, DeleteIcon, Tooltip } from 'evergreen-ui';
 import { Component } from 'react';
 import { DateTime } from 'luxon';
 import { DavConfigurationContext } from '../AppSettings';
@@ -71,8 +71,10 @@ export default class RegularFile extends Component {
     }
 
     renderGridLabel = () => {
-        return <Pane display="inline-flex" alignItems="center" justifyContent="space-between" width={190} height={18} margin={5}>
-                <Text overflow="hidden" maxWidth={155} maxHeight={24}>{this.props.fileItem.basename}</Text>
+        return <Pane display="grid" gridTemplateColumns="1fr auto" alignItems="center" justifyContent="space-between" width={190} height={18} margin={5}>
+                <Tooltip content={this.props.fileItem.basename}>
+                    <Text overflowX="hidden" whiteSpace="nowrap" textOverflow="ellipsis" maxWidth={155} maxHeight={24}>{this.props.fileItem.basename}</Text>
+                </Tooltip>
                 {this.renderActionMenu()}
             </Pane>
     }
