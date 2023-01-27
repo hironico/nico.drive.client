@@ -1,7 +1,7 @@
-import { Button, Heading, InfoSignIcon, Pane, Table, Tablist, Tab, TagInput, EmptyState } from 'evergreen-ui';
+import { Button, Heading, InfoSignIcon, Pane, Table, Tablist, Tab, TagInput, EmptyState, CrossIcon, Text } from 'evergreen-ui';
 import { DownloadIcon, SearchIcon } from 'evergreen-ui';
 
-import { Component } from 'react';
+import { React, Component } from 'react';
 
 import RatingPane from './RatingPane';
 
@@ -161,8 +161,8 @@ export default class FileDetailsPane extends Component {
 
     renderImageTabs = () => {
         const isImage = this.context.isImageFile(this.props.fileItem.basename);
-        return <Pane padding={15}>
-            <Tablist marginBottom={16} flexBasis={240} marginRight={24}>
+        return <Pane padding={15} overflowY="hidden" display="grid" gridTemplateColumns="1fr" gridTemplateRows="auto 1fr" width="100%" height="100%">
+            <Tablist marginBottom={5} borderBottom="muted">
                 {this.state.tabs.filter((tab, index) => {
                     return index > 0 ? isImage : true;
                 })
@@ -199,12 +199,16 @@ export default class FileDetailsPane extends Component {
                 }
 
                 return <Pane
-                    key={tab}
+                    key={`panel-${tab}`}
                     id={`panel-${tab}`}
                     role="tabpanel"
                     aria-labelledby={tab}
                     aria-hidden={index !== this.state.selectedIndex}
-                    display={index === this.state.selectedIndex ? 'block' : 'none'}
+                    display={index === this.state.selectedIndex ? 'grid' : 'none'}
+                    gridTemplateColumns="1fr"
+                    overflowY="scroll"
+                    justifySelf="stretch"
+                    alignSelf="stretch"
                 >
                     {panelTab}
                 </Pane>
@@ -214,7 +218,7 @@ export default class FileDetailsPane extends Component {
     }
 
     renderFileDetails = () => {
-        return <Table marginTop={15}>
+        return <Table marginTop={15} alignSelf="start">
             <Table.Head height={32}>
                 <Table.TextHeaderCell>
                     <Pane display="inline-flex" alignItems="center">
@@ -255,7 +259,7 @@ export default class FileDetailsPane extends Component {
             });
         }
 
-        return <Table marginTop={15} key={categoryName}>
+        return <Table marginTop={15} key={categoryName} alignSelf="start">
             <Table.Head height={32}>
                 <Table.TextHeaderCell>
                     <Pane display="inline-flex" alignItems="center">
@@ -280,7 +284,7 @@ export default class FileDetailsPane extends Component {
                 return this.renderImageCategoryDetails(this.state.imageData[key], key);
             });
 
-            return <div>{tables}</div>
+            return <>{tables}</>
         }
     }
 
@@ -345,9 +349,9 @@ export default class FileDetailsPane extends Component {
         return <TagInput
             inputProps={{ placeholder: placeholder }}
             values={tags}
-            flexGrow={2}
-            margin={15}
+            margin={10}
             disabled={true}
+            alignSelf="stretch"
         />
     }
 
@@ -373,20 +377,22 @@ export default class FileDetailsPane extends Component {
 
         const downloadIcon = <DownloadIcon size={24} marginRight={5}/>
         
-        return <Pane zIndex={1} flexShrink={0} elevation={0} backgroundColor="white">
-            <Pane padding={16} borderBottom="muted">
-                <Heading size={600}>{this.props.fileItem.basename}</Heading>
+        return <Pane zIndex={1} elevation={0} backgroundColor="white" display="grid" gridTemplateColumns="1fr" gridTemplateRows="auto auto auto 1fr" height="100%" overflowY="hidden">
+            <Pane margin={15} borderBottom="muted">
+                <Heading display="grid" gridTemplateColumns="1fr auto">
+                    <Text size={600}>{this.props.fileItem.basename}</Text>
+                    <CrossIcon className="largehidden" marginRight={5} marginLeft={5} onClick={() => this.props.handleClose()} />
+                </Heading>
             </Pane>
-            <Pane display="inline-flex" alignItems="center">
-                <Button appearance="primary" intent="success" is="a" margin={20} iconBefore={downloadIcon} href={this.getDownloadLink()} target="_blank" disabled={!this.context.connectionValid}>Download</Button>                
-                <RatingPane rating={this.getRating()} maxRating={5} marginRight={10} marginLeft={10}/>
+
+            <Pane display="grid" gridTemplateColumns="1fr auto" marginTop={15} marginRight={15}>
+                <Button marginLeft={10} justifySelf="start" appearance="primary" intent="success" is="a" iconBefore={downloadIcon} href={this.getDownloadLink()} target="_blank" disabled={!this.context.connectionValid}>Download</Button>                
+                <RatingPane marginfLeft={5} rating={this.getRating()} maxRating={5} />
             </Pane>
-            <Pane display="flex" gridTemplateColumns="auto">
-                {this.renderTags()}
-            </Pane>
-            <Pane>
-                {this.renderImageTabs()}
-            </Pane>
+            
+            {this.renderTags()}
+
+            {this.renderImageTabs()}
         </Pane>
     }
 }

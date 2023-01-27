@@ -115,6 +115,10 @@ export default class DavExplorerView extends Component {
         });
     }
 
+    closeDetails = () => {
+        this.setState({ showDetails: false });
+    }
+
     changeDisplayMode = (displayMode) => {
         this.setState({
             displayMode: displayMode
@@ -138,11 +142,11 @@ export default class DavExplorerView extends Component {
                 <Heading size={600} marginX="auto" marginTop={15} textAlign="center">Nico's Drive is loading...</Heading>
             </Pane>
         }
-
+        
         return <Pane className="davexplorerview">
             <DavSideBar rootDirs={this.state.rootDirs} handleNavigate={this.navigateAbsolute} currentDirectory={this.state.currentDirectory} />
 
-            <Pane display="grid" gridTemplateRows="auto auto 1fr" height="100%" overflowY="scroll">
+            <Pane display="grid" gridTemplateRows="auto auto 1fr" height="100%" overflowY="hidden">
                 <DavHeader handleNavigate={this.navigateAbsolute} />
 
                 <DavToolBar currentDirectory={this.state.currentDirectory}
@@ -161,11 +165,13 @@ export default class DavExplorerView extends Component {
 
             </Pane>
 
-            <SideSheet id="side-details"
+            <SideSheet
                 isShown={this.state.showDetails}
-                onCloseComplete={() => this.setState({ showDetails: false })}
+                onCloseComplete={this.closeDetails}
+                preventBodyScrolling
+                width={window.screen.width < 900 ? "100%" : 620}
             >
-                <FileDetailsPane fileItem={this.state.detailedFileItem} davClient={this.state.davClient} />
+                <FileDetailsPane fileItem={this.state.detailedFileItem} davClient={this.state.davClient} handleClose={this.closeDetails}/>
             </SideSheet>
         </Pane>
     }

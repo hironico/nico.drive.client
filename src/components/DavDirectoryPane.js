@@ -177,7 +177,7 @@ export default class DavDirectoryPane extends Component {
     }
 
     renderDirectoryContentsTable = () => {
-        return <Table>
+        return <Table height="100%">
             <Table.Head height={32}>
                 <Table.TextHeaderCell textAlign="center" maxWidth={48}>&nbsp;</Table.TextHeaderCell>
                 <Table.TextHeaderCell textAlign="left">Name</Table.TextHeaderCell>
@@ -186,7 +186,7 @@ export default class DavDirectoryPane extends Component {
                 <Table.TextHeaderCell className="tablecell" textAlign="left">Modified</Table.TextHeaderCell>
                 <Table.TextHeaderCell textAlign="center">Actions</Table.TextHeaderCell>
             </Table.Head>
-        <Table.Body>
+        <Table.Body overflowY="scroll">
             { this.props.loading ? this.renderLoadingState() : this.renderFoldersAndFiles() }
         </Table.Body>
       </Table>
