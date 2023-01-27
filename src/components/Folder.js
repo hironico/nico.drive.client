@@ -47,8 +47,8 @@ export default class Folder extends RegularFile {
                     <Pane style={styleThumb} background="tint2">
                         <Icon icon={FolderCloseIcon} size={48} color="#F7D154" />
                     </Pane>
-                    {this.renderGridLabel()}                  
                 </Link>
+                {this.renderGridLabel()}                  
             </Card>
         );
     }
