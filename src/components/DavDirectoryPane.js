@@ -171,13 +171,13 @@ export default class DavDirectoryPane extends Component {
     }
 
     renderDirectoryContentsGrid = () => {
-        return <Pane display="flex" flexWrap="wrap" justifyContent="space-evenly" background="overlay">
+        return <Pane display="flex" flexWrap="wrap" justifyContent="space-evenly" background="overlay" justifySelf="stretch" alignSelf="stretch" overflowY="scroll">
                  { this.props.loading ? this.renderLoadingState() : this.renderFoldersAndFiles() }
             </Pane>
     }
 
     renderDirectoryContentsTable = () => {
-        return <Table height="100%">
+        return <Table justifySelf="stretch" alignSelf="stretch" overflowY="scroll">
             <Table.Head height={32}>
                 <Table.TextHeaderCell textAlign="center" maxWidth={48}>&nbsp;</Table.TextHeaderCell>
                 <Table.TextHeaderCell textAlign="left">Name</Table.TextHeaderCell>
@@ -186,7 +186,7 @@ export default class DavDirectoryPane extends Component {
                 <Table.TextHeaderCell className="tablecell" textAlign="left">Modified</Table.TextHeaderCell>
                 <Table.TextHeaderCell textAlign="center">Actions</Table.TextHeaderCell>
             </Table.Head>
-        <Table.Body overflowY="scroll">
+        <Table.Body>
             { this.props.loading ? this.renderLoadingState() : this.renderFoldersAndFiles() }
         </Table.Body>
       </Table>
