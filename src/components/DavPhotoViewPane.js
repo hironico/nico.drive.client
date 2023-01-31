@@ -93,13 +93,22 @@ export default class DavPhotoViewPane extends Component {
                     />
         }
 
-        return <Pane className="davphotoviewpane">
+        return <Pane display="grid"
+                    gridTemplateColumns="auto 1fr auto"
+                    gridTemplateRows="auto 1fr"
+                    height="100vh"
+                    width="100vw"
+                    background="black"
+                    position="absolute"
+                    top="0px"
+                    left="0px"
+                    z-index="4">
             <Pane background="black" padding={10} gridColumnStart="span 2" justifySelf="center" alignSelf="center">
                 {this.renderActionMenu()}
             </Pane>
             <Pane background="black" padding={10} justifySelf="right" alignSelf="center">
                 <Link onClick={this.handleClose} href="#" borderBottom="none">
-                    <CrossIcon className="davphotoviewicon" />
+                    <CrossIcon className="davphotoviewicon" width="16px" height="16px" color="#d8dae5" />
                 </Link>
             </Pane>
             <Pane background="black" padding={10} justifySelf="center" alignSelf="center">

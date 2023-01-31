@@ -1,46 +1,4 @@
-.davexplorerview {
-  display: grid;
-  grid-template-columns: 1fr;
-  height: 100vh;
-  max-height: 100vh;
-}
-
-.davsidebar {    
-    padding: 15px;
-    display: none;
-    grid-template-rows: auto auto auto 1fr;
-    grid-template-columns: auto;
-    height: 100%;
-}
-
-.tablecell {
-  display: none
-}
-
-.davbreadcrumb {  
-  display: none
-}
-
-.davphotoviewpane {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  grid-template-rows: auto 1fr;
-  height: 100vh;
-  width: 100vw;
-  background: black;
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  z-index: 4;
-}
-
-.davphotoviewicon {
-  width: 16px;
-  height: 16px;
-  color: #d8dae5;
-}
-
-@media screen and (min-width: 900px) {
+@media (min-width: 900px) {
   .davsidebar {
     display: grid
   }
@@ -63,7 +21,12 @@
 
   .davbreadcrumb::-webkit-scrollbar {
     width: 0px;
-    background: transparent; /* make scrollbar transparent */
+    background: transparent;
+    /* make scrollbar transparent */
+  }
+
+  .davtree {
+    scrollbar-width: thin;
   }
 
   .largehidden {

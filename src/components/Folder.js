@@ -63,13 +63,13 @@ export default class Folder extends RegularFile {
                   {this.props.fileItem.basename}
                   </Link>
                 </Table.TextCell>
-                <Table.TextCell className="tablecell" textAlign="left">
+                <Table.TextCell className="tablecell" display="none" textAlign="left">
                     Folder
                 </Table.TextCell>
-                <Table.TextCell className="tablecell" textAlign="left">
+                <Table.TextCell className="tablecell" display="none" textAlign="left">
                     &nbsp;                    
                 </Table.TextCell>
-                <Table.TextCell className="tablecell" textAlign="left">
+                <Table.TextCell className="tablecell" display="none" textAlign="left">
                     {this.renderHttpDate(this.props.fileItem.lastmod)}
                 </Table.TextCell>
                 <Table.TextCell textAlign="center">

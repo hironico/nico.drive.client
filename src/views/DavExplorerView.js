@@ -143,7 +143,7 @@ export default class DavExplorerView extends Component {
             </Pane>
         }
         
-        return <Pane className="davexplorerview">
+        return <Pane className="davexplorerview" display="grid" gridTemplateColumns="1fr" height="100vh" maxHeight="100vh">
             <DavSideBar rootDirs={this.state.rootDirs} handleNavigate={this.navigateAbsolute} currentDirectory={this.state.currentDirectory} />
 
             <Pane display="grid" gridTemplateRows="auto auto 1fr"  overflowY="hidden">
