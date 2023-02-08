@@ -102,13 +102,13 @@ export default class DavPhotoViewPane extends Component {
                     position="absolute"
                     top="0px"
                     left="0px"
-                    z-index="4">
+                    zIndex="4">
             <Pane background="black" padding={10} gridColumnStart="span 2" justifySelf="center" alignSelf="center">
                 {this.renderActionMenu()}
             </Pane>
             <Pane background="black" padding={10} justifySelf="right" alignSelf="center">
                 <Link onClick={this.handleClose} href="#" borderBottom="none">
-                    <CrossIcon className="davphotoviewicon" width="16px" height="16px" color="#d8dae5" />
+                    <CrossIcon className="davphotoviewicon" />
                 </Link>
             </Pane>
             <Pane background="black" padding={10} justifySelf="center" alignSelf="center">

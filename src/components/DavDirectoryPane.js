@@ -181,9 +181,9 @@ export default class DavDirectoryPane extends Component {
             <Table.Head height={32}>
                 <Table.TextHeaderCell textAlign="center" maxWidth={48}>&nbsp;</Table.TextHeaderCell>
                 <Table.TextHeaderCell textAlign="left">Name</Table.TextHeaderCell>
-                <Table.TextHeaderCell className="tablecell" display="none" textAlign="left">Type</Table.TextHeaderCell>
-                <Table.TextHeaderCell className="tablecell" display="none" textAlign="left">Size</Table.TextHeaderCell>
-                <Table.TextHeaderCell className="tablecell" display="none" textAlign="left">Modified</Table.TextHeaderCell>
+                <Table.TextHeaderCell className="tablecell smallhidden" display="none" textAlign="left">Type</Table.TextHeaderCell>
+                <Table.TextHeaderCell className="tablecell smallhidden" display="none" textAlign="left">Size</Table.TextHeaderCell>
+                <Table.TextHeaderCell className="tablecell smallhidden" display="none" textAlign="left">Modified</Table.TextHeaderCell>
                 <Table.TextHeaderCell textAlign="center">Actions</Table.TextHeaderCell>
             </Table.Head>
         <Table.Body>

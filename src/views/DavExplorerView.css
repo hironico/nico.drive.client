@@ -1,18 +1,43 @@
-@media (min-width: 900px) {
+.davexplorerview {
+  display: grid; 
+  grid-template-columns: 1fr; 
+  height: 100vh; 
+  max-height: 100vh;
+}
+
+.davsidebar {
+  display: none
+}
+
+.davphotoviewicon {
+  width: 16px;
+  height: 16px;
+  color: #d8dae5;
+}
+
+.davbreadcrumbmenu {
+  display: grid;
+}
+
+.davbreadcrumb {
+  display: none;
+}
+
+.tablecell.smallhidden {
+  display: none;
+}
+
+@media screen and (min-width: 900px) {
   .davsidebar {
-    display: grid
+    display: grid;
   }
 
   .davexplorerview {
     grid-template-columns: 1fr 5fr;
   }
 
-  .tablecell {
-    display: flex
-  }
-
   .davbreadcrumbmenu {
-    display: none
+    display: none;
   }
 
   .davbreadcrumb {
@@ -36,5 +61,9 @@
   .davphotoviewicon {
     width: 36px;
     height: 36px;
+  }
+
+  .tablecell.smallhidden {
+    display: flex;
   }
 }

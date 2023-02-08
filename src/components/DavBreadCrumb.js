@@ -34,7 +34,7 @@ export default class DavBreadCrumb extends Component {
             }}>{icon}{dir}</Link>
         });
 
-        return <Pane id="davbreadcrumb" className="davbreadcrumb" display="none" padding={8} background="tint2" whiteSpace="nowrap" overflowX="scroll" textAlign="right" alignContent="right">
+        return <Pane id="davbreadcrumb" className="davbreadcrumb" padding={8} background="tint2" whiteSpace="nowrap" overflowX="scroll" textAlign="right" alignContent="right">
             {breadCrumb}
         </Pane>
     }

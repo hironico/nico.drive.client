@@ -7,7 +7,6 @@ import DavRootSelector from "./DavRootSelector";
 
 import { DavConfigurationContext } from '../AppSettings';
 
-
 class DavSideBar extends Component {
     static contextType = DavConfigurationContext;
 
@@ -19,7 +18,7 @@ class DavSideBar extends Component {
     }
 
     render = () => {
-        return <Pane className="davsidebar" display="none" gridTemplateRows="auto auto auto 1fr" gridTemplateColumns="auto" height="100vh" minWidth={170} padding={15} overflow="hidden" background="blueTint" elevation={0} >
+        return <Pane className="davsidebar" gridTemplateRows="auto auto auto 1fr" gridTemplateColumns="auto" height="100vh" minWidth={170} padding={15} overflow="hidden" background="blueTint" elevation={0} >
             <Pane background="blueTint">
                 <Heading size={900} color="neutral" textAlign="left">Nico's drive</Heading>
             </Pane>

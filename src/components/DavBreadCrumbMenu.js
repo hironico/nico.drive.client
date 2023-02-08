@@ -70,7 +70,7 @@ export default class DavBreadCrumbMenu extends Component {
     }
 
     render = () => {
-        return <Pane className="davbreadcrumbmenu" display="grid" gridTemplateColumns="auto 1fr" width="100%">
+        return <Pane className="davbreadcrumbmenu" gridTemplateColumns="auto 1fr" width="100%">
             <IconButton onClick={() => this.handleNavigateParent()} alignSelf="center" icon={ArrowLeftIcon} marginLeft={12} marginRight={5}></IconButton>
             {this.renderMenu()}
         </Pane>
