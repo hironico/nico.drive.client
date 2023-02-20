@@ -19,7 +19,15 @@ export default class RegularFile extends Component {
         window.open(dlLink, '_blank');
     }
 
+    handleDefaultAction = () => {
+        this.download(this.props.fileItem);
+    }
+
     renderMimeType = (mimeType) => {
+        if (this.props.fileItem.type === 'directory') {
+            return 'Folder';
+        }
+
         if (typeof mimeType === 'undefined') {
             return 'File';
         }
@@ -71,7 +79,7 @@ export default class RegularFile extends Component {
     }
 
     renderGridLabel = () => {
-        return <Pane display="grid" gridTemplateColumns="1fr auto" alignItems="center" justifyContent="space-between" width={190} height={18} margin={5}>
+        return <Pane display="grid" gridTemplateColumns="1fr auto" alignItems="center" justifyContent="space-between" width="calc(100% - 10px)" margin={5}>
                 <Tooltip content={this.props.fileItem.basename}>
                     <Text overflowX="hidden" whiteSpace="nowrap" textOverflow="ellipsis" maxWidth={155} maxHeight={24}>{this.props.fileItem.basename}</Text>
                 </Tooltip>
@@ -79,31 +87,42 @@ export default class RegularFile extends Component {
             </Pane>
     }
 
+    renderGridIcon = () => {
+        return <Icon icon={DocumentIcon} size={48} color="success" />
+    }
+
     renderGrid = () => {
         let styleThumb = {
-            width: '200px',
-            height: '200px',
-            marginTop: '-15px',
+            width: 'calc(100% - 6px)',
+            height: 'calc(100% - 6px)',
             display: 'flex',
             justifyContent: 'center',
-            alignItems: 'center'
+            alignItems: 'center',
+            margin: '3px'
         }
 
         return (
             <Card
                 elevation={2}
                 backgroundColor="white"
-                width={200}
-                height={240}
-                margin={24}
-                display="flex"
+                width={150}
+                height={150}
+                marginTop={10}
+                marginBottom={0}
+                marginLeft={5}
+                marginRight={5}
+                display="grid"
+                gridTemplateColumns="1fr"
+                gridTemplateRows="1fr auto"
                 justifyContent="center"
                 alignItems="center"
                 flexDirection="column"
             >
-                <Pane style={styleThumb} background="tint2">
-                    <Icon icon={DocumentIcon} size={48} color="success" />
-                </Pane>
+                <Link href="#" onClick={evt => this.handleDefaultAction()} borderBottom="none">
+                    <Pane style={styleThumb}>
+                        {this.renderGridIcon()}
+                    </Pane>
+                </Link>
 
                 {this.renderGridLabel()}
             </Card>
@@ -129,23 +148,27 @@ export default class RegularFile extends Component {
         </Popover>
     }
 
+    renderTableIcon = () => {
+        return <DocumentIcon size={16} />
+    }
+
     renderTable = () => {
         return <Table.Row key={this.props.fileItem.basename} isSelectable height={32}>
             <Table.TextCell textAlign="center" maxWidth={48}>
-                <DocumentIcon size={16} />
+                {this.renderTableIcon()}
             </Table.TextCell>
-            <Table.TextCell textAlign="left">
-                <Link href={this.context.selectedUserRootDirectory.davClient.getFileDownloadLink(this.props.fileItem.filename)} target="_blank" borderBottom="none">
+            <Table.TextCell textAlign="left" flexGrow={6}>
+                <Link href="#" onClick={(evt) => this.handleDefaultAction()} borderBottom="none">
                     {this.props.fileItem.basename}
                 </Link>
             </Table.TextCell>
-            <Table.TextCell className="tablecell" display="none" textAlign="left">
+            <Table.TextCell className="tablecell smallhidden" textAlign="left">
                 {this.renderMimeType(this.props.fileItem.mime)}
             </Table.TextCell>
-            <Table.TextCell className="tablecell" display="none" textAlign="left">
+            <Table.TextCell className="tablecell smallhidden" textAlign="left">
                 {this.renderFileItemSize()}
             </Table.TextCell>
-            <Table.TextCell className="tablecell" display="none" textAlign="left">
+            <Table.TextCell className="tablecell smallhidden" textAlign="left">
                 {this.renderHttpDate(this.props.fileItem.lastmod)}
             </Table.TextCell>
             <Table.TextCell textAlign="center">

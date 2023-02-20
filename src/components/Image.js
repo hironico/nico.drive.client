@@ -1,5 +1,5 @@
 
-import { Card, Link, Pane, Table, Spinner } from 'evergreen-ui';
+import { Pane, Spinner } from 'evergreen-ui';
 
 import RegularFile from './RegularFile';
 
@@ -100,45 +100,26 @@ export default class Image extends RegularFile {
         .catch(err => console.log(`Could not generate thumb for file ${this.props.fileItem.filename}\nReason: ${err}`));
     }
 
-    renderGridThumb = () => {        
+    renderGridIcon = () => {        
         if (this.state.thumb !== null) {
             const imgUrl = 'url(' + this.state.thumb + ')';
             const styleThumb = {
                 backgroundImage: imgUrl,
                 backgroundPosition: 'center',
                 backgroundSize: 'cover',                
-                width: '200px',
-                height: '200px',
+                width: '100%',
+                height: '100%',
                 marginTop: '-15px'
             }             
             return <div style={styleThumb}>&nbsp;</div>
         } else {
-            return <Pane display="flex" alignItems="center" justifyContent="center" height={200}>
+            return <Pane display="flex" alignItems="center" justifyContent="center">
                        <Spinner />
                    </Pane>
         } 
     }
 
-    renderGrid = () => {
-        return (
-            <Card
-                elevation={2}
-                backgroundColor="white"
-                width={200}
-                height={240}
-                margin={24}
-                display="flex"
-                justifyContent="center"
-                alignItems="center"
-                flexDirection="column"
-            > 
-                {this.renderGridThumb()}
-                {this.renderGridLabel()}
-            </Card>
-        );
-    }
-
-    renderTableThumb = () => {
+    renderTableIcon = () => {
         if (this.state.thumb !== null) {
             const imgUrl = 'url(' + this.state.thumb + ')';
             const styleThumb = {
@@ -155,31 +136,6 @@ export default class Image extends RegularFile {
                        <Spinner height={16} width={16} />
                    </Pane>
         }
-    }
-
-    renderTable = () => {
-        return <Table.Row key={this.props.fileItem.basename} isSelectable justifyContent="space-between" height={32}>
-              <Table.TextCell textAlign="center" maxWidth={48}>
-                {this.renderTableThumb()}
-              </Table.TextCell>
-              <Table.TextCell textAlign="left">
-                  <Link href={this.context.selectedUserRootDirectory.davClient.getFileDownloadLink(this.props.fileItem.filename)} target="_blank" borderBottom="none">
-                      {this.props.fileItem.basename}
-                  </Link>                
-                </Table.TextCell>
-                <Table.TextCell className="tablecell" display="none" textAlign="left">
-                    {this.renderMimeType(this.props.fileItem.mimeType)}
-                </Table.TextCell>
-                <Table.TextCell className="tablecell" display="none" textAlign="left">
-                    {this.renderFileItemSize()}
-                </Table.TextCell>
-                <Table.TextCell className="tablecell" display="none" textAlign="left">
-                    {this.renderHttpDate(this.props.fileItem.lastmod)}
-                </Table.TextCell>
-              <Table.TextCell textAlign="center">
-                  {this.renderActionMenu()}
-              </Table.TextCell>
-            </Table.Row>
     }
 
     renderPhoto = () => {  
