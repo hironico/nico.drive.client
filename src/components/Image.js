@@ -108,8 +108,7 @@ export default class Image extends RegularFile {
                 backgroundPosition: 'center',
                 backgroundSize: 'cover',                
                 width: '100%',
-                height: '100%',
-                marginTop: '-15px'
+                height: '100%'
             }             
             return <div style={styleThumb}>&nbsp;</div>
         } else {

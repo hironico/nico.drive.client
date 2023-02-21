@@ -116,9 +116,8 @@ export default class RegularFile extends Component {
                 gridTemplateRows="1fr auto"
                 justifyContent="center"
                 alignItems="center"
-                flexDirection="column"
             >
-                <Link href="#" onClick={evt => this.handleDefaultAction()} borderBottom="none">
+                <Link href="#" height="100%" borderTop={10} borderLeft={0} borderRight={0} onClick={evt => this.handleDefaultAction()} borderBottom="none">
                     <Pane style={styleThumb}>
                         {this.renderGridIcon()}
                     </Pane>
