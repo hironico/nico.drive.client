@@ -117,7 +117,7 @@ export default class RegularFile extends Component {
                 justifyContent="center"
                 alignItems="center"
             >
-                <Link href="#" height="100%" borderTop={10} borderLeft={0} borderRight={0} onClick={evt => this.handleDefaultAction()} borderBottom="none">
+                <Link href="#" height="100%" marginTop={3} onClick={evt => this.handleDefaultAction()} borderBottom="none">
                     <Pane style={styleThumb}>
                         {this.renderGridIcon()}
                     </Pane>
