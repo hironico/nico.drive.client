@@ -28,22 +28,20 @@ export default class DavUploadButton extends Component {
             const targetFileName = `${this.props.currentDirectory}/${file.name}`;
             console.log(`Target file name is: ${targetFileName}`);
 
-            // tester si le fichier existe déja et s'il faut l'ecraser.
+            const options = {
+                overwrite: false,
+                contentLength: false
+            };
 
-            const uploadOption = {
-                contentLength: file.size
-            }
-
-            this.context.selectedUserRootDirectory.davClient.putFileContents(targetFileName, file, uploadOption)
+            // TODO tester si le fichier existe déja et s'il faut l'ecraser.
+            this.context.selectedUserRootDirectory.davClient.putFileContents(targetFileName, file, options) 
             .then(result => {
-                if (!result) {
-                    toaster.danger(`File upload problem for ${targetFileName}`);
-                } else {
-                    // do a refresh of the current directory !
-                    this.props.handleNavigate(this.props.currentDirectory);
-                }
+                // do a refresh of the current directory !
+                this.props.handleNavigate(this.props.currentDirectory);
             }).catch(error => {
-                toaster.danger(`Problem while uploading file ${targetFileName}: ${error}`);
+                const errMsg = `Problem while uploading file ${targetFileName}: ${error}`;
+                console.error(errMsg);
+                toaster.danger(errMsg);
             }).finally( () => {
                 const index = this.state.currentUploads.indexOf(handle);
                 if (index >= 0) {
@@ -52,7 +50,7 @@ export default class DavUploadButton extends Component {
                         currentUploads: this.state.currentUploads
                     });
                 } else {
-                    console.log(`Did not find handle of ${handle.file.name}`);
+                    console.error(`Did not find handle of ${handle.file.name}`);
                 }
             });
         }
