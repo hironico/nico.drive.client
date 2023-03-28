@@ -6,12 +6,13 @@ import reportWebVitals from './reportWebVitals';
 
 import './index.css';
 
+// do not use React.strinct mode in 2023 ! This cause the components to be double mounted.
+// https://stackoverflow.com/questions/49055172/react-component-mounting-twice
+
 const container = document.getElementById('root');
 const root = createRoot(container);
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+root.render(  
+    <App />,
 );
 
 // If you want to start measuring performance in your app, pass a function

@@ -15,15 +15,20 @@ import WelcomePage from './components/welcome-page/WelcomePage';
 // theming provided by this page: https://github.com/segmentio/evergreen/issues/542
 // see also: https://evergreen.segment.com/introduction/theming
 
+
+const welcomePage = <WelcomePage />
+const loginView = <LoginView />
+const davExplorerView = <DavExplorerView />
+
 class App extends Component {
   render = () => {
     return <ThemeProvider value={appTheme}>      
       <DavConfigurationProvider>
         <BrowserRouter>
         <Routes>
-          <Route path="/" element={<WelcomePage />} />
-          <Route path="login" element={<LoginView />} />
-          <Route path="explorer" element={<DavExplorerView />} />
+          <Route path="/" element={welcomePage} />
+          <Route path="login" element={loginView} />
+          <Route path="explorer" element={davExplorerView} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
         </BrowserRouter>
