@@ -12,6 +12,18 @@ const defaultValue = {
     davBaseUrl: null,
     davApiBaseUrl: null, 
     setDavBaseUrl: noOpFunc,
+
+    connectionValid: false,
+    setConnectionValid: noOpFunc,
+
+    userRootDirectories: [],
+    setUserRootDirectories: noOpFunc,
+
+    selectedUserRootDirectory: null,
+    setSelectedUserRootDirectory: noOpFunc,
+    getSelectedUserRootDirectoryIndex: noOpFunc,
+
+    setUserConnection: noOpFunc,
     
     supportedFormats: ['JPEG', 'JPG', 'PNG', 'WEBP', 'AVIF', 'TIFF', 'GIF', 'SVG', 'CR2', 'CR3', 'DNG'],
     isImageFile: noOpFunc,
@@ -24,16 +36,6 @@ const defaultValue = {
     getExifApiUrl: noOpFunc,
     getMetadataApiUrl: noOpFunc,
     getAuthUrl: noOpFunc,
-    
-    connectionValid: false,
-    setConnectionValid: noOpFunc,
-
-    userRootDirectories: [],
-    setUserRootDirectories: noOpFunc,
-
-    selectedUserRootDirectory: null,
-    setSelectedUserRootDirectory: noOpFunc,
-    getSelectedUserRootDirectoryIndex: noOpFunc,
 
     showConnectionDialog: false,
     disconnect: noOpFunc
@@ -54,6 +56,18 @@ class DavConfigurationProvider extends Component {
             davBaseUrl: null,
             davApiBaseUrl: null, 
             setDavBaseUrl: this.setDavBaseUrl,
+
+            connectionValid: false,
+            setConnectionValid: this.setConnectionValid,
+
+            userRootDirectories: [],
+            setUserRootDirectories: this.setUserRootDirectories,
+
+            selectedUserRootDirectory: null,
+            setSelectedUserRootDirectory: this.setSelectedUserRootDirectory,
+            getSelectedUserRootDirectoryIndex: this.getSelectedUserRootDirectoryIndex,
+
+            setUserConnection: this.setUserConnection,
             
             supportedFormats: ['JPEG', 'JPG', 'PNG', 'WEBP', 'AVIF', 'TIFF', 'GIF', 'SVG', 'CR2', 'CR3', 'DNG'],
             isImageFile: this.isImageFile,
@@ -65,18 +79,8 @@ class DavConfigurationProvider extends Component {
             getThumbApiUrl: this.getThumbApiUrl,
             getExifApiUrl: this.getExifApiUrl,
             getMetadataApiUrl: this.getMetadataApiUrl,
-            getAuthUrl: this.getAuthUrl,
+            getAuthUrl: this.getAuthUrl,            
             
-            connectionValid: false,
-            setConnectionValid: this.setConnectionValid,
-
-            userRootDirectories: [],
-            setUserRootDirectories: this.setUserRootDirectories,
-
-            selectedUserRootDirectory: null,
-            setSelectedUserRootDirectory: this.setSelectedUserRootDirectory,
-            getSelectedUserRootDirectoryIndex: this.getSelectedUserRootDirectoryIndex,
-
             showConnectionDialog: false,
             disconnect: this.disconnect
         }
@@ -108,6 +112,56 @@ class DavConfigurationProvider extends Component {
             if (callback) {
                 callback();
             }
+        });
+    }
+
+    setDavBaseUrl = (davBaseUrl, username) => {
+
+        const davBaseUri =  new URL(davBaseUrl);
+        const proto =  davBaseUri.protocol;
+        const host =  davBaseUri.hostname;
+        const port =  davBaseUri.port;
+
+        const davApiBaseUrl = `${proto}//${host}:${port}`;
+
+        console.log(`DavBaseUrl = ${davBaseUrl}`);
+        console.log(`DavApiBaseUrl = ${davApiBaseUrl}`);
+
+        this.setState({
+            davBaseUrl: davBaseUrl,
+            davApiBaseUrl: davApiBaseUrl,
+            username: username
+        });
+    }
+
+    /**
+     * Set all connection properties for a successfull login in one go in order to avoid 
+     * multiple components refreshes
+     * @param {*} userInfo 
+     * @param {*} rootDirs 
+     * @param {*} davBaseUrl 
+     * @param {*} username 
+     * @param {*} connectionValid 
+     */
+    setUserConnection = (userInfo, rootDirs, davBaseUrl, username, connectionValid) => {
+        const davBaseUri =  new URL(davBaseUrl);
+        const proto =  davBaseUri.protocol;
+        const host =  davBaseUri.hostname;
+        const port =  davBaseUri.port;
+
+        const davApiBaseUrl = `${proto}//${host}:${port}`;
+
+        console.log(`DavBaseUrl = ${davBaseUrl}`);
+        console.log(`DavApiBaseUrl = ${davApiBaseUrl}`);
+
+        this.setState({
+            userInfo: userInfo,
+            selectedUserRootDirectory: rootDirs[0],
+            userRootDirectories: rootDirs,
+            connectionValid: connectionValid,
+            davBaseUrl: davBaseUrl,
+            davApiBaseUrl: davApiBaseUrl,
+            username: username
         });
     }
 
@@ -145,27 +199,6 @@ class DavConfigurationProvider extends Component {
             filterRegExp: new RegExp(valueStr, 'i')
         });
     }
-
-    setDavBaseUrl = (davBaseUrl, username) => {
-
-        const davBaseUri =  new URL(davBaseUrl);
-        const proto =  davBaseUri.protocol;
-        const host =  davBaseUri.hostname;
-        const port =  davBaseUri.port;
-
-        const davApiBaseUrl = `${proto}//${host}:${port}`;
-
-        console.log(`DavBaseUrl = ${davBaseUrl}`);
-        console.log(`DavApiBaseUrl = ${davApiBaseUrl}`);
-
-        this.setState({
-            davBaseUrl: davBaseUrl,
-            davApiBaseUrl: davApiBaseUrl,
-            username: username
-        });
-    }
-
-    
 
     getThumbApiUrl = () => {
         return `${this.state.davApiBaseUrl}/thumb`;
