@@ -23,6 +23,7 @@ export default class DavUploadButton extends Component {
     }
 
     doUploadFiles = async (handles) => {
+        const allUploads = [];
         for(const handle of handles) {
             const file = await handle.getFile();
             const targetFileName = `${this.props.currentDirectory}/${file.name}`;
@@ -34,11 +35,8 @@ export default class DavUploadButton extends Component {
             };
 
             // TODO tester si le fichier existe déja et s'il faut l'ecraser.
-            this.context.selectedUserRootDirectory.davClient.putFileContents(targetFileName, file, options) 
-            .then(result => {
-                // do a refresh of the current directory !
-                this.props.handleNavigate(this.props.currentDirectory);
-            }).catch(error => {
+            const oneUpload = this.context.selectedUserRootDirectory.davClient.putFileContents(targetFileName, file, options) 
+            .catch(error => {
                 const errMsg = `Problem while uploading file ${targetFileName}: ${error}`;
                 console.error(errMsg);
                 toaster.danger(errMsg);
@@ -50,10 +48,15 @@ export default class DavUploadButton extends Component {
                         currentUploads: this.state.currentUploads
                     });
                 } else {
-                    console.error(`Did not find handle of ${handle.file.name}`);
+                    console.warning(`Did not find handle of ${handle.file.name}`);
                 }
             });
+
+            allUploads.push(oneUpload);
         }
+
+        Promise.all(allUploads)
+        .then(() => this.props.handleNavigate(this.props.currentDirectory));
     }
 
     render = () => {
