@@ -34,6 +34,7 @@ export default class LoginView extends Component {
     }
 
     componentDidMount = () => { 
+        console.log('Login view did mount');
         this.setState({
             errorMessage: ''
         });
@@ -95,10 +96,7 @@ export default class LoginView extends Component {
                 errorMessage: '',
                 isLoading: false
             }, () => {
-                this.context.setUserInfo(userInfo);
-                this.context.setUserRootDirectories(userDirectories);
-                this.context.setDavBaseUrl(davBaseUrl, this.state.username);
-                this.context.setConnectionValid(true);
+                this.context.setUserConnection(userInfo, userDirectories, davBaseUrl, this.state.username, true);
             });
         })
         .catch(error => {
@@ -178,6 +176,7 @@ export default class LoginView extends Component {
     render = () => {
         // if we have a dav client properly configured then must go to the explorer;
         // to login again we must log out first !
-        return (this.context.connectionValid) ? <Navigate to='/explorer' /> : this.renderLoginForm();
+        // console.log('Render login view.');
+        return this.context.connectionValid ? <Navigate to="/explorer" /> : this.renderLoginForm();
     }
 }
