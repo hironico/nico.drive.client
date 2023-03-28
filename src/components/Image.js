@@ -24,7 +24,7 @@ export default class Image extends RegularFile {
     }
 
     componentDidUpdate = (prevProps, prevState) => {
-        if (prevProps.fileItem !== this.props.fileItem) {
+        if (JSON.stringify(prevProps.fileItem) !== JSON.stringify(this.props.fileItem)) {
             this.setState({
                 thumb: null
             }, () => this.generateThumb());
@@ -82,22 +82,32 @@ export default class Image extends RegularFile {
                 'Authorization': authHeader
             }
         })
-        .then(res => res.blob())
         .then(res => {
-            var reader = new FileReader();
-            reader.readAsDataURL(res);
-            reader.onloadend = function() {
-                var base64data = reader.result;
-
-                // put that into state
-                that.setState(prev => {
-                    return {
-                        thumb: base64data
-                    }
-                });   
-            }                   
+            if (res.status === 202) {
+                console.log('Image thumb is being gnerated. LOCKED by server. Trying un 1 sec.');
+                setTimeout(() => {
+                    this.generateThumb();
+                }, 1000);
+            } else {
+                res.blob()
+                .then(res => {
+                    var reader = new FileReader();
+                    reader.readAsDataURL(res);
+                    reader.onloadend = function() {
+                        var base64data = reader.result;
+        
+                        // put that into state
+                        that.setState(prev => {
+                            return {
+                                thumb: base64data
+                            }
+                        });   
+                    }                   
+                })
+                .catch(err => console.log(`Could not read thumb from data sent by server for file ${this.props.fileItem.filename}\nReason: ${err}`));
+            }            
         })
-        .catch(err => console.log(`Could not generate thumb for file ${this.props.fileItem.filename}\nReason: ${err}`));
+        .catch(err => console.log(`Could not generate thumb for file ${this.props.fileItem.filename}\nReason: ${err}`));      
     }
 
     renderGridIcon = () => {        
