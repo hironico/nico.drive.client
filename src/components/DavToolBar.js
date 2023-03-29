@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from "react";
 
 import { Pane, Link } from "evergreen-ui";
-import { GridViewIcon, ListIcon, CameraIcon } from "evergreen-ui";
+import { LayoutGridIcon, ListIcon, CameraIcon } from "evergreen-ui";
 
 import { DavConfigurationContext } from '../AppSettings';
 
@@ -31,7 +31,7 @@ export default class DavToolBar extends Component {
                 <CameraIcon size={18} marginLeft={5} marginRight={5} color={this.props.displayMode !== 'photo' ? 'gray600' : 'blue600'} />
             </Link>
             <Link href="#" display="flex" alignItems="center" onClick={(evt) => this.props.handleDisplayMode('grid')} >
-                <GridViewIcon size={18} marginLeft={5} marginRight={5} color={this.props.displayMode !== 'grid' ? 'gray600' : 'blue600'} />
+                <LayoutGridIcon size={18} marginLeft={5} marginRight={5} color={this.props.displayMode !== 'grid' ? 'gray600' : 'blue600'} />
             </Link>
             &nbsp;
             <Link href="#" display="flex" alignItems="center" onClick={(evt) => this.props.handleDisplayMode('table')} >
