@@ -181,7 +181,7 @@ export default class DavDirectoryPane extends Component {
     }
 
     renderDirectoryContentsGrid = () => {
-        return <Pane display="flex" flexWrap="wrap" justifyContent="center" alignContent="flex-start" background="tint2"  overflowY="scroll">
+        return <Pane className="cool-scrollbars" display="flex" flexWrap="wrap" justifyContent="center" alignContent="flex-start" background="tint2"  overflowY="scroll">
                  { this.props.loading ? this.renderLoadingState() : this.renderFoldersAndFiles() }
             </Pane>
     }
