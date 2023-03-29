@@ -32,6 +32,33 @@
     display: grid;
   }
 
+  .cool-scrollbars::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .cool-scrollbars::-webkit-scrollbar-track {
+    display:none;
+  }
+
+  .cool-scrollbars::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+
+  .cool-scrollbars::-webkit-scrollbar-thumb {
+    background-color: transparent;
+  }
+
+  .cool-scrollbars:hover::-webkit-scrollbar-thumb {
+    background-color: #696f8c;
+    background-clip: padding-box;
+    border-radius: 20px;
+  }
+ 
+  .cool-scrollbars::-webkit-scrollbar-track-piece {
+    background: transparent;
+  }
+
   .davexplorerview {
     grid-template-columns: 1fr 5fr;
   }

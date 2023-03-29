@@ -10,7 +10,7 @@ class Tree extends Component {
     static contextType = DavConfigurationContext;
 
     render = () => {
-        return <Pane className="davtree" paddingTop={10} overflow="scroll" height="100%" width="100%">
+        return <Pane className="davtree cool-scrollbars" paddingTop={10} overflow="scroll" height="100%" width="100%">
             {
                 this.props.rootDirs.map((dir, index) => {
                     return <TreeFolder key={`${this.context.selectedUserRootDirectory.name}-${index}`} id={`${this.context.selectedUserRootDirectory.name}-${index}`} absolutePath={`/${dir.basename}`} basename={dir.basename} handleNavigate={this.props.handleNavigate} currentDirectory={this.props.currentDirectory} />
