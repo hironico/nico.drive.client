@@ -181,13 +181,13 @@ export default class DavDirectoryPane extends Component {
     }
 
     renderDirectoryContentsGrid = () => {
-        return <Pane display="flex" flexWrap="wrap" justifyContent="space-evenly" background="overlay" justifySelf="stretch" alignSelf="stretch" overflowY="scroll">
+        return <Pane display="flex" flexWrap="wrap" justifyContent="center" alignContent="flex-start" background="tint2"  overflowY="scroll">
                  { this.props.loading ? this.renderLoadingState() : this.renderFoldersAndFiles() }
             </Pane>
     }
 
     renderDirectoryContentsTable = () => {
-        return <Table justifySelf="stretch" alignSelf="stretch" overflowY="scroll">
+        return <Table className="cool-scrollbars" justifySelf="stretch" alignSelf="stretch" overflowY="scroll">
             <Table.Head height={32}>
                 <Table.TextHeaderCell textAlign="center" maxWidth={48}>&nbsp;</Table.TextHeaderCell>
                 <Table.TextHeaderCell textAlign="left" flexGrow={6}>Name</Table.TextHeaderCell>
@@ -203,7 +203,7 @@ export default class DavDirectoryPane extends Component {
     }
 
     renderDirectoryContentsPhoto = () => {
-        return <Pane display="grid" gridTemplateColumns="auto" gridTemplateRows="auto" background="overlay">
+        return <Pane display="grid" gridTemplateColumns="auto" gridTemplateRows="auto" background="tint2">
             { this.props.loading ? this.renderLoadingState() : this.renderPhotosOnly() }            
         </Pane>
     }

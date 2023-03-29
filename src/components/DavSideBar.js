@@ -18,7 +18,7 @@ class DavSideBar extends Component {
     }
 
     render = () => {
-        return <Pane className="davsidebar" gridTemplateRows="auto auto 1fr" gridTemplateColumns="auto" height="100vh" minWidth={170} overflow="hidden" background="tint2" elevation={0} >
+        return <Pane className="davsidebar" gridTemplateRows="auto auto 1fr" gridTemplateColumns="auto" height="100vh" minWidth={170} overflow="hidden" background="gray300" elevation={0} >
             <Pane marginTop={15} marginLeft={10} marginRight={10} >
                 <Heading size={900} color="neutral" textAlign="left">Nico's drive</Heading>
             </Pane>
