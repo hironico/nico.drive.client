@@ -28,7 +28,17 @@ export default class DavDirectoryPane extends Component {
         }
     }
 
+    componentDidMount = () => {
+        // initalize state with props values
+        this.updateState(this.props);
+    }
+
     componentDidUpdate = (prevProps) => {
+        // may update state because of change in certain properties and context
+        this.updateState(prevProps);
+    }
+
+    updateState = (prevProps) => {
         // if the folders and files have changed we need to filter them out. If not, we do not change anything.
         // same for the filter expression : if it changed, then refilter and update
         let shouldUpdateState = false;
@@ -45,7 +55,7 @@ export default class DavDirectoryPane extends Component {
             files = this.props.files.filter(file => file.basename.search(this.context.filterRegExp) !== -1);
             photos = files.filter(file => this.context.isImageFile(file.basename));
             shouldUpdateState = true;
-        }        
+        }
 
         if (shouldUpdateState) {
             this.setState({
