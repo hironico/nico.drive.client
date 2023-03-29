@@ -2,7 +2,7 @@
 import { Component } from 'react';
 import { Navigate } from 'react-router';
 
-import { Pane, SideSheet, Heading, Spinner } from 'evergreen-ui';
+import { Pane, SideSheet, Heading, Spinner, toaster } from 'evergreen-ui';
 
 import { DavConfigurationContext } from '../AppSettings';
 
@@ -38,69 +38,56 @@ export default class DavExplorerView extends Component {
 
     componentDidMount = () => {
         if (this.state.currentDirectory === null) {
-            this.setState({
-                currentDirectory: '/',
-                loading: true
-            }, () => this.doGetDirectoryContents());
+            this.getDirectoryContents('/');
         }
     }
 
-    getDirectoryContents = () => {
+    getDirectoryContents = (newDir) => {
         this.setState({
             loading: true            
-        }, () => this.doGetDirectoryContents());
+        }, () => this.doGetDirectoryContents(newDir));
     }
 
-    doGetDirectoryContents = async () => {
+    doGetDirectoryContents = async (newDir) => {
         let dirs = [];
         let files = [];
 
         if (this.context.connectionValid) {
-            const directoryItems = await this.context.selectedUserRootDirectory.davClient.getDirectoryContents(this.state.currentDirectory);
+            const directoryItems = await this.context.selectedUserRootDirectory.davClient.getDirectoryContents(newDir);
 
             dirs = directoryItems.filter(item => { return item.type === 'directory' });
             files = directoryItems.filter(item => { return item.type === 'file' });
 
-            if ('/' === this.state.currentDirectory) {
+            if ('/' === newDir) {
                 this.setState({
-                    rootDirs: dirs
+                    rootDirs: dirs,
+                    currentDirectory: newDir,
+                    directories: dirs,
+                    files: files,
+                    loading: false
+                });
+            } else {
+                this.setState({
+                    currentDirectory: newDir,
+                    directories: dirs,
+                    files: files,
+                    loading: false
                 });
             }
         } else {
             console.error('Cannot get directory contents since connection is not valid.');
+            toaster.danger('Cannot refresh directory contents.');
         }
-
-        this.setState({
-            directories: dirs,
-            files: files,
-            loading: false
-        });
     }
 
     navigate = (folderName) => {
         const separator = this.state.currentDirectory.endsWith('/') || folderName.startsWith('/') ? '' : '/';
         let newDir = this.state.currentDirectory + separator + folderName;
-        this.setState((prev) => {
-            return {
-                currentDirectory: newDir,
-                files: [],
-                directories: []
-            }
-        }, () => {
-            this.getDirectoryContents();
-        });
+        this.getDirectoryContents(newDir);
     }
 
     navigateAbsolute = (absolutePath) => {
-        this.setState((prev) => {
-            return {
-                currentDirectory: absolutePath,
-                files: [],
-                directories: []
-            }
-        }, () => {
-            this.getDirectoryContents();
-        });
+        this.getDirectoryContents(absolutePath);
     }
 
     toggleFileDetails = (fileItem) => {
@@ -127,7 +114,7 @@ export default class DavExplorerView extends Component {
 
     deleteFileItem = (fileItem) => {
         this.context.selectedUserRootDirectory.davClient.deleteFile(fileItem.filename)
-        .then(this.getDirectoryContents());
+        .then(this.getDirectoryContents(this.state.currentDirectory));
     }
 
     render = () => {
