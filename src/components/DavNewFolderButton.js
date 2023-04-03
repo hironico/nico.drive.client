@@ -1,6 +1,6 @@
 
 import { Component } from 'react';
-import { Popover, Pane, Text, TextInput, Button, FolderNewIcon, Checkbox, IconButton, toaster } from 'evergreen-ui';
+import { Popover, Pane, Text, TextInput, Button, AddIcon, Checkbox, toaster } from 'evergreen-ui';
 import { DavConfigurationContext } from '../AppSettings';
 
 export default class DavNewFolderButton extends Component {
@@ -54,7 +54,11 @@ export default class DavNewFolderButton extends Component {
           <Button is="div" marginTop={10} marginLeft={5} alignSelf="right" appearance='default' intent='none' onClick={close}>Close</Button>
         </Pane>
       }}>
-      <IconButton is="div" marginLeft={6} marginRight={6} icon={FolderNewIcon} appearance="primary" intent="info" />
+      <Pane display="flex" alignItems="center">
+        <AddIcon size={18} marginRight={5} color="success"/>
+        <Text className="button-label" color="success">Create folder</Text>
+      </Pane>
+      
     </Popover>
   }
 }

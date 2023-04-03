@@ -27,6 +27,10 @@
   display: none;
 }
 
+.button-label {
+  display: none;
+}
+
 @media screen and (min-width: 900px) {
   .davsidebar {
     display: grid;
@@ -92,5 +96,9 @@
 
   .tablecell.smallhidden {
     display: flex;
+  }
+
+  .button-label {
+    display: block;
   }
 }

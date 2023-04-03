@@ -19,10 +19,10 @@ export default class DavToolBar extends Component {
     }
 
     renderFolderTools = () => {
-        return <>
-            <DavUploadButton currentDirectory={this.props.currentDirectory} handleNavigate={this.props.handleNavigate}/>
+        return <Pane marginLeft={6} marginRight={6} display="flex" alignItems="center" gap={10}>
             <DavNewFolderButton currentDirectory={this.props.currentDirectory} handleNavigate={this.props.handleNavigate} />
-        </>
+            <DavUploadButton currentDirectory={this.props.currentDirectory} handleNavigate={this.props.handleNavigate}/>
+        </Pane>
     }
 
     renderDisplayTools = () => {        
