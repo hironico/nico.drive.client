@@ -61,7 +61,7 @@ class TreeFolder extends Component {
   }
 
   handleToggle = (evt) => {
-    if (this.state.subDirs.length === 0) {
+    if (!this.state.isOpen) {
       this.getDirectoryContents();
     } else {
       this.setState({
@@ -70,10 +70,8 @@ class TreeFolder extends Component {
     }
   }
 
-  handleClick = (evt) => {
-    if (this.state.subDirs.length === 0) {      
-      this.getDirectoryContents();
-    }
+  handleClick = (evt) => {    
+    this.getDirectoryContents();
 
     this.props.handleNavigate(this.props.absolutePath);
   }
