@@ -1,8 +1,8 @@
 
 import React, {Component} from 'react';
 
-import { Text, ChevronDownIcon, ChevronRightIcon, FolderCloseIcon, Pane } from 'evergreen-ui';
-import { Icon, FolderOpenIcon } from 'evergreen-ui';
+import { Text, Spinner, Pane } from 'evergreen-ui';
+import { Icon, FolderOpenIcon, ChevronDownIcon, ChevronRightIcon, FolderCloseIcon } from 'evergreen-ui';
 import { DavConfigurationContext } from '../../AppSettings';
 
 const styles = {
@@ -35,36 +35,15 @@ class TreeFolder extends Component {
     super();
     this.state = {
       isOpen: false,
-      subDirs: []
+      subDirs: [],
+      loading: false
     }
-  }
-
-  componentDidUpdate = (prevProps, prevState, snapshot) => {
-    if (this.props.currentDirectory === null || typeof this.props.currentDirectory === 'undefined') {
-      return;
-    }
-    
-    // detect a current directory change
-    if (prevProps.currentDirectory !== this.props.currentDirectory) {
-      // detect if we jumped into this tree folder directory to refresh its contents
-      // that may have changed folowing a directory create or delete operation but only if we are 'open' state
-      if (this.props.currentDirectory === this.props.absolutePath && this.state.isOpen) {
-        this.getDirectoryContents();
-      } else {
-        // if we create a folder and jumped into that new folder, we want to refresh the parent folder as well
-        // to show the newly created folder.
-        const lastIndex = this.props.currentDirectory.lastIndexOf('/');
-        const parentFolder = this.props.currentDirectory.substring(0, lastIndex);
-        if (this.props.absolutePath === parentFolder && this.state.isOpen) {
-          this.getDirectoryContents();
-        }
-      }
-    } 
   }
 
   getDirectoryContents = () => {
     this.setState({
-      subDirs: []
+      subDirs: [],
+      loading: true
     }, () => this.doGetDirectoryContents());    
   }
 
@@ -75,25 +54,25 @@ class TreeFolder extends Component {
       dirs = directoryItems.filter(item => { return item.type === 'directory' });      
     }
     this.setState({
-      subDirs: dirs
+      subDirs: dirs,
+      loading: false,
+      isOpen: dirs.length > 0
     });
   }
 
   handleToggle = (evt) => {
-    this.setState({
-      isOpen: !this.state.isOpen
-    }, () => {
-      if (this.state.isOpen && this.state.subDirs.length === 0) {
-        this.getDirectoryContents();
-      }
-    });
+    if (this.state.subDirs.length === 0) {
+      this.getDirectoryContents();
+    } else {
+      this.setState({
+        isOpen: !this.state.isOpen
+      })
+    }
   }
 
   handleClick = (evt) => {
     if (this.state.subDirs.length === 0) {      
-      this.setState({
-        isOpen: true
-      }, () => this.getDirectoryContents());
+      this.getDirectoryContents();
     }
 
     this.props.handleNavigate(this.props.absolutePath);
@@ -107,13 +86,15 @@ class TreeFolder extends Component {
 
   render = () => {
     
-    const plusIcon = this.state.isOpen ? ChevronDownIcon : ChevronRightIcon;
+    const chevronIcon = this.state.isOpen ? ChevronDownIcon : ChevronRightIcon;
     const folderIcon = this.state.isOpen ? FolderOpenIcon : FolderCloseIcon;
     const nonBreakableBaseName = this.props.basename.replace(/\s/gu, '\u00a0');
 
+    const plusIcon = this.state.isLoading ? <Spinner size={16} /> : <Icon onClick={this.handleToggle} icon={chevronIcon} size={16} marginRight="10" cursor="pointer"/>;
+
     return <Pane>
               <div style={styles.folderLabel}>
-                <Icon onClick={this.handleToggle} icon={plusIcon} size={16} marginRight="10" cursor="pointer"/>
+                {plusIcon}
                 <div style={styles.folderLabel} onClick={this.handleClick}>
                   <Icon icon={folderIcon} size={16} color="#F7D154" cursor="pointer"/>
                   <Text style={styles.folderLabel.span} cursor="pointer">{nonBreakableBaseName}</Text>
