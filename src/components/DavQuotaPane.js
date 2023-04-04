@@ -16,10 +16,10 @@ export default class DavQuotaPane extends Component {
         const quotaGB = (max / 1024 /1024 / 1024).toFixed(2);
         const usageGB = (value / 1024 /1024 / 1024).toFixed(2);
 
-        return <Pane width="100%" padding={10} display="grid" gridTemplateRows="auto 1fr auto" border="default">
+        return <Pane width="100%" padding={10} display="grid" gridTemplateRows="auto 1fr auto">
             <Text>Disk quota usage:</Text>
             <ProgressBar size="tiny" value={value} max={max} />
-            <Text marginTop={15}>{`${usageGB} of ${quotaGB} GB used.`}</Text>
+            <Text marginTop={10}>{`${usageGB} of ${quotaGB} GB used.`}</Text>
         </Pane>        
     }    
 }
