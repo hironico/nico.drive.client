@@ -90,7 +90,7 @@ class TreeFolder extends Component {
     const folderIcon = this.state.isOpen ? FolderOpenIcon : FolderCloseIcon;
     const nonBreakableBaseName = this.props.basename.replace(/\s/gu, '\u00a0');
 
-    const plusIcon = this.state.isLoading ? <Spinner size={16} /> : <Icon onClick={this.handleToggle} icon={chevronIcon} size={16} marginRight="10" cursor="pointer"/>;
+    const plusIcon = this.state.loading ? <Spinner size={16} marginRight="10" /> : <Icon onClick={this.handleToggle} icon={chevronIcon} size={16} marginRight="10" cursor="pointer"/>;
 
     return <Pane>
               <div style={styles.folderLabel}>
