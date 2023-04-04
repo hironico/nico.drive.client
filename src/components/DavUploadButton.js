@@ -67,7 +67,7 @@ export default class DavUploadButton extends Component {
                 <Text>{this.state.currentUploads.length} files uploading.</Text>
             </>
         }
-        return <Pane display="flex" alignItems="center" onClick={(evt) => this.uploadFile()}> 
+        return <Pane display="flex" alignItems="center" cursor="pointer" onClick={(evt) => this.uploadFile()}> 
             {status}
             <CircleArrowUpIcon size={18} color="info" marginRight={5} />
             <Text className="button-label" color="info">Upload a file</Text>

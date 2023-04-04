@@ -54,7 +54,7 @@ export default class DavNewFolderButton extends Component {
           <Button is="div" marginTop={10} marginLeft={5} alignSelf="right" appearance='default' intent='none' onClick={close}>Close</Button>
         </Pane>
       }}>
-      <Pane display="flex" alignItems="center">
+      <Pane display="flex" alignItems="center" cursor="pointer">
         <AddIcon size={18} marginRight={5} color="success"/>
         <Text className="button-label" color="success">Create folder</Text>
       </Pane>
