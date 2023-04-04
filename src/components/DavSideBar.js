@@ -6,6 +6,7 @@ import Tree from './tree/Tree';
 import DavRootSelector from "./DavRootSelector";
 
 import { DavConfigurationContext } from '../AppSettings';
+import DavQuotaPane from "./DavQuotaPane";
 
 class DavSideBar extends Component {
     static contextType = DavConfigurationContext;
@@ -18,7 +19,7 @@ class DavSideBar extends Component {
     }
 
     render = () => {
-        return <Pane className="davsidebar" gridTemplateRows="auto auto 1fr" gridTemplateColumns="auto" height="100vh" minWidth={170} overflow="hidden" background="gray300" elevation={0} >
+        return <Pane className="davsidebar" gridTemplateRows="auto auto 1fr auto" gridTemplateColumns="auto" height="100vh" minWidth={170} overflow="hidden" background="gray300" elevation={0} >
             <Pane marginTop={15} marginLeft={10} marginRight={10} >
                 <Heading size={900} color="neutral" textAlign="left">Nico's drive</Heading>
             </Pane>
@@ -28,7 +29,8 @@ class DavSideBar extends Component {
             </Pane>            
             <Pane display="grid" gridTemplateColumns="1fr" width="100%" overflow="hidden" marginTop={15} >
                 <Tree key={this.context.selectedUserRootDirectory.name} rootDirs={this.props.rootDirs} handleNavigate={this.props.handleNavigate} currentDirectory={this.props.currentDirectory} />    
-            </Pane>            
+            </Pane>
+            <DavQuotaPane />
         </Pane>
     }
 }
