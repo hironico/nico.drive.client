@@ -7,6 +7,7 @@ import { DavConfigurationContext } from "../AppSettings";
 
 import '../views/DavExplorerView.css';
 import DavRootSelectorMenuGroup from "./DavRootSelectorMenuGroup";
+import DavQuotaPane from "./DavQuotaPane";
 
 /**
  * The DavHeader contains the search bar for filtering currently displayed file items and the avatar menu for user information
@@ -33,7 +34,11 @@ class DavHeader extends Component {
                         <Menu.Group title="Profile">
                             <Menu.Item icon={PersonIcon}>{this.context.username}</Menu.Item>                            
                         </Menu.Group>
-                        <Menu.Divider className="largehidden"/>
+                        <Menu.Divider />
+                        <Menu.Group title="Usage">
+                            <DavQuotaPane />
+                        </Menu.Group>                        
+                        <Menu.Divider />
                         <DavRootSelectorMenuGroup handleNavigate={this.props.handleNavigate} handleCloseMenu={close} />
                         <Menu.Divider />
                         <Menu.Group title="Server">
