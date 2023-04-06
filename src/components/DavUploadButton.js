@@ -56,7 +56,10 @@ export default class DavUploadButton extends Component {
         }
 
         Promise.all(allUploads)
-        .then(() => this.props.handleNavigate(this.props.currentDirectory));
+        .then(() => {
+            this.context.refreshUserInfo(); // for quota update
+            this.props.handleNavigate(this.props.currentDirectory)
+        });
     }
 
     render = () => {

@@ -114,7 +114,10 @@ export default class DavExplorerView extends Component {
 
     deleteFileItem = (fileItem) => {
         this.context.selectedUserRootDirectory.davClient.deleteFile(fileItem.filename)
-        .then(this.getDirectoryContents(this.state.currentDirectory));
+        .then(() => {
+            this.getDirectoryContents(this.state.currentDirectory);
+            this.context.refreshUserInfo();
+        });
     }
 
     render = () => {

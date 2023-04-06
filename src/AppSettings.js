@@ -8,6 +8,7 @@ const defaultValue = {
     username: '',
     userInfo: {},
     setUserInfo: noOpFunc,
+    refresUserInfo: noOpFunc,
 
     davBaseUrl: null,
     davApiBaseUrl: null, 
@@ -52,6 +53,7 @@ class DavConfigurationProvider extends Component {
             username: '',
             userInfo: {},
             setUserInfo: this.setUserInfo,
+            refreshUserInfo: this.refreshUserInfo,
 
             davBaseUrl: null,
             davApiBaseUrl: null, 
@@ -84,12 +86,31 @@ class DavConfigurationProvider extends Component {
             showConnectionDialog: false,
             disconnect: this.disconnect
         }
-    }
+    }    
 
     setUserInfo = (info) => {
         this.setState({
             userInfo: info
         });
+    }
+
+    refreshUserInfo = () => {
+        const authHeader = this.state.selectedUserRootDirectory.davClient.getHeaders()['Authorization']; 
+        const fetchOptions = { 
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': authHeader
+            }
+        };
+
+        const fetchUrl = `${this.state.getAuthUrl()}/whois/${this.state.username}`;
+        // console.log(`Fetching from: ${fetchUrl}`);
+
+        fetch(fetchUrl, fetchOptions)
+        .then(res => res.json())
+        .then(userInfo => this.state.setUserInfo(userInfo))
+        .catch(error => console.log(`Could not update quota space used.\n${error.message}`));
     }
 
     setConnectionValid = (validity) => { 
