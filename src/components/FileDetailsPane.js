@@ -209,6 +209,7 @@ export default class FileDetailsPane extends Component {
                     overflowY="scroll"
                     justifySelf="stretch"
                     alignSelf="stretch"
+                    className="cool-scrollbars"
                 >
                     {panelTab}
                 </Pane>
