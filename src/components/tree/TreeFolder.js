@@ -6,16 +6,6 @@ import { Icon, FolderOpenIcon, ChevronDownIcon, ChevronRightIcon, FolderCloseIco
 import { DavConfigurationContext } from '../../AppSettings';
 
 const styles = {
-    folderLabel: {
-        display: 'grid',
-        justifyItems: 'start',
-        gridTemplateColumns: 'auto auto 1fr',
-        span: {
-          marginLeft: '5px',
-          whiteSpace: 'nowrap'
-        },
-        fontFamily: 'Lato'
-    },
     collapsibleOpen: {
         height: 'auto',
         overflow: 'hidden',
@@ -76,9 +66,9 @@ class TreeFolder extends Component {
     this.props.handleNavigate(this.props.absolutePath);
   }
 
-  renderSubDirectories = () => {
+  renderSubDirectories = (level) => {
     return this.state.subDirs.map((dir, index) => {
-      return <TreeFolder key={`${this.props.id}-${index}`} basename={dir.basename} absolutePath={`${this.props.absolutePath}/${dir.basename}`} handleNavigate={this.props.handleNavigate} currentDirectory={this.props.currentDirectory}/>
+      return <TreeFolder key={`${this.props.id}-${index}`} basename={dir.basename} absolutePath={`${this.props.absolutePath}/${dir.basename}`} handleNavigate={this.props.handleNavigate} currentDirectory={this.props.currentDirectory} level={level}/>
     });
   }
 
@@ -88,19 +78,33 @@ class TreeFolder extends Component {
     const folderIcon = this.state.isOpen ? FolderOpenIcon : FolderCloseIcon;
     const nonBreakableBaseName = this.props.basename.replace(/\s/gu, '\u00a0');
 
-    const plusIcon = this.state.loading ? <Spinner size={16} marginRight="10" /> : <Icon onClick={this.handleToggle} icon={chevronIcon} size={16} marginRight="10" cursor="pointer"/>;
+    const level = this.props.level ? this.props.level : 0;
+    const plusIcon = this.state.loading ? <Spinner size={16} marginRight="10" marginLeft={level * 10}/> : <Icon onClick={this.handleToggle} icon={chevronIcon} size={16} marginRight="10" marginLeft={level * 10} cursor="pointer"/>;
 
-    return <Pane>
-              <div style={styles.folderLabel}>
+    // selected color = tint1
+    const selected = this.props.absolutePath === this.props.currentDirectory;
+    const bgColor = selected ? '#F9FAFC' : 'transparent';
+
+    const subDirs = this.state.isOpen ? this.renderSubDirectories(level + 1) : <></>;
+
+    return <Pane width="100%" display="grid" gridTemplateColumns="1fr">
+              <Pane backgroundColor={bgColor} display="grid" 
+                                              justifyItems="start" 
+                                              alignItems="center" 
+                                              gridTemplateColumns="auto auto 1fr" 
+                                              borderCorlor="transparent" 
+                                              border={1}
+                                              borderRadius={3}
+                                              margin={0}
+                                              fontFamily="Lato"
+                                              >
                 {plusIcon}
-                <div style={styles.folderLabel} onClick={this.handleClick}>
+                <Pane onClick={this.handleClick} display="grid" alignItems="center" justifyItems="start" gridTemplateColumns="auto 1fr" padding={5}>
                   <Icon icon={folderIcon} size={16} color="#F7D154" cursor="pointer"/>
-                  <Text style={styles.folderLabel.span} cursor="pointer">{nonBreakableBaseName}</Text>
-                </div>
-              </div>
-              <div style={this.state.isOpen ? styles.collapsibleOpen : styles.collapsibleClosed}>
-                {this.renderSubDirectories()}
-              </div>
+                  <Text marginLeft={5} whiteSpace="nowrap" cursor="pointer">{nonBreakableBaseName}</Text>
+                </Pane>
+              </Pane>
+              {subDirs}
             </Pane>
   }
 }
