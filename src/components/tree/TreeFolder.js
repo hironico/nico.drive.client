@@ -91,9 +91,7 @@ class TreeFolder extends Component {
               <Pane backgroundColor={bgColor} display="grid" 
                                               justifyItems="start" 
                                               alignItems="center" 
-                                              gridTemplateColumns="auto auto 1fr" 
-                                              borderCorlor="transparent" 
-                                              border={1}
+                                              gridTemplateColumns="auto auto 1fr"                                               
                                               borderRadius={3}
                                               margin={0}
                                               fontFamily="Lato"
