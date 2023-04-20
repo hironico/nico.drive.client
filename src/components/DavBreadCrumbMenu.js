@@ -1,4 +1,4 @@
-import {  ArrowLeftIcon, CaretDownIcon, HomeIcon, IconButton, Link, Menu, NestIcon, Pane, Popover, Position } from "evergreen-ui";
+import {  ArrowLeftIcon, HomeIcon, Link, Menu, NestIcon, Pane, Popover, Position } from "evergreen-ui";
 import { React, Component } from "react";
 
 import '../views/DavExplorerView.css';
@@ -65,13 +65,15 @@ export default class DavBreadCrumbMenu extends Component {
                 </Menu>
             )}
         >
-            <Link href="#" alignSelf="center" borderBottom="none" overflow="hidden" textOverflow="ellipsis" whiteSpace="nowrap"><CaretDownIcon />&nbsp;{currentFolder}</Link>
+            <Link href="#" alignSelf="center" borderBottom="none" overflow="hidden" textOverflow="ellipsis" whiteSpace="nowrap">{currentFolder}</Link>
         </Popover>
     }
 
-    render = () => {
-        return <Pane className="davbreadcrumbmenu" gridTemplateColumns="auto 1fr" width="100%">
-            <IconButton onClick={() => this.handleNavigateParent()} alignSelf="center" icon={ArrowLeftIcon} marginLeft={12} marginRight={5}></IconButton>
+    render = () => {        
+        return <Pane className="davbreadcrumbmenu" gridTemplateColumns="auto 1fr" width="100%" display="grid" alignItems="center">
+            <Link href="#" onClick={() => this.handleNavigateParent()} alignSelf="center" marginLeft={12} marginRight={5} borderBottom="none">
+                <ArrowLeftIcon />
+            </Link>
             {this.renderMenu()}
         </Pane>
     }
