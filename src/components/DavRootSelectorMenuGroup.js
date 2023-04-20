@@ -38,7 +38,6 @@ export default class DavRootSelectorMenuGroup extends Component {
         const items = this.context.userRootDirectories.map((rootDir, index) => {
             let intent = "default";
             if (selectedIndex === index) {
-                console.log(`Rootdir named : ${rootDir.name} is the selected root dir.`)
                 intent = "success";
             }
             return <Menu.Item key={index} icon={DatabaseIcon} intent={intent} onSelect={(evt) => this.changeUserRootDirectory(rootDir, this.props.handleCloseMenu)}>{rootDir.name}</Menu.Item>
