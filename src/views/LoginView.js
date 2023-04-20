@@ -33,8 +33,7 @@ export default class LoginView extends Component {
         }
     }
 
-    componentDidMount = () => { 
-        console.log('Login view did mount');
+    componentDidMount = () => {
         this.setState({
             errorMessage: ''
         });
