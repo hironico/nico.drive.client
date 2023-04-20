@@ -1,5 +1,5 @@
 
-import { Popover, Position, Menu, Button } from 'evergreen-ui';
+import { Popover, Position, Menu, Button, Pane, Text, Small } from 'evergreen-ui';
 import { Icon, DeleteIcon, MoreIcon, FolderCloseIcon } from 'evergreen-ui';
 
 import RegularFile from './RegularFile';
@@ -39,5 +39,11 @@ export default class Folder extends RegularFile {
 
     renderTableIcon = () => {
         return <FolderCloseIcon color="#F7D154" size={16}/>
+    }
+
+    renderTableFileProps = () => {
+        return <Pane className='largehidden'>
+            <Text color="muted"><Small>{this.renderHttpDate(this.props.fileItem.lastmod)}</Small></Text>
+        </Pane>
     }
 }

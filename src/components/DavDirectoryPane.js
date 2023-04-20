@@ -190,7 +190,7 @@ export default class DavDirectoryPane extends Component {
         return <Table className="cool-scrollbars" justifySelf="stretch" alignSelf="stretch" overflowY="scroll">
             <Table.Head height={32}>
                 <Table.TextHeaderCell textAlign="center" maxWidth={48}>&nbsp;</Table.TextHeaderCell>
-                <Table.TextHeaderCell textAlign="left" flexGrow={6}>Name</Table.TextHeaderCell>
+                <Table.TextHeaderCell textAlign="left" flexGrow={5}>Name</Table.TextHeaderCell>
                 <Table.TextHeaderCell className="tablecell smallhidden" display="none" textAlign="left">Type</Table.TextHeaderCell>
                 <Table.TextHeaderCell className="tablecell smallhidden" display="none" textAlign="left">Size</Table.TextHeaderCell>
                 <Table.TextHeaderCell className="tablecell smallhidden" display="none" textAlign="left">Modified</Table.TextHeaderCell>
