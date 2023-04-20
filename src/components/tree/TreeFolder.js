@@ -5,19 +5,6 @@ import { Text, Spinner, Pane } from 'evergreen-ui';
 import { Icon, FolderOpenIcon, ChevronDownIcon, ChevronRightIcon, FolderCloseIcon } from 'evergreen-ui';
 import { DavConfigurationContext } from '../../AppSettings';
 
-const styles = {
-    collapsibleOpen: {
-        height: 'auto',
-        overflow: 'hidden',
-        paddingLeft: '10px'
-    },
-    collapsibleClosed: {
-        height: '0px',
-        overflow: 'hidden',
-        paddingLeft: '10px'
-    }
-  }
-
 class TreeFolder extends Component {
   static contextType = DavConfigurationContext;
 
