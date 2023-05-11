@@ -1,5 +1,5 @@
 
-import { Card, Icon, Pane, Link, Text, Small, Table, Button, Position, Popover, Menu, Tooltip } from 'evergreen-ui';
+import { Card, Icon, Pane, Link, Text, Small, Table, Button, Position, Popover, Menu, Tooltip, Strong } from 'evergreen-ui';
 import {DocumentIcon, InfoSignIcon, DownloadIcon, MoreIcon, DeleteIcon} from 'evergreen-ui';
 import { Component } from 'react';
 import { DateTime } from 'luxon';
@@ -149,7 +149,7 @@ export default class RegularFile extends Component {
     }
 
     renderTableIcon = () => {
-        return <DocumentIcon size={16} />
+        return <DocumentIcon size={24} />
     }
 
     renderTableFileProps = () => {
@@ -159,13 +159,13 @@ export default class RegularFile extends Component {
     }
 
     renderTable = () => {
-        return <Table.Row key={this.props.fileItem.basename} isSelectable height={48}>
-            <Table.TextCell textAlign="center" maxWidth={48}>
+        return <Table.Row key={this.props.fileItem.basename} isSelectable height={52} paddingBottom={5} paddintTop={5}>
+            <Table.TextCell textAlign="center" maxWidth={64} minWidth={32} width={32} padding={0}>
                 {this.renderTableIcon()}
             </Table.TextCell>
             <Table.Cell textAlign="left" flexGrow={5} display="grid" gridTemplateRows="1fr auto">
                 <Link href="#" onClick={(evt) => this.handleDefaultAction()} borderBottom="none">
-                    <Text color="muted" overflowX="hidden" whiteSpace="nowrap" textOverflow="ellipsis">{this.props.fileItem.basename}</Text>
+                    <Strong color="muted" overflowX="hidden" whiteSpace="nowrap" textOverflow="ellipsis" >{this.props.fileItem.basename}</Strong>
                 </Link>
                 {this.renderTableFileProps()}
             </Table.Cell>

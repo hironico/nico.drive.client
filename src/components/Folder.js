@@ -38,7 +38,7 @@ export default class Folder extends RegularFile {
     }
 
     renderTableIcon = () => {
-        return <FolderCloseIcon color="#F7D154" size={16}/>
+        return <FolderCloseIcon color="#F7D154" size={24}/>
     }
 
     renderTableFileProps = () => {

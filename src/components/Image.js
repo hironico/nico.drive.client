@@ -135,8 +135,8 @@ export default class Image extends RegularFile {
                 backgroundImage: imgUrl,
                 backgroundPosition: 'center',
                 backgroundSize: 'cover',
-                width: '24px',
-                height: '20px',
+                width: '32px',
+                height: '32px',
                 margin: '0px'
             }
             return <div style={styleThumb}>&nbsp;</div>
