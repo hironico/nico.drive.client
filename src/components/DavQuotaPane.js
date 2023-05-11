@@ -41,6 +41,7 @@ export default class DavQuotaPane extends Component {
                 if (ratio >= 0.90) {
                     color = "#D14343"; // red500
                 }
+                value = Math.min(value, max);
             break;
         }
 
