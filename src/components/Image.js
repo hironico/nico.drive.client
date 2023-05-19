@@ -137,13 +137,12 @@ export default class Image extends RegularFile {
                 backgroundSize: 'cover',
                 width: '32px',
                 height: '32px',
-                margin: '0px'
+                margin: '0px',
+                alignSelf: 'center'
             }
             return <div style={styleThumb}>&nbsp;</div>
         } else {
-            return <Pane display="flex" alignItems="center" justifyContent="center" height={24} width={24} padding={0} margin={0}>
-                       <Spinner height={16} width={16} />
-                   </Pane>
+            return <Spinner height={16} width={16} alignSelf="center"/>
         }
     }
 

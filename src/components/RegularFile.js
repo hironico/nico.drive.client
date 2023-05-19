@@ -149,7 +149,7 @@ export default class RegularFile extends Component {
     }
 
     renderTableIcon = () => {
-        return <DocumentIcon size={24} />
+        return <DocumentIcon size={32} alignSelft="center" />
     }
 
     renderTableFileProps = () => {
@@ -160,7 +160,7 @@ export default class RegularFile extends Component {
 
     renderTable = () => {
         return <Table.Row key={this.props.fileItem.basename} isSelectable height={52} paddingBottom={5} paddintTop={5}>
-            <Table.TextCell textAlign="center" maxWidth={64} minWidth={32} width={32} padding={0}>
+            <Table.TextCell textAlign="center" display="grid" gridTemplateColumns="auto" alignItems="center" justifyContent="center" maxWidth={64} minWidth={32} width={32} padding={0}>
                 {this.renderTableIcon()}
             </Table.TextCell>
             <Table.Cell textAlign="left" flexGrow={5} display="grid" gridTemplateRows="1fr auto">
