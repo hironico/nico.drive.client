@@ -84,10 +84,10 @@ export default class Image extends RegularFile {
         })
         .then(res => {
             if (res.status === 202) {
-                console.log('Image thumb is being gnerated. LOCKED by server. Trying un 1 sec.');
+                console.log('Image thumb is being gnerated. LOCKED by server. Trying again in 5 sec.');
                 setTimeout(() => {
                     this.generateThumb();
-                }, 1000);
+                }, 5000);
             } else {
                 res.blob()
                 .then(res => {
