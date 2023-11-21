@@ -71,7 +71,7 @@ export default class DavBreadCrumbMenu extends Component {
 
     render = () => {        
         return <Pane className="davbreadcrumbmenu" gridTemplateColumns="auto 1fr" width="100%" alignItems="center">
-            <ArrowLeftIcon onClick={() => this.handleNavigateParent()} alignSelf="center" marginLeft={12} marginRight={5} color="#3366FF"/>
+            <ArrowLeftIcon cursor="pointer" onClick={() => this.handleNavigateParent()} alignSelf="center" marginLeft={12} marginRight={5} color="#3366FF"/>
             {this.renderMenu()}
         </Pane>
     }
