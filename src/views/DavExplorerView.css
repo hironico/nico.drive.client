@@ -31,6 +31,11 @@
   display: none;
 }
 
+.card-file {
+  width: 120px;
+  height:120px; 
+}
+
 @media screen and (min-width: 900px) {
   .davsidebar {
     display: grid;
@@ -100,5 +105,10 @@
 
   .button-label {
     display: block;
+  }
+
+  .card-file {
+    width: 150px;
+    height:150px; 
   }
 }

@@ -106,8 +106,6 @@ export default class RegularFile extends Component {
             <Card
                 elevation={2}
                 backgroundColor="white"
-                width={150}
-                height={150}
                 marginTop={10}
                 marginBottom={0}
                 marginLeft={5}
@@ -117,6 +115,7 @@ export default class RegularFile extends Component {
                 gridTemplateRows="1fr auto"
                 justifyContent="center"
                 alignItems="center"
+                className="card-file"
             >
                 <Link href="#" height="100%" marginTop={3} onClick={evt => this.handleDefaultAction()} borderBottom="none">
                     <Pane style={styleThumb}>
