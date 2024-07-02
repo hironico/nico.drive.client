@@ -82,7 +82,7 @@ export default class RegularFile extends Component {
     renderGridLabel = () => {
         return <Pane display="grid" gridTemplateColumns="1fr auto" alignItems="center" justifyContent="space-between" width="calc(100% - 10px)" margin={5}>
                 <Tooltip content={this.props.fileItem.basename}>
-                    <Text overflowX="hidden" whiteSpace="nowrap" textOverflow="ellipsis" maxWidth={155} maxHeight={24}>{this.props.fileItem.basename}</Text>
+                    <Text onClick={evt => this.handleDefaultAction()} cursor="pointer" overflowX="hidden" whiteSpace="nowrap" textOverflow="ellipsis" maxWidth={155} maxHeight={24}>{this.props.fileItem.basename}</Text>
                 </Tooltip>
                 {this.renderActionMenu()}
             </Pane>
@@ -134,11 +134,11 @@ export default class RegularFile extends Component {
             content={
                 <Menu>
                     <Menu.Group>
-                        <Menu.Item icon={InfoSignIcon} intent="info" onSelect={() => { this.props.handleShowDetails(this.props.fileItem) }}>Details...</Menu.Item>
-                        <Menu.Item icon={DownloadIcon} intent="success" onSelect={() => { this.download(this.props.fileItem)} }>Download...</Menu.Item>
+                        <Menu.Item icon={InfoSignIcon} intent="info" onSelect={() => this.props.handleShowDetails(this.props.fileItem) }>Details...</Menu.Item>
+                        <Menu.Item icon={DownloadIcon} intent="success" onSelect={() => this.download(this.props.fileItem) }>Download...</Menu.Item>
                     </Menu.Group>
                     <Menu.Group>
-                        <Menu.Item icon={DeleteIcon} intent="danger" onSelect={() => { this.props.handleDelete(this.props.fileItem)} }>Delete</Menu.Item>
+                        <Menu.Item icon={DeleteIcon} intent="danger" onSelect={() => this.props.handleDelete(this.props.fileItem) }>Delete</Menu.Item>
                     </Menu.Group>
                 </Menu>
             }            
@@ -158,23 +158,23 @@ export default class RegularFile extends Component {
     }
 
     renderTable = () => {
-        return <Table.Row key={this.props.fileItem.basename} isSelectable height={52} paddingBottom={5} paddingTop={5} onClick={(evt) => this.handleDefaultAction()}>
-            <Table.TextCell textAlign="center" display="grid" gridTemplateColumns="auto" alignItems="center" justifyContent="center" maxWidth={64} minWidth={32} width={32} padding={0}>
+        return <Table.Row key={this.props.fileItem.basename} isSelectable height={52} paddingBottom={5} paddingTop={5} >
+            <Table.TextCell onClick={(evt) => this.handleDefaultAction()} textAlign="center" display="grid" gridTemplateColumns="auto" alignItems="center" justifyContent="center" maxWidth={64} minWidth={32} width={32} padding={0}>
                 {this.renderTableIcon()}
             </Table.TextCell>
-            <Table.Cell textAlign="left" flexGrow={5} display="grid" gridTemplateRows="1fr auto">
+            <Table.Cell onClick={(evt) => this.handleDefaultAction()} textAlign="left" flexGrow={5} display="grid" gridTemplateRows="1fr auto">
                 <Link href="#" borderBottom="none">
                     <Strong color="muted" overflowX="hidden" whiteSpace="nowrap" textOverflow="ellipsis" >{this.props.fileItem.basename}</Strong>
                 </Link>
                 {this.renderTableFileProps()}
             </Table.Cell>
-            <Table.TextCell className="tablecell smallhidden" textAlign="left">
+            <Table.TextCell onClick={(evt) => this.handleDefaultAction()} className="tablecell smallhidden" textAlign="left">
                 {this.renderMimeType(this.props.fileItem.mime)}
             </Table.TextCell>
-            <Table.TextCell className="tablecell smallhidden" textAlign="left">
+            <Table.TextCell onClick={(evt) => this.handleDefaultAction()} className="tablecell smallhidden" textAlign="left">
                 {this.renderFileItemSize()}
             </Table.TextCell>
-            <Table.TextCell className="tablecell smallhidden" textAlign="left">
+            <Table.TextCell onClick={(evt) => this.handleDefaultAction()} className="tablecell smallhidden" textAlign="left">
                 {this.renderHttpDate(this.props.fileItem.lastmod)}
             </Table.TextCell>
             <Table.TextCell textAlign="center">
