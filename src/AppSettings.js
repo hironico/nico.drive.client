@@ -44,6 +44,8 @@ const defaultValue = {
 
 const DavConfigurationContext = React.createContext(defaultValue);
 
+const useDavConfigurationContext = () => React.useContext(DavConfigurationContext);
+
 class DavConfigurationProvider extends Component {
 
     constructor() {
@@ -262,4 +264,4 @@ class DavConfigurationProvider extends Component {
     }
 }
 
-export { DavConfigurationContext, DavConfigurationProvider }
+export { DavConfigurationContext, DavConfigurationProvider, useDavConfigurationContext }
