@@ -29,7 +29,7 @@ class App extends Component {
           <Route path="/" element={welcomePage} />
           <Route path="login" element={loginView} />
           <Route path="explorer" element={davExplorerView} />
-          <Route path="*" element={<Navigate to="/" />} />
+          <Route path="*" element={<Navigate to="login" />} />
         </Routes>
         </BrowserRouter>
         </DavConfigurationProvider>
