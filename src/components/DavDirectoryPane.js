@@ -1,5 +1,5 @@
 import { Component } from "react"
-import { EmptyState, Pane, Table, Dialog, Text, Button } from "evergreen-ui";
+import { EmptyState, Pane, Table, Dialog, Text, Button , SearchInput} from "evergreen-ui";
 import { Spinner, SearchIcon } from "evergreen-ui";
 
 import Folder from './Folder';
@@ -181,13 +181,18 @@ export default class DavDirectoryPane extends Component {
     }
 
     renderDirectoryContentsGrid = () => {
-        return <Pane className="cool-scrollbars" display="flex" flexWrap="wrap" justifyContent="center" alignContent="flex-start" background="tint2"  overflowY="scroll">
+        return <Pane display="grid" gridTemplateRows="auto 1fr" gridTemplateColumns="1fr" overflowY="scroll" alignItems="auto" justifyItems="stretch" justifyContent="start">
+            <SearchInput placeholder="Search something..." alignSelf="auto" justifySelf="stretch" width="100%" paddingRight={10} paddingLeft={10} onChange={(e) => this.context.filterFileItems(e.target.value)} value={this.context.filter} /> 
+            <Pane className="cool-scrollbars" display="flex" flexWrap="wrap" justifyContent="center" alignContent="flex-start" background="tint2" overflowY="scroll" paddingBottom={10}>
                  { this.props.loading ? this.renderLoadingState() : this.renderFoldersAndFiles() }
             </Pane>
+        </Pane>
     }
 
     renderDirectoryContentsTable = () => {
-        return <Table className="cool-scrollbars" justifySelf="stretch" alignSelf="stretch" overflowY="scroll">
+        return <Pane display="grid" gridTemplateRows="auto 1fr" gridTemplateColumns="1fr" overflowY="scroll" alignItems="stretch">
+        <SearchInput placeholder="Search something..." width="100%" paddingRight={10} paddingLeft={10} onChange={(e) => this.context.filterFileItems(e.target.value)} value={this.context.filter} />            
+        <Table className="cool-scrollbars" justifySelf="stretch" alignSelf="stretch" overflowY="scroll">
             <Table.Head height={32}>
                 <Table.TextHeaderCell textAlign="center" maxWidth={48}>&nbsp;</Table.TextHeaderCell>
                 <Table.TextHeaderCell textAlign="left" flexGrow={5}>Name</Table.TextHeaderCell>
@@ -200,6 +205,7 @@ export default class DavDirectoryPane extends Component {
             { this.props.loading ? this.renderLoadingState() : this.renderFoldersAndFiles() }
         </Table.Body>
       </Table>
+      </Pane>
     }
 
     renderDirectoryContentsPhoto = () => {
