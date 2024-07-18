@@ -22,7 +22,7 @@ export default class DavToolBar extends Component {
         }
     }
 
-    showNeyFolder = () => {
+    showNewFolder = () => {
         this.setState({showNewFolderSideSheet: true})
       }
 
@@ -47,7 +47,7 @@ export default class DavToolBar extends Component {
             <DavBreadCrumbMenu handleNavigate={this.props.handleNavigate} currentDirectory={this.props.currentDirectory} />
 
             <Pane justifySelf="end" display="inline-flex" alignItems="center" >
-                <DavDisplayToolsMenu handleDisplayMode={this.props.handleDisplayMode} showCreateFolderPane={this.showNeyFolder} showFileUploadPane={this.showFileUpload} />
+                <DavDisplayToolsMenu handleDisplayMode={this.props.handleDisplayMode} showCreateFolderPane={this.showNewFolder} showFileUploadPane={this.showFileUpload} />
                 <DavUserMenu handleNavigate={this.props.handleNavigate} />
             </Pane>
         </Pane>
