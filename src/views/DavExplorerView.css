@@ -27,16 +27,12 @@
   display: none;
 }
 
-.button-label {
-  display: none;
-}
-
 .card-file {
   width: 120px;
   height:120px; 
 }
 
-@media screen and (min-width: 900px) {
+@media screen and (min-width: 950px) {
   .davsidebar {
     display: grid;
   }
@@ -101,10 +97,6 @@
 
   .tablecell.smallhidden {
     display: flex;
-  }
-
-  .button-label {
-    display: block;
   }
 
   .card-file {
