@@ -6,7 +6,6 @@ import { Pane, SideSheet, Heading, Spinner, toaster } from 'evergreen-ui';
 
 import { DavConfigurationContext } from '../AppSettings';
 
-import DavHeader from '../components/DavHeader';
 import FileDetailsPane from '../components/FileDetailsPane';
 import DavDirectoryPane from '../components/DavDirectoryPane';
 import DavToolBar from '../components/DavToolBar';
@@ -136,8 +135,7 @@ export default class DavExplorerView extends Component {
         return <Pane className="davexplorerview">
             <DavSideBar rootDirs={this.state.rootDirs} handleNavigate={this.navigateAbsolute} currentDirectory={this.state.currentDirectory} isLoading={this.state.loading} />
 
-            <Pane display="grid" gridTemplateRows="auto auto 1fr"  overflowY="hidden">
-                <DavHeader handleNavigate={this.navigateAbsolute} />
+            <Pane display="grid" gridTemplateRows="auto auto 1fr"  overflowY="hidden" paddingTop={10}>
 
                 <DavToolBar currentDirectory={this.state.currentDirectory}
                     displayMode={this.state.displayMode} 
