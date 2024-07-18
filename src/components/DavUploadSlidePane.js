@@ -6,7 +6,7 @@ export default function DavUploadSlidePane (props) {
     return <SideSheet
         position={Position.TOP}
         isShown={props.isShown}
-        onCloseComplete={() => props.handleClose}
+        onCloseComplete={() => props.handleClose()}
         preventBodyScrolling
         containerProps={{
             display: 'grid',
