@@ -1,6 +1,6 @@
 import { Component } from "react";
 
-import { Pane, SearchInput, Position, Popover, Avatar, Menu } from 'evergreen-ui';
+import { Position, Popover, Avatar, Menu } from 'evergreen-ui';
 import { GlobeNetworkIcon, PersonIcon, LogOutIcon } from 'evergreen-ui';
 
 import { DavConfigurationContext } from "../AppSettings";
@@ -13,7 +13,7 @@ import DavQuotaPane from "./DavQuotaPane";
  * The DavHeader contains the search bar for filtering currently displayed file items and the avatar menu for user information
  * It uses the context to operate on file items filtering and login information.
  */
-class DavHeader extends Component {
+class DavUserMenu extends Component {
     static contextType = DavConfigurationContext;
 
     constructor() {
@@ -24,9 +24,7 @@ class DavHeader extends Component {
     }
 
     render = () => {
-        return <Pane background="tint2" display="grid" gridTemplateColumns="1fr auto" paddingTop={15} paddingBottom={15} paddingLeft={15} justifyItems="stretch">
-            <SearchInput placeholder="Search something..." width="75%" alignSelf="center" onChange={(e) => this.context.filterFileItems(e.target.value)} value={this.context.filter} />            
-            <Popover
+        return <Popover
                 justifySelf="end"
                 position={Position.BOTTOM_RIGHT}
                 content={({ close }) => (
@@ -52,8 +50,7 @@ class DavHeader extends Component {
             >
                 <Avatar name={this.context.username} size={32} marginLeft={15} marginRight={15} style={{ cursor: 'pointer' }} justifySelf="end" />
             </Popover>
-        </Pane>
     }
 }
 
-export default DavHeader;
+export default DavUserMenu;
