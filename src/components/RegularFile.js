@@ -21,7 +21,7 @@ export default class RegularFile extends Component {
     }
 
     handleDefaultAction = () => {
-        this.download(this.props.fileItem);
+        this.props.defaultAction ? this.props.defaultAction() : this.download(this.props.fileItem);
     }
 
     renderMimeType = (mimeType) => {
@@ -117,7 +117,7 @@ export default class RegularFile extends Component {
                 alignItems="center"
                 className="card-file"
             >
-                <Link href="#" height="100%" marginTop={3} onClick={evt => this.handleDefaultAction()} borderBottom="none">
+                <Link href="#" height="100%" marginTop={3} onClick={(evt) => this.handleDefaultAction()} borderBottom="none">
                     <Pane style={styleThumb}>
                         {this.renderGridIcon()}
                     </Pane>
