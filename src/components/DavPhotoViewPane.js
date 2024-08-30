@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import { DoubleChevronLeftIcon, DoubleChevronRightIcon, SearchIcon, CrossIcon } from 'evergreen-ui';
+import { DoubleChevronLeftIcon, DoubleChevronRightIcon, SearchIcon, CrossIcon, CloudDownloadIcon, InfoSignIcon } from 'evergreen-ui';
 import { Pane, Text, EmptyState, Link } from 'evergreen-ui';
 
 import Image from './Image';
@@ -61,52 +61,65 @@ export default class DavPhotoViewPane extends Component {
         }
     }
 
+    handleDownload = () => {
+        const fileItem = this.props.fileItems[this.state.currentFileItemIndex];
+        const dlLink = this.context.selectedUserRootDirectory.davClient.getFileDownloadLink(fileItem.filename);
+        window.open(dlLink, '_blank');
+    }
+
     render = () => {
         if (typeof this.props.fileItems === 'undefined' || this.props.fileItems.length === 0) {
             return <EmptyState
-                        background="light"
-                        title="There is no photo to display in this directory!"
-                        orientation="horizontal"
-                        icon={<SearchIcon color="#C1C4D6" />}
-                        iconBgColor="#EDEFF5"
-                        description="Switch to grid or table display mode to view the other files in this directory."
-                    />
+                background="light"
+                title="There is no photo to display in this directory!"
+                orientation="horizontal"
+                icon={<SearchIcon color="#C1C4D6" />}
+                iconBgColor="#EDEFF5"
+                description="Switch to grid or table display mode to view the other files in this directory."
+            />
         }
 
         return <Pane display="grid"
-                    gridTemplateColumns="auto 1fr auto"
-                    gridTemplateRows="auto 1fr auto"
-                    height="100vh"
-                    width="100vw"
-                    background="black"
-                    position="absolute"
-                    top="0px"
-                    left="0px"
-                    zIndex="4">
-            <Pane background="black" padding={10} gridColumnStart="span 2" justifySelf="center" alignSelf="center">
-                <Text>{this.props.fileItems[this.state.currentFileItemIndex].basename}</Text>
+            gridTemplateColumns="auto 1fr auto"
+            gridTemplateRows="auto 1fr auto"
+            gridTemplateAreas="'header header header' 'sideleft main sideright' 'footer footer footer'"
+            height="100vh"
+            width="100vw"
+            background="black"
+            position="absolute"
+            top="0px"
+            left="0px"
+            zIndex="4">
+            <Pane background="black" padding={10} gridArea="header" justifySelf="end" alignSelf="center" width="100%">
+                <Text color="white">{this.props.fileItems[this.state.currentFileItemIndex].basename}</Text>
+                <Pane float="right" display="inline-flex">
+                    <Link onClick={evt => this.props.handleShowDetails(this.props.fileItems[this.state.currentFileItemIndex])} href="#" borderBottom="none">
+                        <InfoSignIcon className="davphotoviewicon" />
+                    </Link>
+                    <Link onClick={evt => this.handleDownload()} href="#" borderBottom="none">
+                        <CloudDownloadIcon className="davphotoviewicon" marginLeft={5}/>
+                    </Link>                    
+                    <Link onClick={this.handleClose} href="#" borderBottom="none" marginLeft={15}>
+                        <CrossIcon className="davphotoviewicon" />
+                    </Link>
+                </Pane>
             </Pane>
-            <Pane background="black" padding={10} justifySelf="right" alignSelf="center">
-                <Link onClick={this.handleClose} href="#" borderBottom="none">
-                    <CrossIcon className="davphotoviewicon" />
-                </Link>
-            </Pane>
-            <Pane background="black" padding={10} justifySelf="center" alignSelf="center">
+            <Pane background="black" padding={10} gridArea="sideleft" justifySelf="center" alignSelf="center">
                 <Link onClick={this.handlePreviousPhoto} href="#" borderBottom="none">
                     <DoubleChevronLeftIcon className="davphotoviewicon" />
-                </Link>                        
+                </Link>
             </Pane>
-            <Pane background="black" width="auto" height="auto" >
+            <Pane background="black" width="auto" height="auto" gridArea="main">
                 <Image displayMode='photo' fileItem={this.props.fileItems[this.state.currentFileItemIndex]} />
             </Pane>
-            <Pane background="black" padding={10} justifySelf="center" alignSelf="center">
+            <Pane background="black" padding={10} justifySelf="center" alignSelf="center" gridArea="sideright">
                 <Link onClick={this.handleNextPhoto} href="#" borderBottom="none">
                     <DoubleChevronRightIcon className="davphotoviewicon" />
-                </Link>                          
-            </Pane>      
+                </Link>
+            </Pane>
 
-            <Pane className="cool-scrollbars" background="black" gridColumn="1 / -1" overflowX="scroll" overflowY="hidden" justifyItems="center" display="grid" gridTemplateRows="1fr" gridTemplateColumns="1fr">
-                <DavPhotoStrip fileItems={this.props.fileItems} handleShowDetails={this.props.handleShowDetails} handleDelete={this.props.handleDelete} handleShowPhoto={this.handleShowPhotoAt}/>
+            <Pane className="cool-scrollbars" background="black" gridArea="footer" gridColumn="1 / -1" overflowX="scroll" overflowY="hidden" justifyItems="center" display="grid" gridTemplateRows="1fr" gridTemplateColumns="1fr">
+                <DavPhotoStrip fileItems={this.props.fileItems} handleShowDetails={this.props.handleShowDetails} handleDelete={this.props.handleDelete} handleShowPhoto={this.handleShowPhotoAt} />
             </Pane>
         </Pane>
     }
