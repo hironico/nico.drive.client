@@ -6,8 +6,60 @@ import RegularFile from './RegularFile';
 
 export default class Folder extends RegularFile {
 
+    constructor(props) {
+        super(props);
+        this.state = {
+            elementsCount: 0,
+            sizeInBytes: 0
+        }
+    }
+
+    componentDidMount = () => {
+        this.fetchMetaData();
+    }
+
+    componentDidUpdate = (prevProps, prevState) => {
+        if (prevProps.fileItem !== this.props.fileItem) {
+            this.fetchMetaData();
+        }        
+    }
+
+    fetchMetaData = () => {
+        const metaUrl = this.context.getFolderMetadataApiUrl();
+
+        const metadataRequest = {
+            "username": this.context.username,
+            "homeDir": this.context.selectedUserRootDirectory.name,
+            "filename": this.props.fileItem.filename
+        }
+        
+        const authHeader = this.context.selectedUserRootDirectory.davClient.getHeaders()['Authorization'];
+
+        fetch(metaUrl, {
+            method: 'POST',
+            body: JSON.stringify(metadataRequest),
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': authHeader
+            }
+        })
+        .then(res => res.status === 200 ? res.json() : {})
+        .then(res => {
+            this.setState({
+                sizeInBytes: res.sizeBytes,
+                elementsCount: res.elementsCount
+            });
+        }).catch(err => {
+            console.log('Error while reading folder metadata: ' + err);
+        });
+    }
+
     handleDefaultAction = () => {
         this.props.handleNavigate(this.props.fileItem.basename);
+    }
+
+    getFileItemSize = () => {
+        return this.state.sizeInBytes;
     }
 
     renderActionMenu = () => {
@@ -29,10 +81,6 @@ export default class Folder extends RegularFile {
         return 'Directory';
     }
 
-    renderFileItemSize = () => {
-        return '';
-    }
-
     renderGridIcon = () => {
         return <Icon icon={FolderCloseIcon} size={48} color="#F7D154" />
     }
@@ -43,7 +91,7 @@ export default class Folder extends RegularFile {
 
     renderTableFileProps = () => {
         return <Pane className='largehidden'>
-            <Text color="muted"><Small>{this.renderHttpDate(this.props.fileItem.lastmod)}</Small></Text>
+            <Text color="muted"><Small>{this.renderFileItemSize()}&nbsp;-&nbsp;{this.renderHttpDate(this.props.fileItem.lastmod)}</Small></Text>
         </Pane>
     }
 }

@@ -24,6 +24,10 @@ export default class RegularFile extends Component {
         this.props.defaultAction ? this.props.defaultAction() : this.download(this.props.fileItem);
     }
 
+    getFileItemSize = () => {
+        return this.props.fileItem.size;
+    }
+
     renderMimeType = (mimeType) => {
         if (this.props.fileItem.type === 'directory') {
             return 'Folder';
@@ -62,7 +66,7 @@ export default class RegularFile extends Component {
 
     renderFileItemSize = () => {
         let unite = 'bytes';
-        let taille = this.props.fileItem.size;
+        let taille = this.getFileItemSize();
         if (taille > 1024) {
             taille = (taille / 1024).toFixed(2);
             unite = 'KB';
