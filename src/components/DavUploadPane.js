@@ -10,11 +10,6 @@ export default function DavFileUploadPane(props) {
 
   const davConfigurationContext = useDavConfigurationContext();
 
-  const values = React.useMemo(() => [...files, ...fileRejections.map((fileRejection) => fileRejection.file)], [
-    files,
-    fileRejections,
-  ]);
-
   const handleRemove = React.useCallback(
     (file) => {
       const updatedFiles = files.filter((existingFile) => existingFile !== file)
@@ -33,31 +28,51 @@ export default function DavFileUploadPane(props) {
     [files, fileRejections, maxFiles, maxSizeInBytes]
   );
 
-  const uploadOneFile = async (file) => {
-    console.log('Now uploading file: ' + file.name);
-    if (!davConfigurationContext) {
-      console.log('Cannot upload. Not connected to dav client in app context.');
-      return;
-    }
-    
-    const targetFileName = `${props.currentDirectory}/${file.name}`;
-    console.log(`Target file name is: ${targetFileName}`);
+  const uploadOneFile = (file) => {
+    return new Promise((accept, reject) => {
+      console.log('Now uploading file: ' + file.name);
+      if (!davConfigurationContext) {
+        const msg = 'Cannot upload. Not connected to dav client in app context.';
+        console.log(msg);
+        reject(msg);
+        return;
+      }
 
-    const options = {
-      overwrite: false,
-      contentLength: false
-    };
+      const targetFileName = `${props.currentDirectory}/${file.name}`;
+      console.log(`Target file name is: ${targetFileName}`);
 
-    // TODO test if file exists and if we do overwrite?
-    await davConfigurationContext.selectedUserRootDirectory.davClient.putFileContents(targetFileName, file, options)
-      .catch(error => {
-        const errMsg = `Problem while uploading file ${targetFileName}: ${error}`;
-        console.error(errMsg);
-        toaster.danger(errMsg);        
-      });
+      const options = {
+        overwrite: false,
+        contentLength: false
+      };
 
-    // remove the file whatever the result is AFTER the execution of upload
-    handleRemove(file);
+      const fileReader = new FileReader();
+      fileReader.onload = (e) => {
+        const fileContents = e.target.result;
+        // TODO test if file exists and if we do overwrite?
+        davConfigurationContext.selectedUserRootDirectory.davClient.putFileContents(targetFileName, fileContents, options)
+          .then((result) => {
+            if (result) {
+              console.log('File has been properly uploaded.');
+            } else {
+              console.log('Error while uploading the file. Already exists ?');
+            }
+            // remove the file whatever the result is AFTER the execution of upload
+            handleRemove(file);
+
+            accept(file);
+          })
+          .catch(error => {
+            const errMsg = `Problem while uploading file ${targetFileName}: ${error}`;
+            console.error(errMsg);
+            toaster.danger(errMsg);
+            reject(error);
+          });
+      }
+
+      fileReader.readAsArrayBuffer(file);
+    })
+
   }
 
   const addFilesToUpload = (newFiles) => {
@@ -65,19 +80,24 @@ export default function DavFileUploadPane(props) {
     if (newFiles === null || newFiles.length === 0) {
       console.log('Nothing to upload.');
       return;
-    }    
-
-    newFiles.forEach((file) => {
-       // this must be a blocking function
-       uploadOneFile(file);
-    });
-
-    props.handleNavigate(props.currentDirectory);
-    if (props.handleClose) {
-      props.handleClose();
     }
 
-    toaster.success('All files are uploaded!');
+    const allProm = [];
+    newFiles.forEach((file) => {
+      // this must be a blocking function
+      const prom = uploadOneFile(file);
+      allProm.push(prom);
+    });
+
+    Promise.all(allProm)
+      .then(() => {
+        props.handleNavigate(props.currentDirectory);
+        if (props.handleClose) {
+          props.handleClose();
+        }
+
+        toaster.success('All files are uploaded!');
+      })
   };
 
   const fileCountOverLimit = files.length + fileRejections.length - maxFiles;
@@ -118,7 +138,7 @@ export default function DavFileUploadPane(props) {
             </React.Fragment>
           )
         }}
-        values={values}
+        values={files}
       />
     </Pane>
   )
