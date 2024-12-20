@@ -70,7 +70,7 @@ export default class DavPhotoViewPane extends Component {
     render = () => {
         if (typeof this.props.fileItems === 'undefined' || this.props.fileItems.length === 0) {
             return <EmptyState
-                background="light"
+                background="dark"
                 title="There is no photo to display in this directory!"
                 orientation="horizontal"
                 icon={<SearchIcon color="#C1C4D6" />}

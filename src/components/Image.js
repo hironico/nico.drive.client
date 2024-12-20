@@ -1,5 +1,5 @@
 
-import { Pane, Spinner } from 'evergreen-ui';
+import { Pane, Spinner, Alert } from 'evergreen-ui';
 
 import RegularFile from './RegularFile';
 
@@ -32,7 +32,7 @@ export default class Image extends RegularFile {
     }
 
     generateThumb = () => {
-        const authHeader = this.context.selectedUserRootDirectory.davClient.getHeaders()['Authorization']; 
+        const authHeader = this.context.selectedUserRootDirectory.davClient.getHeaders()['Authorization'];
 
         let width;
         let height;
@@ -74,7 +74,7 @@ export default class Image extends RegularFile {
         }
 
         const that = this;
-        fetch(this.context.getThumbApiUrl(), { 
+        fetch(this.context.getThumbApiUrl(), {
             method: 'POST',
             body: JSON.stringify(req),
             headers: {
@@ -82,50 +82,50 @@ export default class Image extends RegularFile {
                 'Authorization': authHeader
             }
         })
-        .then(res => {
-            if (res.status === 202) {
-                console.log('Image thumb is being gnerated. LOCKED by server. Trying again in 5 sec.');
-                setTimeout(() => {
-                    this.generateThumb();
-                }, 5000);
-            } else {
-                res.blob()
-                .then(res => {
-                    var reader = new FileReader();
-                    reader.readAsDataURL(res);
-                    reader.onloadend = function() {
-                        var base64data = reader.result;
-        
-                        // put that into state
-                        that.setState(prev => {
-                            return {
-                                thumb: base64data
+            .then(res => {
+                if (res.status === 202) {
+                    console.log('Image thumb is being gnerated. LOCKED by server. Trying again in 5 sec.');
+                    setTimeout(() => {
+                        this.generateThumb();
+                    }, 5000);
+                } else {
+                    res.blob()
+                        .then(res => {
+                            var reader = new FileReader();
+                            reader.readAsDataURL(res);
+                            reader.onloadend = function () {
+                                var base64data = reader.result;
+
+                                // put that into state
+                                that.setState(prev => {
+                                    return {
+                                        thumb: base64data
+                                    }
+                                });
                             }
-                        });   
-                    }                   
-                })
-                .catch(err => console.log(`Could not read thumb from data sent by server for file ${this.props.fileItem.filename}\nReason: ${err}`));
-            }            
-        })
-        .catch(err => console.log(`Could not generate thumb for file ${this.props.fileItem.filename}\nReason: ${err}`));      
+                        })
+                        .catch(err => console.log(`Could not read thumb from data sent by server for file ${this.props.fileItem.filename}\nReason: ${err}`));
+                }
+            })
+            .catch(err => console.log(`Could not generate thumb for file ${this.props.fileItem.filename}\nReason: ${err}`));
     }
 
-    renderGridIcon = () => {        
+    renderGridIcon = () => {
         if (this.state.thumb !== null) {
             const imgUrl = 'url(' + this.state.thumb + ')';
             const styleThumb = {
                 backgroundImage: imgUrl,
                 backgroundPosition: 'center',
-                backgroundSize: 'cover',                
+                backgroundSize: 'cover',
                 width: '100%',
                 height: '100%'
-            }             
+            }
             return <div style={styleThumb}>&nbsp;</div>
         } else {
             return <Pane display="flex" alignItems="center" justifyContent="center">
-                       <Spinner />
-                   </Pane>
-        } 
+                <Spinner />
+            </Pane>
+        }
     }
 
     renderTableIcon = () => {
@@ -142,11 +142,11 @@ export default class Image extends RegularFile {
             }
             return <div style={styleThumb}>&nbsp;</div>
         } else {
-            return <Spinner height={16} width={16} alignSelf="center"/>
+            return <Spinner height={16} width={16} alignSelf="center" />
         }
     }
 
-    renderPhoto = () => {  
+    renderPhoto = () => {
         if (this.state.thumb !== null) {
             const imgUrl = 'url(' + this.state.thumb + ')';
             const styleThumb = {
@@ -156,12 +156,16 @@ export default class Image extends RegularFile {
                 backgroundRepeat: 'no-repeat',
                 width: '100%',
                 height: '100%'
-            }             
+            }
             return <div style={styleThumb}>&nbsp;</div>
         } else {
-            return <Pane display="flex" alignItems="center" justifyContent="center" height={200}>
-                        <Spinner color="white" />
-                    </Pane>
+            return <Pane display="flex" alignItems="center" justifyContent="center" height="100%">
+                <Alert
+                    intent="none"
+                    title="Picture is loading"
+                    marginBottom={32}
+                >Please be patient...</Alert>
+            </Pane>
         }
     }
 }

@@ -131,10 +131,10 @@ export default class DavDirectoryPane extends Component {
 
     renderLoadingState = () => {
         return <EmptyState
-            background="light"
+            background="tint2"
             title="Loading..."
             orientation="horizontal"
-            icon={<Spinner color="#C1C4D6" />}
+            icon={<Spinner color="tint2" />}
             iconBgColor="#EDEFF5"
             description="This can take some time depending of the number of folders and files contained in this directory."
         />
