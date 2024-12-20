@@ -190,7 +190,7 @@ export default class DavDirectoryPane extends Component {
     }
 
     renderDirectoryContentsTable = () => {
-        return <Pane display="grid" gridTemplateRows="auto 1fr" gridTemplateColumns="1fr" overflowY="scroll" alignItems="stretch">
+        return <Pane display="grid" gridTemplateRows="auto 1fr" gridTemplateColumns="1fr" overflowY="scroll" alignItems="stretch" background="tint2">
         <SearchInput placeholder="Search something..." width="100%" paddingRight={10} paddingLeft={10} onChange={(e) => this.context.filterFileItems(e.target.value)} value={this.context.filter} />            
         <Table className="cool-scrollbars" justifySelf="stretch" alignSelf="stretch" overflowY="scroll">
             <Table.Head height={32}>

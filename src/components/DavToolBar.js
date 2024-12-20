@@ -39,7 +39,7 @@ export default class DavToolBar extends Component {
     }
 
     render = () => {
-        return <Pane zIndex={1} flexShrink={0} background="tint2" display="grid" gridTemplateColumns="1fr auto" paddingBottom={10}>            
+        return <Pane zIndex={1} flexShrink={0} background="tint2" display="grid" gridTemplateColumns="1fr auto" paddingBottom={10} paddingTop={10}>            
             <DavUploadSlidePane currentDirectory={this.props.currentDirectory} handleNavigate={this.props.handleNavigate} isShown={this.state.showUploadPaneSideSheet} handleClose={this.closeFileUpload} />
             <DavNewFolderSlidePane currentDirectory={this.props.currentDirectory} handleNavigate={this.props.handleNavigate} isShown={this.state.showNewFolderSideSheet} handleClose={this.closeNewFolder} />
 
