@@ -4,7 +4,7 @@ import { useDavConfigurationContext } from "../AppSettings";
 
 export default function DavFileUploadPane(props) {
   const maxFiles = 5;
-  const maxSizeInBytes = 50 * 1024 ** 2; // 50 MB
+  const maxSizeInBytes = 5000 * 1024 ** 2; // 5 GB
   const [files, setFiles] = React.useState([]);
   const [fileRejections, setFileRejections] = React.useState([]);
 
@@ -50,6 +50,7 @@ export default function DavFileUploadPane(props) {
       fileReader.onload = (e) => {
         const fileContents = e.target.result;
         // TODO test if file exists and if we do overwrite?
+        // TODO try to STREAM to dav server instead of putting all contents at once, so that we can monitor transfer progress
         davConfigurationContext.selectedUserRootDirectory.davClient.putFileContents(targetFileName, fileContents, options)
           .then((result) => {
             if (result) {
