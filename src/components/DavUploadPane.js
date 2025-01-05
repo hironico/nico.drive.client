@@ -1,17 +1,20 @@
-import React from "react";
+import React, {useCallback, useEffect} from "react";
 import { FileUploader, FileCard, Pane, FileRejectionReason, rebaseFiles, Alert, majorScale, toaster } from "evergreen-ui";
 import { useDavConfigurationContext } from "../AppSettings";
 
 export default function DavFileUploadPane(props) {
-  const maxFiles = 5;
-  const maxSizeInBytes = 5000 * 1024 ** 2; // 5 GB
+  const maxFiles = 50;
+  const maxSizeInBytes = 5000 * 1024 * 2; // 5 GB
   const [files, setFiles] = React.useState([]);
   const [fileRejections, setFileRejections] = React.useState([]);
+  const [currentFile, setCurrentFile] = React.useState(null);
+  const [uploadsPending, setUploadsPending] = React.useState(false);
 
   const davConfigurationContext = useDavConfigurationContext();
 
-  const handleRemove = React.useCallback(
-    (file) => {
+  const handleRemove = useCallback((file) => {
+    console.log(`Removing file ${file.name}`);
+
       const updatedFiles = files.filter((existingFile) => existingFile !== file)
       const updatedFileRejections = fileRejections.filter((fileRejection) => fileRejection.file !== file)
 
@@ -22,84 +25,89 @@ export default function DavFileUploadPane(props) {
         { maxFiles, maxSizeInBytes }
       )
 
-      setFiles(accepted)
-      setFileRejections(rejected)
-    },
-    [files, fileRejections, maxFiles, maxSizeInBytes]
-  );
+      setFiles(accepted);
+      setFileRejections(rejected);
+      setCurrentFile(null); // this will trigger the next file upload if any
+    }, [fileRejections, files, maxSizeInBytes]);
 
-  const uploadOneFile = (file) => {
-    return new Promise((accept, reject) => {
-      console.log('Now uploading file: ' + file.name);
-      if (!davConfigurationContext) {
-        const msg = 'Cannot upload. Not connected to dav client in app context.';
-        console.log(msg);
-        reject(msg);
-        return;
-      }
 
-      const targetFileName = `${props.currentDirectory}/${file.name}`;
-      console.log(`Target file name is: ${targetFileName}`);
+  const uploadOneFile = useCallback((file) => {
+    if (file === null) {
+      console.log('Attempting to upload a null file !');
+      return;
+    }
 
-      const options = {
-        overwrite: false,
-        contentLength: false
-      };
+    console.log('Now uploading file: ' + file.name);
+    if (!davConfigurationContext) {
+      const msg = 'Cannot upload. Not connected to dav client in app context.';
+      console.log(msg);
+      return;
+    }
 
-      const fileReader = new FileReader();
-      fileReader.onload = (e) => {
-        const fileContents = e.target.result;
-        // TODO test if file exists and if we do overwrite?
-        // TODO try to STREAM to dav server instead of putting all contents at once, so that we can monitor transfer progress
-        davConfigurationContext.selectedUserRootDirectory.davClient.putFileContents(targetFileName, fileContents, options)
-          .then((result) => {
-            if (result) {
-              console.log('File has been properly uploaded.');
-            } else {
-              console.log('Error while uploading the file. Already exists ?');
-            }
-            // remove the file whatever the result is AFTER the execution of upload
-            handleRemove(file);
+    const targetFileName = `${props.currentDirectory}/${file.name}`;
+    console.log(`Target file name is: ${targetFileName}`);
 
-            accept(file);
-          })
-          .catch(error => {
-            const errMsg = `Problem while uploading file ${targetFileName}: ${error}`;
-            console.error(errMsg);
-            toaster.danger(errMsg);
-            reject(error);
-          });
-      }
+    const options = {
+      overwrite: false,
+      contentLength: false
+    };
 
-      fileReader.readAsArrayBuffer(file);
-    })
+    const fileReader = new FileReader();
+    fileReader.onload = (e) => {
+      const fileContents = e.target.result;
+      // TODO test if file exists and if we do overwrite?
+      // TODO try to STREAM to dav server instead of putting all contents at once, so that we can monitor transfer progress
+      davConfigurationContext.selectedUserRootDirectory.davClient.putFileContents(targetFileName, fileContents, options)
+        .then((result) => {
+          if (result) {
+            console.log('File has been properly uploaded.');
+          } else {
+            console.log('Error while uploading the file. Already exists ?');
+          }
+        })
+        .finally(() => {
+          // remove the file from the queue whatever the result is AFTER the execution of upload
+          handleRemove(file);
+        })
+        .catch(error => {
+          const errMsg = `Problem while uploading file ${targetFileName}: ${error}`;
+          console.error(errMsg);
+          toaster.danger(errMsg);
+        })
+    }
 
-  }
+    fileReader.readAsArrayBuffer(file);    
+  }, [davConfigurationContext, handleRemove, props.currentDirectory]);
 
-  const addFilesToUpload = (newFiles) => {
-    setFiles(newFiles);
+  const addFilesToUpload = (newFiles) => {    
     if (newFiles === null || newFiles.length === 0) {
       console.log('Nothing to upload.');
       return;
     }
 
-    const allProm = [];
-    newFiles.forEach((file) => {
-      // this must be a blocking function
-      const prom = uploadOneFile(file);
-      allProm.push(prom);
-    });
-
-    Promise.all(allProm)
-      .then(() => {
-        props.handleNavigate(props.currentDirectory);
-        if (props.handleClose) {
-          props.handleClose();
-        }
-
-        toaster.success('All files are uploaded!');
-      })
+    const toUpload = files.concat(newFiles);
+    setFiles(toUpload);
   };
+
+  // anytime the files queue changes, then check if something still in the queue and upload it.
+  useEffect(() => {
+    console.log('something changed in files, currentFiles, and uploadOneFile');
+    // do not remove this condition otherwise infinite loop calling this effect
+    if (currentFile === null && files.length > 0) {
+      console.log('CurrentFile is null and files has at least one element... Upload 1st one.');
+      const oneFile = files[0]; 
+      setCurrentFile(oneFile);
+      setUploadsPending(true);
+      uploadOneFile(oneFile);
+    }
+
+    // if we are finished then close the upload pane
+    if (currentFile === null && files.length === 0 && uploadsPending) {
+      setUploadsPending(false);
+      props.handleClose();
+      props.handleNavigate(props.currentDirectory);
+    }
+  }, [files, currentFile, uploadOneFile]);
 
   const fileCountOverLimit = files.length + fileRejections.length - maxFiles;
   const fileCountError = `You can upload up to 5 files. Please remove ${fileCountOverLimit} ${fileCountOverLimit === 1 ? 'file' : 'files'}.`;
@@ -112,7 +120,7 @@ export default function DavFileUploadPane(props) {
         disabled={files.length + fileRejections.length >= maxFiles}
         maxSizeInBytes={maxSizeInBytes}
         maxFiles={maxFiles}
-        onAccepted={addFilesToUpload}
+        onAccepted={(f) => addFilesToUpload(f)}
         onRejected={setFileRejections}
         renderFile={(file, index) => {
           const { name, size, type } = file
