@@ -2,7 +2,7 @@ import React, {useCallback, useEffect} from "react";
 import { FileUploader, FileCard, Pane, FileRejectionReason, rebaseFiles, Alert, majorScale, toaster } from "evergreen-ui";
 import { useDavConfigurationContext } from "../AppSettings";
 
-export default function DavFileUploadPane(props) {
+export default function DavFileUploadPane({handleClose, handleNavigate, currentDirectory}) {
   const maxFiles = 50;
   const maxSizeInBytes = 5000 * 1024 * 2; // 5 GB
   const [files, setFiles] = React.useState([]);
@@ -44,7 +44,7 @@ export default function DavFileUploadPane(props) {
       return;
     }
 
-    const targetFileName = `${props.currentDirectory}/${file.name}`;
+    const targetFileName = `${currentDirectory}/${file.name}`;
     console.log(`Target file name is: ${targetFileName}`);
 
     const options = {
@@ -77,7 +77,7 @@ export default function DavFileUploadPane(props) {
     }
 
     fileReader.readAsArrayBuffer(file);    
-  }, [davConfigurationContext, handleRemove, props.currentDirectory]);
+  }, [davConfigurationContext, handleRemove, currentDirectory]);
 
   const addFilesToUpload = (newFiles) => {    
     if (newFiles === null || newFiles.length === 0) {
@@ -104,10 +104,10 @@ export default function DavFileUploadPane(props) {
     // if we are finished then close the upload pane
     if (currentFile === null && files.length === 0 && uploadsPending) {
       setUploadsPending(false);
-      props.handleClose();
-      props.handleNavigate(props.currentDirectory);
+      handleClose();
+      handleNavigate(currentDirectory);
     }
-  }, [files, currentFile, uploadOneFile]);
+  }, [files, currentFile, uploadOneFile, currentDirectory, uploadsPending, handleClose, handleNavigate]);
 
   const fileCountOverLimit = files.length + fileRejections.length - maxFiles;
   const fileCountError = `You can upload up to 5 files. Please remove ${fileCountOverLimit} ${fileCountOverLimit === 1 ? 'file' : 'files'}.`;
