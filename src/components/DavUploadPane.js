@@ -3,7 +3,7 @@ import { FileUploader, FileCard, Pane, FileRejectionReason, rebaseFiles, Alert, 
 import { useDavConfigurationContext } from "../AppSettings";
 
 export default function DavFileUploadPane({handleClose, handleNavigate, currentDirectory}) {
-  const maxFiles = 50;
+  const maxFiles = 10;
   const maxSizeInBytes = 5000 * 1024 * 2; // 5 GB
   const [files, setFiles] = React.useState([]);
   const [fileRejections, setFileRejections] = React.useState([]);
@@ -110,7 +110,7 @@ export default function DavFileUploadPane({handleClose, handleNavigate, currentD
   }, [files, currentFile, uploadOneFile, currentDirectory, uploadsPending, handleClose, handleNavigate]);
 
   const fileCountOverLimit = files.length + fileRejections.length - maxFiles;
-  const fileCountError = `You can upload up to 5 files. Please remove ${fileCountOverLimit} ${fileCountOverLimit === 1 ? 'file' : 'files'}.`;
+  const fileCountError = `You can upload up to ${maxFiles} files at a time. Please remove ${fileCountOverLimit} file(s).`;
 
   return (
     <Pane padding={10} justifySelf="stretch" alignSelf="stretch" display="grid" justifyContent="stretch" alignItems="center">
@@ -123,11 +123,9 @@ export default function DavFileUploadPane({handleClose, handleNavigate, currentD
         onAccepted={(f) => addFilesToUpload(f)}
         onRejected={setFileRejections}
         renderFile={(file, index) => {
-          const { name, size, type } = file
-          const renderFileCountError = index === 0 && fileCountOverLimit > 0
+          const { name, size, type } = file;
+          const renderFileCountError = index === 0 && fileCountOverLimit > 0;
 
-          // We're displaying an <Alert /> component to aggregate files rejected for being over the maxFiles limit,
-          // so don't show those errors individually on each <FileCard />
           const fileRejection = fileRejections.find(
             (fileRejection) => fileRejection.file === file && fileRejection.reason !== FileRejectionReason.OverFileLimit
           );
@@ -143,6 +141,7 @@ export default function DavFileUploadPane({handleClose, handleNavigate, currentD
                 sizeInBytes={size}
                 type={type}
                 validationMessage={message}
+                isLoading={currentFile === file}
               />
             </React.Fragment>
           )
