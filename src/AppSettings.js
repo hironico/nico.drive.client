@@ -38,6 +38,7 @@ const defaultValue = {
     getMetadataApiUrl: noOpFunc,
     getAuthUrl: noOpFunc,
     getFolderMetadataApiUrl: noOpFunc,
+    getZipApiUrl: noOpFunc,
 
     showConnectionDialog: false,
     disconnect: noOpFunc
@@ -85,7 +86,8 @@ class DavConfigurationProvider extends Component {
             getExifApiUrl: this.getExifApiUrl,
             getMetadataApiUrl: this.getMetadataApiUrl,
             getAuthUrl: this.getAuthUrl,  
-            getFolderMetadataApiUrl: this.getFolderMetadataApiUrl,          
+            getFolderMetadataApiUrl: this.getFolderMetadataApiUrl,
+            getZipApiUrl: this.getZipApiUrl,
             
             showConnectionDialog: false,
             disconnect: this.disconnect
@@ -243,6 +245,10 @@ class DavConfigurationProvider extends Component {
 
     getFolderMetadataApiUrl = () => {
         return `${this.state.davApiBaseUrl}/meta/folder`;
+    }
+
+    getZipApiUrl = () => {
+        return `${this.state.davApiBaseUrl}/zip`;
     }
 
     isImageFile = (filename) => {

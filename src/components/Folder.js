@@ -1,10 +1,13 @@
 
 import { Popover, Position, Menu, Button, Pane, Text, Small } from 'evergreen-ui';
-import { Icon, DeleteIcon, MoreIcon, FolderCloseIcon } from 'evergreen-ui';
+import { Icon, DeleteIcon, MoreIcon, FolderCloseIcon, CompressedIcon } from 'evergreen-ui';
 
 import RegularFile from './RegularFile';
 
+import { DavConfigurationContext } from '../AppSettings';
+
 export default class Folder extends RegularFile {
+    static contextType = DavConfigurationContext;
 
     constructor(props) {
         super(props);
@@ -54,6 +57,101 @@ export default class Folder extends RegularFile {
         });
     }
 
+    downloadZipFileLegacy = async (response) => {
+        try {
+          // Créer un blob à partir de la réponse
+          const blob = await response.blob();
+          
+          // Créer une URL d'objet pour le blob
+          const url = window.URL.createObjectURL(blob);
+          
+          // Créer un élément a invisible pour déclencher le téléchargement
+          const a = document.createElement('a');
+          a.style.display = 'none';
+          a.href = url;
+          
+          // Essayer d'obtenir le nom du fichier depuis les en-têtes de la réponse
+          const contentDisposition = response.headers.get('content-disposition');
+          let filename = 'hironico-folder.zip';
+          
+          if (contentDisposition) {
+            const filenameMatch = contentDisposition.match(/filename="(.+)"/);
+            if (filenameMatch && filenameMatch[1]) {
+              filename = filenameMatch[1];
+            }
+          }
+          
+          a.download = filename;
+          document.body.appendChild(a);
+          a.click();
+          
+          // Nettoyer
+          window.URL.revokeObjectURL(url);
+          document.body.removeChild(a);
+          
+          console.log('Téléchargement terminé avec succès (méthode traditionnelle)');
+        } catch (error) {
+          console.error('Erreur lors du téléchargement:', error);
+        }
+      }
+
+    handleDownloadZip = (fileItem) => {
+        const authHeader = this.context.selectedUserRootDirectory.davClient.getHeaders()['Authorization'];
+        const req = {
+            "username": this.context.username,
+            "homeDir": this.context.selectedUserRootDirectory.name,
+            "filename": fileItem.filename,
+        }
+
+        fetch(this.context.getZipApiUrl(), {
+            method: 'POST',
+            body: JSON.stringify(req),
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': authHeader
+            }
+        }).then(async response => {
+            if (!response.ok) {
+                alert('Error download zip');
+            } else {
+                // Essayer d'obtenir le nom du fichier depuis les en-têtes de la réponse
+                const contentDisposition = response.headers.get('content-disposition');
+                let filename = 'hironico-folder.zip';
+                
+                if (contentDisposition) {
+                    const filenameMatch = contentDisposition.match(/filename="(.+)"/);
+                    if (filenameMatch && filenameMatch[1]) {
+                    filename = filenameMatch[1];
+                    }
+                }
+
+                // Vérifier si l'API File System Access est disponible
+                if ('showSaveFilePicker' in window) {
+                    // Ouvrir la boîte de dialogue pour choisir le fichier de destination
+                    const fileHandle = await window.showSaveFilePicker({
+                    suggestedName: filename,
+                    types: [{
+                        description: 'Fichier ZIP',
+                        accept: {'application/zip': ['.zip']}
+                    }]
+                    });
+                    
+                    // Créer un stream writable
+                    const writableStream = await fileHandle.createWritable();
+                    
+                    // Obtenir le stream de la réponse et le rediriger vers le fichier
+                    await response.body.pipeTo(writableStream);
+                    
+                    console.log('Téléchargement terminé avec succès');
+                } else {
+                    // Fallback pour les navigateurs qui ne supportent pas l'API
+                    console.log("L'API File System Access n'est pas supportée par votre navigateur, utilisation de la méthode alternative");
+                    this.downloadZipFileLegacy(response);
+                }
+            }
+        })
+    }
+
     handleDefaultAction = () => {
         this.props.handleNavigate(this.props.fileItem.basename);
     }
@@ -67,6 +165,10 @@ export default class Folder extends RegularFile {
             position={Position.BOTTOM_RIGHT}
             content={
                 <Menu>
+                    <Menu.Group>
+                        <Menu.Item icon={CompressedIcon} intent="success" onSelect={(_evt) => this.handleDownloadZip(this.props.fileItem)}>Download ZIP</Menu.Item>
+                    </Menu.Group>
+                    <Menu.Divider />
                     <Menu.Group>
                         <Menu.Item icon={DeleteIcon} intent="danger" onSelect={() => { this.props.handleDelete(this.props.fileItem)} }>Delete</Menu.Item>
                     </Menu.Group>
