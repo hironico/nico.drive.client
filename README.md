@@ -14,7 +14,8 @@ It features a convenient yet visually appealing user interface to get the most o
 
 When connected to a nico.drive webDAV server, the following additional features are available:
 - Displays image thumbnails thanks to the thumb REST API of nico.drive's server.
-- Enhanced file meta-data from the nico.drive's server REST API : image exif and xmp
+- Enhanced file meta-data from the nico.drive's server REST API : image exif and xmp.
+- Download a directory contents in a ZIP archive.
 
 # How-to use
 
@@ -46,7 +47,7 @@ Then copy or embed the build directory on your production server.
 or
 
 - sudo npm install -g serve
-- serve -s build
+- serve -s dist
 
 More info : https://cra.link/deployment
 
