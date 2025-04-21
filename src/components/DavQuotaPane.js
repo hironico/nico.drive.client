@@ -1,12 +1,11 @@
 import ProgressBar from "./progressbar/ProgressBar";
 
-const { Pane, Text } = require("evergreen-ui");
-const {  Component } = require("react");
-const { DavConfigurationContext } = require("../AppSettings");
+import { Pane, Text } from "evergreen-ui";
+import {  Component }  from "react";
+import { DavConfigurationContext } from "../AppSettings";
 
 export default class DavQuotaPane extends Component {
-    static contextType = DavConfigurationContext;
-    
+    static contextType = DavConfigurationContext;   
 
     render = () => {
 
