@@ -19,7 +19,7 @@ export default class LoginView extends Component {
         super();
         let url = `${window.location.protocol}//${window.location.hostname}:${window.location.port}/`;
 
-        if (url === 'http://localhost:3000/') {
+        if (url.startsWith('http://localhost')) {
             url = 'http://localhost:8080/';
         }
 
