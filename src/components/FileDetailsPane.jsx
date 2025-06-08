@@ -16,13 +16,12 @@ export default class FileDetailsPane extends Component {
         this.state = {
             imageData: [],
             selectedIndex: 0,
-            tabs: ['Information', 'Image', 'Metadata']
+            tabs: ['Information', 'Image']
         }
     }
 
     componentDidMount = () => {
         this.loadImageInformation();
-        this.loadMetaDataInformation();
     }
 
     getDownloadLink = () => {        
@@ -56,36 +55,36 @@ export default class FileDetailsPane extends Component {
         .then(res => res.status === 200 ? res.json() : { message : `${res.status} : ${res}`})
         .then(exifInfo => {
 
-            exifInfo.exif = this.cleanProperties(exifInfo.exif);
-            exifInfo.image = this.cleanProperties(exifInfo.image);
-            exifInfo.gps = this.cleanProperties(exifInfo.gps);
-            exifInfo.makerNote = this.cleanProperties(exifInfo.makerNote);
-            exifInfo.thumbNail = this.cleanProperties(exifInfo.thumbnail);
+            const cleanProps = this.cleanProperties(exifInfo);
 
+            // console.debug(`Clean props are:\n${JSON.stringify(cleanProps, null, 4)}`);
+
+            const gpsInfo = Object.fromEntries(Object.entries(cleanProps).filter(([key]) => key.startsWith('GPS')));
+            const otherInfo = Object.fromEntries(Object.entries(cleanProps).filter(([key]) => !key.startsWith('GPS')));
             const data = {
-                image: exifInfo.image,
-                exif: exifInfo.exif,
-                gps: exifInfo.gps,
-                makernote: exifInfo.makernote,
-                thumbnail: exifInfo.thumbnail
+                exif: otherInfo,
+                gps: gpsInfo,
             }
 
             this.setState({
                 imageData: data
             });
         }).catch(err => {
-            console.log('Error while reading exif data: ' + err);
+            console.error('Error while reading exif data: ' + err);
         });
     }
 
     cleanProperties = (data) => {
         for (const dataKey in data) {
             let dataValue = data[dataKey];
+            if (Array.isArray(dataValue)) {
+                data[dataKey] = Array.from(dataValue).join(',');
+            }
             if (this.isObject(dataValue)) {
                 if (this.isBufferDataObject(dataValue)) {
                     data[dataKey] = this.getBufferDataOBjectValue(dataValue);
                 } else {
-                    console.log(`${dataKey} is an object with unrecognized structure. Replacing with string.`);
+                    console.debug(`${dataKey} is an object with unrecognized structure. Replacing with string.`);
                     data[dataKey] = '' + JSON.stringify(dataValue);
                 }
             }
@@ -109,37 +108,6 @@ export default class FileDetailsPane extends Component {
         return String.fromCodePoint(...variable.data);
     }
 
-
-    loadMetaDataInformation = () => {
-        const metaUrl = this.context.getMetadataApiUrl();
-
-        const metadataRequest = {
-            "username": this.context.username,
-            "homeDir": this.context.selectedUserRootDirectory.name,
-            "filename": this.props.fileItem.filename,
-            "raw": false
-        }
-        
-        const authHeader = this.context.selectedUserRootDirectory.davClient.getHeaders()['Authorization'];
-
-        fetch(metaUrl, {
-            method: 'POST',
-            body: JSON.stringify(metadataRequest),
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': authHeader
-            }
-        })
-        .then(res => res.status === 200 ? res.json() : {})
-        .then(res => {
-            this.setState({
-                metadata: res
-            });
-        }).catch(err => {
-            console.log('Error while reading metadata: ' + err);
-        });
-    }
-
     renderFileItemSize = () => {
         let unite = 'bytes';
         let taille = this.props.fileItem.size;
@@ -161,7 +129,7 @@ export default class FileDetailsPane extends Component {
 
     renderImageTabs = () => {
         const isImage = this.context.isImageFile(this.props.fileItem.basename);
-        return <Pane padding={15} overflowY="hidden" display="grid" gridTemplateColumns="1fr" gridTemplateRows="auto 1fr" width="100%" height="100%">
+        return <Pane padding={5} width="100%" height="100%" className="cool-scrollbars" overflowY="scroll">
             <Tablist marginBottom={5} borderBottom="muted">
                 {this.state.tabs.filter((tab, index) => {
                     return index > 0 ? isImage : true;
@@ -179,7 +147,6 @@ export default class FileDetailsPane extends Component {
                     ))}
             </Tablist>
             {this.state.tabs.map((tab, index) => {
-
                 let panelTab;
                 switch (index) {
                     case 0:
@@ -188,10 +155,6 @@ export default class FileDetailsPane extends Component {
 
                     case 1:
                         panelTab = this.renderImageDetails();
-                        break;
-
-                    case 2:
-                        panelTab = this.renderMetadataDetails();
                         break;
 
                     default:
@@ -206,10 +169,8 @@ export default class FileDetailsPane extends Component {
                     aria-hidden={index !== this.state.selectedIndex}
                     display={index === this.state.selectedIndex ? 'grid' : 'none'}
                     gridTemplateColumns="1fr"
-                    overflowY="scroll"
-                    justifySelf="stretch"
-                    alignSelf="stretch"
-                    className="cool-scrollbars"
+                    gridTemplateRows="auto auto"
+                    width="100%"
                 >
                     {panelTab}
                 </Pane>
@@ -219,10 +180,10 @@ export default class FileDetailsPane extends Component {
     }
 
     renderFileDetails = () => {
-        return <Table marginTop={15} alignSelf="start">
+        return <Table justifySelf="stretch"> 
             <Table.Head height={32}>
                 <Table.TextHeaderCell>
-                    <Pane display="inline-flex" alignItems="center">
+                    <Pane>
                         <InfoSignIcon />&nbsp;File information
                     </Pane>
                 </Table.TextHeaderCell>
@@ -230,9 +191,9 @@ export default class FileDetailsPane extends Component {
                     &nbsp;
                 </Table.TextHeaderCell>
             </Table.Head>
-            <Table.Body>
-                <Table.Row key="row_path" height={32}>
-                    <Table.TextCell>Path:</Table.TextCell>
+            <Table.VirtualBody height={250}>
+                <Table.Row height={32}>
+                    <Table.TextCell key="row_path">Path:</Table.TextCell>
                     <Table.TextCell>{this.props.fileItem.filename}</Table.TextCell>
                 </Table.Row>
                 <Table.Row height={32}>
@@ -243,7 +204,7 @@ export default class FileDetailsPane extends Component {
                     <Table.TextCell key="row_size">Size:</Table.TextCell>
                     <Table.TextCell>{this.renderFileItemSize()}</Table.TextCell>
                 </Table.Row>
-            </Table.Body>
+            </Table.VirtualBody>
         </Table>
     }
 
@@ -253,14 +214,14 @@ export default class FileDetailsPane extends Component {
             rows = this.renderEmptyDetails(`No ${categoryName} information has been found.`);
         } else {
             rows = Object.keys(category).map((key, index) => {
-                return <Table.Row key={index} height={32}>
+                return <Table.Row height={32} key={`img-cat-row-${index}`}>
                     <Table.TextCell>{key}</Table.TextCell>
                     <Table.TextCell>{category[key]}</Table.TextCell>
                 </Table.Row>
             });
         }
 
-        return <Table marginTop={15} key={categoryName} alignSelf="start">
+        return <Table marginBottom={15} key={categoryName} alignSelf="start" justifySelf="stretch">
             <Table.Head height={32}>
                 <Table.TextHeaderCell>
                     <Pane display="inline-flex" alignItems="center">
@@ -271,9 +232,9 @@ export default class FileDetailsPane extends Component {
                     &nbsp;
                 </Table.TextHeaderCell>
             </Table.Head>
-            <Table.Body>
+            <Table.VirtualBody maxHeight={300} height={300}>
                 {rows}
-            </Table.Body>
+            </Table.VirtualBody>
         </Table>
     }
 
@@ -285,38 +246,10 @@ export default class FileDetailsPane extends Component {
                 return this.renderImageCategoryDetails(this.state.imageData[key], key);
             });
 
-            return <>{tables}</>
+            return <Pane display="grid" gridTemplateColumns="1fr" gridTemplateRows="1fr" alignSelf="stretch" alignItems="stretch"> 
+                {tables}
+            </Pane>
         }
-    }
-
-    renderMetadataDetails = () => {
-        let rows;
-        if (typeof this.state.metadata === 'undefined' || Object.keys(this.state.metadata).length === 0) {
-            rows = this.renderEmptyDetails('Metedata details are not available.')
-        } else {
-            rows = Object.keys(this.state.metadata).map((key, index) => {
-                return <Table.Row key={`meta-${index}`} height={32}>
-                    <Table.TextCell>{key}</Table.TextCell>
-                    <Table.TextCell>{this.state.metadata[key]}</Table.TextCell>
-                </Table.Row>
-            });
-        }
-
-        return <Table marginTop={15}>
-            <Table.Head height={32}>
-                <Table.TextHeaderCell>
-                    <Pane display="inline-flex" alignItems="center">
-                        <InfoSignIcon />&nbsp;Metadata information
-                    </Pane>
-                </Table.TextHeaderCell>
-                <Table.TextHeaderCell>
-                    &nbsp;
-                </Table.TextHeaderCell>
-            </Table.Head>
-            <Table.Body>
-                {rows}
-            </Table.Body>
-        </Table>
     }
 
     renderEmptyDetails = (message) => {
@@ -338,11 +271,9 @@ export default class FileDetailsPane extends Component {
 
         let placeholder = 'No tag has been found';
         let tags = [];
-        if (this.state.metadata) {            
-            if (typeof this.state.metadata.tags !== 'undefined') {
-                if ('' !== this.state.metadata.tags) {
-                    tags = this.state.metadata.tags.split(',');
-                } 
+        if (this.state.imageData.exif) {            
+            if (typeof this.state.imageData.exif.subject !== 'undefined') {
+                tags = this.state.imageData.exif.subject.split(',');
             }
             placeholder = tags.length === 0 ? 'No tag for this image' : '';
         }
@@ -362,15 +293,15 @@ export default class FileDetailsPane extends Component {
             return 0;
         }
 
-        if (!this.state.metadata) {
+        if (!this.state.imageData.exif) {
             return 0;
         }
 
-        if (!this.state.metadata['xmp:Rating']) {
+        if (!this.state.imageData.exif['Rating']) {
             return 0;
         }
         
-        return Number.parseInt(this.state.metadata['xmp:Rating']);
+        return Number.parseInt(this.state.imageData.exif['Rating']) + 1;
     }
 
     render = () => {
