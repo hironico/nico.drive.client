@@ -8,17 +8,17 @@ import { ThemeProvider } from 'evergreen-ui';
 import { BrowserRouter } from 'react-router-dom';
 import { Routes, Route, Navigate } from 'react-router';
 
-import LoginView from './views/LoginView';
 import DavExplorerView from './views/DavExplorerView';
-import WelcomePage from './components/welcome-page/WelcomePage';
+import WelcomeView from './views/WelcomeView';
+import withAuth from './components/withAuth';
 
 // theming provided by this page: https://github.com/segmentio/evergreen/issues/542
 // see also: https://evergreen.segment.com/introduction/theming
 
 
-const welcomePage = <WelcomePage />
-const loginView = <LoginView />
-const davExplorerView = <DavExplorerView />
+const welcomeView = <WelcomeView />
+const AuthenticatedDavExplorerView = withAuth(DavExplorerView);
+const davExplorerView = <AuthenticatedDavExplorerView />
 
 class App extends Component {
   render = () => {
@@ -26,10 +26,9 @@ class App extends Component {
       <DavConfigurationProvider>
         <BrowserRouter>
         <Routes>
-          <Route path="/" element={welcomePage} />
-          <Route path="login" element={loginView} />
-          <Route path="explorer" element={davExplorerView} />
-          <Route path="*" element={<Navigate to="login" />} />
+          <Route path="/" element={welcomeView} />
+          <Route path="/explorer" element={davExplorerView} />
+          <Route path="*" element={welcomeView} />
         </Routes>
         </BrowserRouter>
         </DavConfigurationProvider>

@@ -3,17 +3,29 @@ import { Component } from 'react';
 import { Button, InfoSignIcon, LogInIcon } from 'evergreen-ui';
 import { Navigate } from 'react-router-dom';
 
-import { DavConfigurationContext } from '../../AppSettings';
+import { DavConfigurationContext } from '../AppSettings';
 
-import './WelcomePage.css';
+import './WelcomeView.css';
 
-export default class WelcomePage extends Component {
+export default class WelcomeView extends Component {
     static contextType = DavConfigurationContext;
     
     constructor() {
         super();
         this.state = {
-            goLogin: false
+            goLogin: false,
+            isCheckingAuth: true
+        }
+    }
+
+    async componentDidMount() {
+        // Check authentication status when component mounts
+        try {
+            await this.context.refreshUserInfo();
+        } catch (error) {
+            console.error('Error checking authentication:', error);
+        } finally {
+            this.setState({ isCheckingAuth: false });
         }
     }
 
@@ -26,8 +38,30 @@ export default class WelcomePage extends Component {
     render = () => {
 
         if (this.state.goLogin === true) {
-            return <Navigate to="/login" />
+            window.location = "https://localhost:3443/auth/login";            
+            return <></>
         }
+
+        // Show loading while checking authentication
+        if (this.state.isCheckingAuth) {
+            return (
+                <div style={{ 
+                    display: 'flex', 
+                    justifyContent: 'center', 
+                    alignItems: 'center', 
+                    height: '100vh' 
+                }}>
+                    <div>Loading...</div>
+                </div>
+            );
+        }
+
+        // If user is authenticated, redirect to explorer
+        if(this.context.connectionValid) {
+            return <Navigate to="/explorer" replace />;
+        }
+
+        // Show welcome view for non-authenticated users
 
         return <header id="header">
 				<div className="content">

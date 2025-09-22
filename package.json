@@ -28,7 +28,8 @@
   "scripts": {
     "start": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "clean": "rm -rf ./dist/*"
   },
   "eslintConfig": {
     "extends": [

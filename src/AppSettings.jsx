@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { AuthType } from "webdav";
+import { createClient, AuthType } from "webdav";
 
 const noOpFunc = () => {};
 
@@ -102,23 +102,66 @@ class DavConfigurationProvider extends Component {
         });
     }
 
-    refreshUserInfo = () => {
-        const authHeader = this.state.selectedUserRootDirectory.davClient.getHeaders()['Authorization']; 
+    refreshUserInfo = async () => {
         const fetchOptions = { 
             method: 'GET',
+            credentials: 'include', // Include cookies/session for authentication
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': authHeader
             }
         };
+        
+        const fetchUrl = `/auth/status`;
+        console.log(`Fetching user info from: ${fetchUrl}`);
 
-        const fetchUrl = `${this.state.getAuthUrl()}/whois/${this.state.username}`;
-        // console.log(`Fetching from: ${fetchUrl}`);
-
-        fetch(fetchUrl, fetchOptions)
+        await fetch(fetchUrl, fetchOptions)
         .then(res => res.json())
-        .then(userInfo => this.state.setUserInfo(userInfo))
-        .catch(error => console.log(`Could not update quota space used.\n${error.message}`));
+        .then(userInfo => {
+            const proto = window.location.protocol;
+            const hostname = window.location.hostname;
+            const port = window.location.port;
+
+            const davApiBaseUrl = `${proto}//${hostname}:${port}`;
+            const davBaseUrl = `${davApiBaseUrl}/dav`;
+
+            console.log(`User has been received: ${JSON.stringify(userInfo)}`);
+
+            let userDirectories = [];
+            
+            if (userInfo.authenticated) {
+                // Use session-based authentication - no credentials needed as they're handled by browser session
+                const clientOptions = {
+                    authType: AuthType.None, // No explicit auth needed - browser session handles it
+                    withCredentials: true,   // Include cookies/session in requests
+                }
+
+                userDirectories = userInfo.rootDirectories.map(dir => {
+                    if (!dir.startsWith('/')) {
+                        dir = `/${dir}`;
+                    }
+                    const clientUrl = `${davBaseUrl}/${userInfo.user.username}${dir}`;
+                    const davClient = createClient(clientUrl, clientOptions);
+                    const userDirectory = {
+                        name: dir,
+                        url: clientUrl,
+                        davClient: davClient
+                    }
+                    return userDirectory;
+                });
+            }
+
+
+            this.setState({
+                connectionValid: userInfo.authenticated,
+                userInfo: userInfo.authenticated ? userInfo.user : null,
+                quotaUsed: userInfo.quotaUsed,
+                userRootDirectories: userInfo.authenticated ? userDirectories : [],
+                selectedUserRootDirectory: userInfo.authenticated ? userDirectories[0] : null,
+                username: userInfo.authenticated ? userInfo.user.username : '',
+                davApiBaseUrl: davApiBaseUrl,
+                davBaseUrl: davBaseUrl
+            });
+        }).catch(error => console.error(`Could not refresh user info.\n${error.message}`));
     }
 
     setConnectionValid = (validity) => { 
@@ -217,7 +260,8 @@ class DavConfigurationProvider extends Component {
             userRootDirectories: [],
             connectionValid: false,
             showConnectionDialog: true,
-            username: ''
+            username: '',
+            userinfo: null
         });
     }
 

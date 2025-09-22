@@ -122,10 +122,12 @@ export default class DavExplorerView extends Component {
     render = () => {
 
         if (!this.context || !this.context.connectionValid) {
-            return <Navigate to="/login" />
+            console.log('Connection is not valid. returning to home.');
+            return <Navigate to="/" />
         }
 
         if (this.state.currentDirectory === null || !this.state.currentDirectory) {
+            console.log('Explorer is loading...');
             return <Pane gridTemplateColumns="auto">
                 <Spinner marginX="auto" marginTop={120} />
                 <Heading size={600} marginX="auto" marginTop={15} textAlign="center">Nico's Drive is loading...</Heading>

@@ -10,7 +10,7 @@ export default class DavQuotaPane extends Component {
     render = () => {
 
         let max = this.context.userInfo.quota;
-        let value = this.context.userInfo.quotaUsed;
+        let value = this.context.quotaUsed;
         const quotaGB = (max / 1024 /1024 / 1024).toFixed(2);
         const usageGB = (value / 1024 /1024 / 1024).toFixed(2);
         
@@ -46,7 +46,7 @@ export default class DavQuotaPane extends Component {
 
         return <Pane width="100%" padding={10} display="grid" gridTemplateRows="auto 1fr auto" elevation={1} background="tint1">
             <Text>Data space usage:</Text>
-            <ProgressBar size="tiny" value={value} max={max} color={color} />
+            <ProgressBar size="tiny" value={value} max={max} min={0} color={color} />
             <Text marginTop={10}>{statusText}</Text>
         </Pane>        
     }    

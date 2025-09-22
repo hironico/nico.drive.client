@@ -23,6 +23,11 @@ class DavUserMenu extends Component {
         }
     }
 
+    openProfilePage = () => {
+        const url = `${window.location.origin}/auth/profile`;
+        window.open(url, '_blank', 'noopener,noreferrer');
+    }
+
     render = () => {
         return <Popover
                 justifySelf="end"
@@ -30,7 +35,7 @@ class DavUserMenu extends Component {
                 content={({ close }) => (
                     <Menu>
                         <Menu.Group title="Profile">
-                            <Menu.Item icon={PersonIcon}>{this.context.username}</Menu.Item>                            
+                            <Menu.Item icon={PersonIcon} onSelect={this.openProfilePage}>{this.context.username}</Menu.Item>                            
                         </Menu.Group>
                         <Menu.Divider />
                         <Menu.Group title="Usage">
@@ -41,7 +46,10 @@ class DavUserMenu extends Component {
                         <Menu.Divider />
                         <Menu.Group title="Server">
                             <Menu.Item icon={GlobeNetworkIcon}>{this.context.davBaseUrl}</Menu.Item>
-                            <Menu.Item icon={LogOutIcon} intent="danger" onSelect={() => { this.context.disconnect() }}>
+                            <Menu.Item icon={LogOutIcon} intent="danger" onSelect={() => { 
+                                // For session-based auth, redirect to server logout endpoint
+                                window.location.href = '/auth/logout';
+                            }}>
                                 Disconnect
                             </Menu.Item>
                         </Menu.Group>
