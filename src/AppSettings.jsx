@@ -3,6 +3,8 @@ import { AuthType } from "webdav";
 
 const noOpFunc = () => {};
 
+const supportedFormatArray = ['JPEG', 'JPG', 'PNG', 'WEBP', 'AVIF', 'TIFF', 'GIF', 'SVG', 'CR2', 'CR3', 'DNG', 'HEIC'];
+
 const defaultValue = {
     authType: AuthType.Basic,
     username: '',
@@ -26,7 +28,7 @@ const defaultValue = {
 
     setUserConnection: noOpFunc,
     
-    supportedFormats: ['JPEG', 'JPG', 'PNG', 'WEBP', 'AVIF', 'TIFF', 'GIF', 'SVG', 'CR2', 'CR3', 'DNG'],
+    supportedFormats: supportedFormatArray,
     isImageFile: noOpFunc,
 
     filter: '',
@@ -75,7 +77,7 @@ class DavConfigurationProvider extends Component {
 
             setUserConnection: this.setUserConnection,
             
-            supportedFormats: ['JPEG', 'JPG', 'PNG', 'WEBP', 'AVIF', 'TIFF', 'GIF', 'SVG', 'CR2', 'CR3', 'DNG'],
+            supportedFormats: supportedFormatArray,
             isImageFile: this.isImageFile,
 
             filter: '',
