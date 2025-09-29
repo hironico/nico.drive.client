@@ -9,25 +9,19 @@ const defaultValue = {
     authType: AuthType.Basic,
     username: '',
     userInfo: {},
-    setUserInfo: noOpFunc,
     refresUserInfo: noOpFunc,
 
     davBaseUrl: null,
     davApiBaseUrl: null, 
-    setDavBaseUrl: noOpFunc,
 
     connectionValid: false,
-    setConnectionValid: noOpFunc,
 
     userRootDirectories: [],
-    setUserRootDirectories: noOpFunc,
 
     selectedUserRootDirectory: null,
     setSelectedUserRootDirectory: noOpFunc,
     getSelectedUserRootDirectoryIndex: noOpFunc,
-
-    setUserConnection: noOpFunc,
-    
+        
     supportedFormats: supportedFormatArray,
     isImageFile: noOpFunc,
 
@@ -42,7 +36,6 @@ const defaultValue = {
     getFolderMetadataApiUrl: noOpFunc,
     getZipApiUrl: noOpFunc,
 
-    showConnectionDialog: false,
     disconnect: noOpFunc
 }
 
@@ -58,24 +51,18 @@ class DavConfigurationProvider extends Component {
             authType: AuthType.Basic,
             username: '',
             userInfo: {},
-            setUserInfo: this.setUserInfo,
             refreshUserInfo: this.refreshUserInfo,
 
             davBaseUrl: null,
             davApiBaseUrl: null, 
-            setDavBaseUrl: this.setDavBaseUrl,
 
             connectionValid: false,
-            setConnectionValid: this.setConnectionValid,
 
             userRootDirectories: [],
-            setUserRootDirectories: this.setUserRootDirectories,
 
             selectedUserRootDirectory: null,
             setSelectedUserRootDirectory: this.setSelectedUserRootDirectory,
             getSelectedUserRootDirectoryIndex: this.getSelectedUserRootDirectoryIndex,
-
-            setUserConnection: this.setUserConnection,
             
             supportedFormats: supportedFormatArray,
             isImageFile: this.isImageFile,
@@ -91,14 +78,14 @@ class DavConfigurationProvider extends Component {
             getFolderMetadataApiUrl: this.getFolderMetadataApiUrl,
             getZipApiUrl: this.getZipApiUrl,
             
-            showConnectionDialog: false,
             disconnect: this.disconnect
         }
-    }    
+    }
 
-    setUserInfo = (info) => {
+    componentDidMount = () => {
         this.setState({
-            userInfo: info
+            davBaseUrl: this.getDavBaseUrl(),
+            davApiBaseUrl: this.getDavApiBaseUrl()
         });
     }
 
@@ -111,18 +98,12 @@ class DavConfigurationProvider extends Component {
             }
         };
         
-        const fetchUrl = `/auth/status`;
+        const fetchUrl = `${this.getDavApiBaseUrl()}/auth/status`;
         console.log(`Fetching user info from: ${fetchUrl}`);
 
         await fetch(fetchUrl, fetchOptions)
         .then(res => res.json())
         .then(userInfo => {
-            const proto = window.location.protocol;
-            const hostname = window.location.hostname;
-            const port = window.location.port;
-
-            const davApiBaseUrl = `${proto}//${hostname}:${port}`;
-            const davBaseUrl = `${davApiBaseUrl}/dav`;
 
             console.log(`User has been received: ${JSON.stringify(userInfo)}`);
 
@@ -139,7 +120,7 @@ class DavConfigurationProvider extends Component {
                     if (!dir.startsWith('/')) {
                         dir = `/${dir}`;
                     }
-                    const clientUrl = `${davBaseUrl}/${userInfo.user.username}${dir}`;
+                    const clientUrl = `${this.getDavBaseUrl()}/${userInfo.user.username}${dir}`;
                     const davClient = createClient(clientUrl, clientOptions);
                     const userDirectory = {
                         name: dir,
@@ -150,31 +131,15 @@ class DavConfigurationProvider extends Component {
                 });
             }
 
-
             this.setState({
                 connectionValid: userInfo.authenticated,
                 userInfo: userInfo.authenticated ? userInfo.user : null,
                 quotaUsed: userInfo.quotaUsed,
                 userRootDirectories: userInfo.authenticated ? userDirectories : [],
                 selectedUserRootDirectory: userInfo.authenticated ? userDirectories[0] : null,
-                username: userInfo.authenticated ? userInfo.user.username : '',
-                davApiBaseUrl: davApiBaseUrl,
-                davBaseUrl: davBaseUrl
+                username: userInfo.authenticated ? userInfo.user.username : ''
             });
         }).catch(error => console.error(`Could not refresh user info.\n${error.message}`));
-    }
-
-    setConnectionValid = (validity) => { 
-        this.setState({
-            connectionValid: validity
-        });
-    }
-
-    setUserRootDirectories = (rootDirs) => {
-        this.setState({
-            selectedUserRootDirectory: rootDirs[0],
-            userRootDirectories: rootDirs
-        });
     }
 
     setSelectedUserRootDirectory = (oneRootDir, callback) => {
@@ -184,56 +149,6 @@ class DavConfigurationProvider extends Component {
             if (callback) {
                 callback();
             }
-        });
-    }
-
-    setDavBaseUrl = (davBaseUrl, username) => {
-
-        const davBaseUri =  new URL(davBaseUrl);
-        const proto =  davBaseUri.protocol;
-        const host =  davBaseUri.hostname;
-        const port =  davBaseUri.port;
-
-        const davApiBaseUrl = `${proto}//${host}:${port}`;
-
-        console.log(`DavBaseUrl = ${davBaseUrl}`);
-        console.log(`DavApiBaseUrl = ${davApiBaseUrl}`);
-
-        this.setState({
-            davBaseUrl: davBaseUrl,
-            davApiBaseUrl: davApiBaseUrl,
-            username: username
-        });
-    }
-
-    /**
-     * Set all connection properties for a successfull login in one go in order to avoid 
-     * multiple components refreshes
-     * @param {*} userInfo 
-     * @param {*} rootDirs 
-     * @param {*} davBaseUrl 
-     * @param {*} username 
-     * @param {*} connectionValid 
-     */
-    setUserConnection = (userInfo, rootDirs, davBaseUrl, username, connectionValid) => {
-        const davBaseUri =  new URL(davBaseUrl);
-        const proto =  davBaseUri.protocol;
-        const host =  davBaseUri.hostname;
-        const port =  davBaseUri.port;
-
-        const davApiBaseUrl = `${proto}//${host}:${port}`;
-
-        console.log(`DavBaseUrl = ${davBaseUrl}`);
-        console.log(`DavApiBaseUrl = ${davApiBaseUrl}`);
-
-        this.setState({
-            userInfo: userInfo,
-            selectedUserRootDirectory: rootDirs[0],
-            userRootDirectories: rootDirs,
-            connectionValid: connectionValid,
-            davBaseUrl: davBaseUrl,
-            davApiBaseUrl: davApiBaseUrl,
-            username: username
         });
     }
 
@@ -259,7 +174,6 @@ class DavConfigurationProvider extends Component {
             selectedUserRootDirectory: null,
             userRootDirectories: [],
             connectionValid: false,
-            showConnectionDialog: true,
             username: '',
             userinfo: null
         });
@@ -271,6 +185,24 @@ class DavConfigurationProvider extends Component {
             filter: value,
             filterRegExp: new RegExp(valueStr, 'i')
         });
+    }
+
+    getDavApiBaseUrl = () => {
+        const hostname = window.location.hostname;
+
+        // check if we are in development server 
+        if ('localhost' === hostname) {
+            return 'https://localhost:3443';
+        }
+
+        const proto = window.location.protocol;        
+        const port = window.location.port;
+        return `${proto}//${hostname}:${port}`;
+    }
+
+
+    getDavBaseUrl = () => {
+        return `${this.getDavApiBaseUrl()}/dav`;
     }
 
     getThumbApiUrl = () => {
