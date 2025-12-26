@@ -31,7 +31,7 @@ export default class Folder extends RegularFile {
         const metaUrl = this.context.getFolderMetadataApiUrl();
 
         const metadataRequest = {
-            "username": this.context.username,
+            "username": this.context.selectedUserRootDirectory.owner,
             "homeDir": this.context.selectedUserRootDirectory.name,
             "filename": this.props.fileItem.filename
         }

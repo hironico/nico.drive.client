@@ -1,6 +1,6 @@
 
 import { Component } from 'react';
-import { Navigate } from 'react-router';
+import { Navigate, useNavigate } from 'react-router';
 
 import { Pane, SideSheet, Heading, Spinner, toaster } from 'evergreen-ui';
 
@@ -18,7 +18,7 @@ import './DavExplorerView.css';
  * the DAV Client. It uses sub components such as DavToolBar and DavDirectoryPane to render things returned 
  * by the DavClient.
  */
-export default class DavExplorerView extends Component {
+class DavExplorerView extends Component {
     static contextType = DavConfigurationContext;
 
     constructor() {
@@ -135,14 +135,21 @@ export default class DavExplorerView extends Component {
         }
         
         return <Pane className="davexplorerview">
-            <DavSideBar rootDirs={this.state.rootDirs} handleNavigate={this.navigateAbsolute} currentDirectory={this.state.currentDirectory} isLoading={this.state.loading} />
+            <DavSideBar 
+                rootDirs={this.state.rootDirs} 
+                handleNavigate={this.navigateAbsolute} 
+                currentDirectory={this.state.currentDirectory} 
+                isLoading={this.state.loading}
+                navigate={this.props.navigate}
+            />
 
             <Pane display="grid" gridTemplateRows="auto auto 1fr" overflowY="hidden">
 
                 <DavToolBar currentDirectory={this.state.currentDirectory}
                     displayMode={this.state.displayMode} 
                     handleDisplayMode={this.changeDisplayMode}
-                    handleNavigate={this.navigateAbsolute} />
+                    handleNavigate={this.navigateAbsolute}
+                    navigate={this.props.navigate} />
 
                 <DavDirectoryPane displayMode={this.state.displayMode}
                     folders={this.state.directories}
@@ -166,3 +173,11 @@ export default class DavExplorerView extends Component {
         </Pane>
     }
 }
+
+// Wrapper to inject navigate from React Router
+function DavExplorerViewWrapper(props) {
+    const navigate = useNavigate();
+    return <DavExplorerView {...props} navigate={navigate} />;
+}
+
+export default DavExplorerViewWrapper;

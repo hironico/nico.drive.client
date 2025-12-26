@@ -80,7 +80,7 @@ export default class RegularFile extends Component {
             unite = 'GB';
         }
 
-        return `${taille} ${unite}`;
+        return taille ? `${taille} ${unite}` : '???';
     }
 
     renderGridLabel = () => {
@@ -98,12 +98,11 @@ export default class RegularFile extends Component {
 
     renderGrid = () => {
         let styleThumb = {
-            width: 'calc(100% - 6px)',
-            height: 'calc(100% - 6px)',
+            width: '100%',
+            height: '100%',
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            margin: '3px'
         }
 
         return (

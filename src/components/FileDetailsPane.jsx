@@ -37,7 +37,7 @@ export default class FileDetailsPane extends Component {
         const metaUrl = this.context.getExifApiUrl();
 
         const exifRequest = {
-            "username": this.context.username,
+            "username": this.context.selectedUserRootDirectory.owner,
             "homeDir": this.context.selectedUserRootDirectory.name,
             "filename": this.props.fileItem.filename
         }

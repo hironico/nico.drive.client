@@ -65,7 +65,7 @@ export default class Image extends RegularFile {
         }
 
         const req = {
-            "username": this.context.username,
+            "username": this.context.selectedUserRootDirectory.owner,
             "homeDir": this.context.selectedUserRootDirectory.name,
             "filename": this.props.fileItem.filename,
             "width": width,
@@ -108,6 +108,10 @@ export default class Image extends RegularFile {
                 }
             })
             .catch(err => console.log(`Could not generate thumb for file ${this.props.fileItem.filename}\nReason: ${err}`));
+    }
+
+    renderGridLabel = () => {
+        return <></>
     }
 
     renderGridIcon = () => {

@@ -29,7 +29,6 @@ const WelcomeView = () => {
     }, []);
 
     const showLoginDialog = () => {
-        alert('set show login to true!');
         setGoLogin(true);
     };
 
