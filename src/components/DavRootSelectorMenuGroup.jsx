@@ -43,6 +43,8 @@ export default class DavRootSelectorMenuGroup extends Component {
             return <Menu.Item key={index} icon={DatabaseIcon} intent={intent} onSelect={(evt) => this.changeUserRootDirectory(rootDir, this.props.handleCloseMenu)}>{rootDir.name}</Menu.Item>
         });
 
+        const sharedWithMeItems = this.context.s
+
         return <Menu.Group title="My drives">
             {items}
         </Menu.Group>

@@ -12,17 +12,21 @@ import '../views/DavExplorerView.css';
 export default class DavPhotoViewPane extends Component {
     static contextType = DavConfigurationContext;
 
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {
-            currentFileItemIndex: 0
+            currentFileItemIndex: props.initialPhotoIndex || 0
         }
     }
 
     componentDidUpdate = (prevProps, prevState) => {
         if (prevProps.fileItems !== this.props.fileItems) {
             this.setState({
-                currentFileItemIndex: 0
+                currentFileItemIndex: this.props.initialPhotoIndex || 0
+            })
+        } else if (prevProps.initialPhotoIndex !== this.props.initialPhotoIndex && typeof this.props.initialPhotoIndex !== 'undefined') {
+            this.setState({
+                currentFileItemIndex: this.props.initialPhotoIndex
             })
         }
     }

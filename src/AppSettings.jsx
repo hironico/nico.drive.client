@@ -10,6 +10,7 @@ const defaultValue = {
     username: '',
     userInfo: {},
     refresUserInfo: noOpFunc,
+    isAdministrator: false,
 
     davBaseUrl: null,
     davApiBaseUrl: null, 
@@ -116,6 +117,7 @@ class DavConfigurationProvider extends Component {
                     withCredentials: true,   // Include cookies/session in requests
                 }
 
+                // root directories owned by this user
                 userDirectories = userInfo.rootDirectories.map(dir => {
                     if (!dir.startsWith('/')) {
                         dir = `/${dir}`;
@@ -125,10 +127,35 @@ class DavConfigurationProvider extends Component {
                     const userDirectory = {
                         name: dir,
                         url: clientUrl,
-                        davClient: davClient
+                        davClient: davClient,
+                        owner: userInfo.user.username
                     }
                     return userDirectory;
                 });
+
+                // shared directories have the properties: name, owner, access
+                const sharedDirectories = userInfo.sharedDirectories.map(sharedDir => {
+
+                    let dir = sharedDir.name;
+                    if (!dir.startsWith('/')) {
+                        dir = `/${dir}`;
+                    }
+                    const clientUrl = `${this.getDavBaseUrl()}/${sharedDir.owner}${dir}`;
+
+                    console.log(`Shared dir url found: ${clientUrl}`);
+
+                    const davClient = createClient(clientUrl, clientOptions);
+                    const sharedDirectory = {
+                        name: dir,
+                        url: clientUrl,
+                        davClient: davClient,
+                        owner: sharedDir.owner
+                    }
+                    return sharedDirectory;
+                });
+
+                // add shared directories to the user directories.
+                userDirectories.push.apply(userDirectories, sharedDirectories);
             }
 
             this.setState({
@@ -137,7 +164,8 @@ class DavConfigurationProvider extends Component {
                 quotaUsed: userInfo.quotaUsed,
                 userRootDirectories: userInfo.authenticated ? userDirectories : [],
                 selectedUserRootDirectory: userInfo.authenticated ? userDirectories[0] : null,
-                username: userInfo.authenticated ? userInfo.user.username : ''
+                username: userInfo.authenticated ? userInfo.user.username : '',
+                isAdministrator: userInfo.authenticated ? (userInfo.user.roles?.includes('nicodrive-admin') || false) : false
             });
         }).catch(error => console.error(`Could not refresh user info.\n${error.message}`));
     }
@@ -191,7 +219,11 @@ class DavConfigurationProvider extends Component {
         const hostname = window.location.hostname;
 
         // check if we are in development server 
-        if ('localhost' === hostname) {
+        if ('localhost' === hostname && window.location.port === '5173') {
+            // In Vite dev mode - use relative URLs to leverage proxy
+            return '';
+        } else if ('localhost' === hostname) {
+            // Direct backend access
             return 'https://localhost:3443';
         }
 

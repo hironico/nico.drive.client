@@ -1,7 +1,7 @@
 import { Component } from "react";
 
-import { Position, Popover, Avatar, Menu } from 'evergreen-ui';
-import { GlobeNetworkIcon, PersonIcon, LogOutIcon } from 'evergreen-ui';
+import { Position, Popover, Avatar, Menu, CogIcon } from 'evergreen-ui';
+import { GlobeNetworkIcon, PersonIcon, LogOutIcon, PeopleIcon } from 'evergreen-ui';
 
 import { DavConfigurationContext } from "../AppSettings";
 
@@ -28,8 +28,17 @@ class DavUserMenu extends Component {
         window.open(url, '_blank', 'noopener,noreferrer');
     }
 
+    handleNavigateToRootDirs = () => {
+        this.props.navigate('/rootdirs');
+    };
+
+    handleNavigateToUserManagement = () => {
+        this.props.navigate('/admin/users');
+    };
+
     render = () => {
-        return <Popover
+        return <>
+            <Popover
                 justifySelf="end"
                 position={Position.BOTTOM_RIGHT}
                 content={({ close }) => (
@@ -43,6 +52,28 @@ class DavUserMenu extends Component {
                         </Menu.Group>                        
                         <Menu.Divider />
                         <DavRootSelectorMenuGroup handleNavigate={this.props.handleNavigate} handleCloseMenu={close} />
+                        <Menu.Divider />
+                        <Menu.Group>
+                            <Menu.Item icon={CogIcon} onSelect={() => { 
+                                close();
+                                this.handleNavigateToRootDirs();
+                            }}>
+                                Manage root directories...
+                            </Menu.Item>
+                        </Menu.Group>
+                        {this.context.isAdministrator && (
+                            <>
+                                <Menu.Divider />
+                                <Menu.Group title="Administration">
+                                    <Menu.Item icon={PeopleIcon} onSelect={() => { 
+                                        close();
+                                        this.handleNavigateToUserManagement();
+                                    }}>
+                                        Manage users...
+                                    </Menu.Item>
+                                </Menu.Group>
+                            </>
+                        )}
                         <Menu.Divider />
                         <Menu.Group title="Server">
                             <Menu.Item icon={GlobeNetworkIcon}>{this.context.davBaseUrl}</Menu.Item>
@@ -58,6 +89,7 @@ class DavUserMenu extends Component {
             >
                 <Avatar name={this.context.username} size={32} marginLeft={15} marginRight={15} style={{ cursor: 'pointer' }} justifySelf="end" />
             </Popover>
+        </>
     }
 }
 

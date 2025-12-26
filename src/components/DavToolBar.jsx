@@ -48,7 +48,7 @@ export default class DavToolBar extends Component {
 
             <Pane justifySelf="end" display="inline-flex" alignItems="center" >
                 <DavDisplayToolsMenu handleDisplayMode={this.props.handleDisplayMode} showCreateFolderPane={this.showNewFolder} showFileUploadPane={this.showFileUpload} />
-                <DavUserMenu handleNavigate={this.props.handleNavigate} />
+                <DavUserMenu handleNavigate={this.props.handleNavigate} navigate={this.props.navigate} />
             </Pane>
         </Pane>
     }

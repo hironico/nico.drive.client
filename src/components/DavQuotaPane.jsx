@@ -9,45 +9,50 @@ export default class DavQuotaPane extends Component {
 
     render = () => {
 
-        let max = this.context.userInfo.quota;
-        let value = this.context.quotaUsed;
-        const quotaGB = (max / 1024 /1024 / 1024).toFixed(2);
-        const usageGB = (value / 1024 /1024 / 1024).toFixed(2);
+        // userInfo.quota is in GB from session, quotaUsed is in bytes
+        const quotaGB = this.context.userInfo.quota; // in GB
+        const quotaUsedBytes = this.context.quotaUsed; // in bytes
+        const usageGB = quotaUsedBytes / (1024 * 1024 * 1024); // Convert bytes to GB
+        const usageGBDisplay = usageGB.toFixed(2); // For display
         
         let statusText = '';
         let color = "#5C85FF"; // blue400
-        switch(this.context.userInfo.quota) {
+        let progressValue = usageGB;
+        let progressMax = quotaGB;
+        
+        // Handle special cases
+        switch(quotaGB) {
             case 0:
-                max = 100;
-                value = 100;
+                progressValue = 100;
+                progressMax = 100;
                 statusText = 'READ ONLY access';
                 color = "#D14343"; // red500
             break;
 
             case -1:
-                max = 100;
-                value = 100;                
-                statusText = `Space used: ${usageGB} GB`;
+                progressValue = 100;
+                progressMax = 100;                
+                statusText = `Space used: ${usageGBDisplay} GB`;
                 color = "#52BD95"; // green500
             break;
 
             default:                
-                statusText = `${usageGB} of ${quotaGB} GB used.`;
-                const ratio =  value / max;                
+                statusText = `${usageGBDisplay} of ${quotaGB} GB used.`;
+                // Calculate ratio for color coding
+                const ratio = usageGB / quotaGB;                
                 if (ratio >= 0.75) {
                     color = "#FFB020"; // orange500
                 } 
                 if (ratio >= 0.90) {
                     color = "#D14343"; // red500
                 }
-                value = Math.min(value, max);
             break;
         }
 
         return <Pane width="100%" padding={10} display="grid" gridTemplateRows="auto 1fr auto" elevation={1} background="tint1">
             <Text>Data space usage:</Text>
-            <ProgressBar size="tiny" value={value} max={max} min={0} color={color} />
+            <ProgressBar size="tiny" value={progressValue} max={progressMax} min={0} color={color} />
             <Text marginTop={10}>{statusText}</Text>
-        </Pane>        
+        </Pane>
     }    
 }

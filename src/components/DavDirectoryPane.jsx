@@ -24,7 +24,8 @@ export default class DavDirectoryPane extends Component {
             photos: [],
             currentRegExp: '',
             isDeleteDialogShown: false,
-            fileItemToDelete: null
+            fileItemToDelete: null,
+            initialPhotoIndex: 0
         }
     }
 
@@ -98,6 +99,27 @@ export default class DavDirectoryPane extends Component {
         });
     }
 
+    /**
+     * Handles clicking on an image to open it in photo view mode.
+     * Finds the index of the clicked image in the photos array and switches to photo mode.
+     * @param fileItem the image file item that was clicked
+     */
+    handleImageClick = (fileItem) => {
+        // Find the index of the clicked image in the photos array
+        const photoIndex = this.state.photos.findIndex(photo => photo.filename === fileItem.filename);
+        
+        if (photoIndex !== -1) {
+            this.setState({
+                initialPhotoIndex: photoIndex
+            }, () => {
+                // Switch to photo display mode
+                if (this.props.handleDisplayMode) {
+                    this.props.handleDisplayMode('photo');
+                }
+            });
+        }
+    }
+
     renderFolders = () => {
         return this.state.folders
             .map((directory, index) => {
@@ -118,7 +140,8 @@ export default class DavDirectoryPane extends Component {
                               fileItem={file}
                               displayMode={this.props.displayMode}
                               handleShowDetails={this.props.handleShowDetails} 
-                              handleDelete={this.delete} />
+                              handleDelete={this.delete}
+                              defaultAction={() => this.handleImageClick(file)} />
             } else {
                 return <RegularFile key={'file_' + index} 
                                     fileItem={file}
@@ -127,7 +150,7 @@ export default class DavDirectoryPane extends Component {
                                     handleDelete={this.delete} />
             }
         });
-    }  
+    }
 
     renderLoadingState = () => {
         return <EmptyState
@@ -175,6 +198,7 @@ export default class DavDirectoryPane extends Component {
 
     renderPhotosOnly = () => {
         return <DavPhotoViewPane fileItems={this.state.photos} 
+                                 initialPhotoIndex={this.state.initialPhotoIndex}
                                  handleShowDetails={this.props.handleShowDetails} 
                                  handleDelete={this.delete} 
                                  handleDisplayMode={this.props.handleDisplayMode}/>

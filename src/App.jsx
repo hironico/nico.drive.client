@@ -9,6 +9,8 @@ import { BrowserRouter } from 'react-router-dom';
 import { Routes, Route, Navigate } from 'react-router';
 
 import DavExplorerView from './views/DavExplorerView';
+import DavRootDirManagementView from './views/DavRootDirManagementView';
+import UserManagementView from './views/UserManagementView';
 import WelcomeView from './views/WelcomeView';
 import withAuth from './components/withAuth';
 
@@ -19,6 +21,10 @@ import withAuth from './components/withAuth';
 const welcomeView = <WelcomeView />
 const AuthenticatedDavExplorerView = withAuth(DavExplorerView);
 const davExplorerView = <AuthenticatedDavExplorerView />
+const AuthenticatedDavRootDirManagementView = withAuth(DavRootDirManagementView);
+const davRootDirManagementView = <AuthenticatedDavRootDirManagementView />
+const AuthenticatedUserManagementView = withAuth(UserManagementView);
+const userManagementView = <AuthenticatedUserManagementView />
 
 class App extends Component {
   render = () => {
@@ -28,6 +34,8 @@ class App extends Component {
         <Routes>
           <Route path="/" element={welcomeView} />
           <Route path="/explorer" element={davExplorerView} />
+          <Route path="/rootdirs" element={davRootDirManagementView} />
+          <Route path="/admin/users" element={userManagementView} />
           <Route path="*" element={welcomeView} />
         </Routes>
         </BrowserRouter>
