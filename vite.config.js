@@ -73,6 +73,20 @@ export default defineConfig({
         cookieDomainRewrite: 'localhost',
         cookiePathRewrite: '/',
       },
+      '/users': {
+        target: 'https://localhost:3443',
+        changeOrigin: true,
+        secure: false, // Allow self-signed certificates
+        cookieDomainRewrite: 'localhost',
+        cookiePathRewrite: '/',
+      },
+      '/rootdirs': {
+        target: 'https://localhost:3443',
+        changeOrigin: true,
+        secure: false, // Allow self-signed certificates
+        cookieDomainRewrite: 'localhost',
+        cookiePathRewrite: '/',
+      },
     },
   },
 })
