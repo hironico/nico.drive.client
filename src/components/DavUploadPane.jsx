@@ -47,36 +47,65 @@ export default function DavFileUploadPane({handleClose, handleNavigate, currentD
     const targetFileName = `${currentDirectory}/${file.name}`;
     console.log(`Target file name is: ${targetFileName}`);
 
-    const options = {
-      overwrite: false,
-      contentLength: false
-    };
+    // Per RFC 4918, the Overwrite header only applies to COPY/MOVE, not PUT.
+    // The webdav-server library ignores it on PUT and overwrites unconditionally.
+    // The correct way to detect an existing file is to call exists() first via the davClient.
+    const davClient = davConfigurationContext.selectedUserRootDirectory.davClient;
+    davClient.exists(targetFileName)
+      .then(alreadyExists => {
+        if (alreadyExists) {
+          const errMsg = `File ${file.name} already exists on the server.`;
+          console.warn(errMsg);
+          toaster.warning(errMsg);
+          handleRemove(file);
+          return;
+        }
 
-    const fileReader = new FileReader();
-    fileReader.onload = (e) => {
-      const fileContents = e.target.result;
-      // TODO test if file exists and if we do overwrite?
-      // TODO try to STREAM to dav server instead of putting all contents at once, so that we can monitor transfer progress
-      davConfigurationContext.selectedUserRootDirectory.davClient.putFileContents(targetFileName, fileContents, options)
-        .then((result) => {
-          if (result) {
+        // Build the full PUT URL from the selected root directory's base URL.
+        // We avoid using putFileContents (which buffers the whole file via FileReader)
+        // and instead pass the File object directly as the fetch body so the browser
+        // streams the data to the server without loading it entirely into memory first.
+        const baseUrl = davConfigurationContext.selectedUserRootDirectory.url.replace(/\/$/, '');
+        const fullUrl = `${baseUrl}${targetFileName}`.replace(/([^:])\/\/+/g, '$1/');
+
+        console.log(`Streaming PUT to: ${fullUrl}`);
+
+        fetch(fullUrl, {
+          method: 'PUT',
+          // Passing the File object directly as body triggers streaming upload in the browser.
+          // The browser reads and sends the file in chunks without buffering it all into RAM.
+          body: file,
+          credentials: 'include',
+          headers: {
+            // Let the browser set Content-Type from the File's MIME type, or fall back to binary.
+            'Content-Type': file.type || 'application/octet-stream',
+          }
+        })
+        .then(response => {
+          if (response.ok || response.status === 201 || response.status === 204) {
             console.log('File has been properly uploaded.');
-          } else {            
-            console.error('Error while uploading the file. Already exists ?');
+          } else {
+            const errMsg = `Error while uploading ${file.name}. Server responded with status ${response.status}.`;
+            console.error(errMsg);
+            toaster.danger(errMsg);
           }
         })
         .finally(() => {
-          // remove the file from the queue whatever the result is AFTER the execution of upload
+          // Remove the file from the queue whatever the result is, AFTER the upload finishes
           handleRemove(file);
         })
         .catch(error => {
           const errMsg = `Problem while uploading file ${targetFileName}: ${error}`;
           console.error(errMsg);
           toaster.danger(errMsg);
-        })
-    }
-
-    fileReader.readAsArrayBuffer(file);    
+        });
+      })
+      .catch(error => {
+        const errMsg = `Could not check existence of ${file.name}: ${error}`;
+        console.error(errMsg);
+        toaster.danger(errMsg);
+        handleRemove(file);
+      });
   }, [davConfigurationContext, handleRemove, currentDirectory]);
 
   const addFilesToUpload = (newFiles) => {    
