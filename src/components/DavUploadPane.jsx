@@ -1,16 +1,19 @@
 import React, {useCallback, useEffect} from "react";
 import { FileUploader, FileCard, Pane, FileRejectionReason, rebaseFiles, Alert, majorScale, toaster } from "evergreen-ui";
 import { useDavConfigurationContext } from "../AppSettings";
+import { useUploadProgress } from "./UploadProgressContext";
 
 export default function DavFileUploadPane({handleClose, handleNavigate, currentDirectory}) {
-  const maxFiles = 10;
-  const maxSizeInBytes = 5000 * 1024 * 2; // 5 GB
+  const maxFiles = 10000;
+  const maxSizeInMB = 5000;
+  const maxSizeInBytes = maxSizeInMB * 1024 * 1024; // 5 GB
   const [files, setFiles] = React.useState([]);
   const [fileRejections, setFileRejections] = React.useState([]);
   const [currentFile, setCurrentFile] = React.useState(null);
   const [uploadsPending, setUploadsPending] = React.useState(false);
 
   const davConfigurationContext = useDavConfigurationContext();
+  const { addUpload, updateUpload, completeUpload } = useUploadProgress();
 
   const handleRemove = useCallback((file) => {
     console.log(`Removing file ${file.name}`);
@@ -47,6 +50,10 @@ export default function DavFileUploadPane({handleClose, handleNavigate, currentD
     const targetFileName = `${currentDirectory}/${file.name}`;
     console.log(`Target file name is: ${targetFileName}`);
 
+    // Register this upload in the progress context so the toolbar indicator can track it
+    const uploadId = `${file.name}-${Date.now()}`;
+    addUpload(uploadId, file.name);
+
     // Per RFC 4918, the Overwrite header only applies to COPY/MOVE, not PUT.
     // The webdav-server library ignores it on PUT and overwrites unconditionally.
     // The correct way to detect an existing file is to call exists() first via the davClient.
@@ -57,56 +64,67 @@ export default function DavFileUploadPane({handleClose, handleNavigate, currentD
           const errMsg = `File ${file.name} already exists on the server.`;
           console.warn(errMsg);
           toaster.warning(errMsg);
+          completeUpload(uploadId, 'exists');
           handleRemove(file);
           return;
         }
 
         // Build the full PUT URL from the selected root directory's base URL.
-        // We avoid using putFileContents (which buffers the whole file via FileReader)
-        // and instead pass the File object directly as the fetch body so the browser
-        // streams the data to the server without loading it entirely into memory first.
+        // We use XMLHttpRequest instead of fetch so we can attach an upload progress
+        // listener (xhr.upload.onprogress). Passing the File object directly to
+        // xhr.send() still streams it — the browser never loads the whole file into
+        // memory before sending, exactly like fetch({ body: file }) would.
         const baseUrl = davConfigurationContext.selectedUserRootDirectory.url.replace(/\/$/, '');
         const fullUrl = `${baseUrl}${targetFileName}`.replace(/([^:])\/\/+/g, '$1/');
 
         console.log(`Streaming PUT to: ${fullUrl}`);
 
-        fetch(fullUrl, {
-          method: 'PUT',
-          // Passing the File object directly as body triggers streaming upload in the browser.
-          // The browser reads and sends the file in chunks without buffering it all into RAM.
-          body: file,
-          credentials: 'include',
-          headers: {
-            // Let the browser set Content-Type from the File's MIME type, or fall back to binary.
-            'Content-Type': file.type || 'application/octet-stream',
+        const xhr = new XMLHttpRequest();
+
+        // Progress events — fired while bytes are being sent to the server
+        xhr.upload.addEventListener('progress', (event) => {
+          if (event.lengthComputable) {
+            updateUpload(uploadId, event.loaded, event.total);
           }
-        })
-        .then(response => {
-          if (response.ok || response.status === 201 || response.status === 204) {
+        });
+
+        // Request finished (any HTTP status)
+        xhr.addEventListener('load', () => {
+          if (xhr.status >= 200 && xhr.status < 300) {
             console.log('File has been properly uploaded.');
+            completeUpload(uploadId, 'done');
           } else {
-            const errMsg = `Error while uploading ${file.name}. Server responded with status ${response.status}.`;
+            const errMsg = `Error while uploading ${file.name}. Server responded with status ${xhr.status}.`;
             console.error(errMsg);
             toaster.danger(errMsg);
+            completeUpload(uploadId, 'error');
           }
-        })
-        .finally(() => {
-          // Remove the file from the queue whatever the result is, AFTER the upload finishes
           handleRemove(file);
-        })
-        .catch(error => {
-          const errMsg = `Problem while uploading file ${targetFileName}: ${error}`;
+        });
+
+        // Network-level failure (no response at all)
+        xhr.addEventListener('error', () => {
+          const errMsg = `Network error while uploading ${file.name}.`;
           console.error(errMsg);
           toaster.danger(errMsg);
+          completeUpload(uploadId, 'error');
+          handleRemove(file);
         });
+
+        xhr.open('PUT', fullUrl);
+        xhr.withCredentials = true;  // send session cookie
+        xhr.setRequestHeader('Content-Type', file.type || 'application/octet-stream');
+        // Send the File object directly — browser streams it without buffering in RAM
+        xhr.send(file);
       })
       .catch(error => {
         const errMsg = `Could not check existence of ${file.name}: ${error}`;
         console.error(errMsg);
         toaster.danger(errMsg);
+        completeUpload(uploadId, 'error');
         handleRemove(file);
       });
-  }, [davConfigurationContext, handleRemove, currentDirectory]);
+  }, [davConfigurationContext, handleRemove, currentDirectory, addUpload, updateUpload, completeUpload]);
 
   const addFilesToUpload = (newFiles) => {    
     if (newFiles === null || newFiles.length === 0) {
@@ -146,7 +164,7 @@ export default function DavFileUploadPane({handleClose, handleNavigate, currentD
     <Pane padding={10} justifySelf="stretch" alignSelf="stretch" display="grid" justifyContent="stretch" alignItems="center">
       <FileUploader
         label="Upload Files"
-        description="You can upload up to 5 files. Files can be up to 50MB. You can upload .jpg and .pdf file formats."
+        description={`Select files or drand and drop them here. Files can be up to ${maxSizeInMB} MB. You can upload .jpg and .pdf file formats.`}
         disabled={files.length + fileRejections.length >= maxFiles}
         maxSizeInBytes={maxSizeInBytes}
         maxFiles={maxFiles}

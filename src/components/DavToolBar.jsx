@@ -10,6 +10,8 @@ import DavUserMenu from "./DavUserMenu";
 import DavUploadSlidePane from "./DavUploadSlidePane";
 import DavDisplayToolsMenu from "./DavDisplayToolsMenu";
 import DavNewFolderSlidePane from "./DavNewFolderSlidePane";
+import { UploadProgressProvider } from "./UploadProgressContext";
+import DavUploadProgressIndicator from "./DavUploadProgressIndicator";
 
 export default class DavToolBar extends Component {
     static contextType = DavConfigurationContext;
@@ -39,17 +41,24 @@ export default class DavToolBar extends Component {
     }
 
     render = () => {
-        return <Pane zIndex={1} flexShrink={0} background="tint2" display="grid" gridTemplateColumns="1fr auto" paddingBottom={10} paddingTop={10}>            
-            <DavUploadSlidePane currentDirectory={this.props.currentDirectory} handleNavigate={this.props.handleNavigate} isShown={this.state.showUploadPaneSideSheet} handleClose={this.closeFileUpload} />
-            <DavNewFolderSlidePane currentDirectory={this.props.currentDirectory} handleNavigate={this.props.handleNavigate} isShown={this.state.showNewFolderSideSheet} handleClose={this.closeNewFolder} />
+        // UploadProgressProvider wraps the entire toolbar so that both DavUploadPane
+        // (deep child) and DavUploadProgressIndicator (sibling in this pane) share the
+        // same upload-progress state without lifting it to DavExplorerView.
+        return <UploadProgressProvider>
+            <Pane zIndex={1} flexShrink={0} background="tint2" display="grid" gridTemplateColumns="1fr auto" paddingBottom={10} paddingTop={10}>
+                <DavUploadSlidePane currentDirectory={this.props.currentDirectory} handleNavigate={this.props.handleNavigate} isShown={this.state.showUploadPaneSideSheet} handleClose={this.closeFileUpload} />
+                <DavNewFolderSlidePane currentDirectory={this.props.currentDirectory} handleNavigate={this.props.handleNavigate} isShown={this.state.showNewFolderSideSheet} handleClose={this.closeNewFolder} />
 
-            <DavBreadCrumb handleNavigate={this.props.handleNavigate} currentDirectory={this.props.currentDirectory} />
-            <DavBreadCrumbMenu handleNavigate={this.props.handleNavigate} currentDirectory={this.props.currentDirectory} />
+                <DavBreadCrumb handleNavigate={this.props.handleNavigate} currentDirectory={this.props.currentDirectory} />
+                <DavBreadCrumbMenu handleNavigate={this.props.handleNavigate} currentDirectory={this.props.currentDirectory} />
 
-            <Pane justifySelf="end" display="inline-flex" alignItems="center" >
-                <DavDisplayToolsMenu handleDisplayMode={this.props.handleDisplayMode} showCreateFolderPane={this.showNewFolder} showFileUploadPane={this.showFileUpload} />
-                <DavUserMenu handleNavigate={this.props.handleNavigate} navigate={this.props.navigate} />
+                <Pane justifySelf="end" display="inline-flex" alignItems="center" >
+                    {/* Upload progress indicator — only visible when uploads are tracked */}
+                    <DavUploadProgressIndicator />
+                    <DavDisplayToolsMenu handleDisplayMode={this.props.handleDisplayMode} showCreateFolderPane={this.showNewFolder} showFileUploadPane={this.showFileUpload} />
+                    <DavUserMenu handleNavigate={this.props.handleNavigate} navigate={this.props.navigate} />
+                </Pane>
             </Pane>
-        </Pane>
+        </UploadProgressProvider>
     }
 }
