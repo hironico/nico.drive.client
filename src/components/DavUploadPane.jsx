@@ -61,8 +61,8 @@ export default function DavFileUploadPane({handleClose, handleNavigate, currentD
         .then((result) => {
           if (result) {
             console.log('File has been properly uploaded.');
-          } else {
-            console.log('Error while uploading the file. Already exists ?');
+          } else {            
+            console.error('Error while uploading the file. Already exists ?');
           }
         })
         .finally(() => {
@@ -91,7 +91,7 @@ export default function DavFileUploadPane({handleClose, handleNavigate, currentD
 
   // anytime the files queue changes, then check if something still in the queue and upload it.
   useEffect(() => {
-    console.log('something changed in files, currentFiles, and uploadOneFile');
+    console.log('something changed in queue files, currentFiles, and uploadOneFile');
     // do not remove this condition otherwise infinite loop calling this effect
     if (currentFile === null && files.length > 0) {
       console.log('CurrentFile is null and files has at least one element... Upload 1st one.');
@@ -103,6 +103,7 @@ export default function DavFileUploadPane({handleClose, handleNavigate, currentD
 
     // if we are finished then close the upload pane
     if (currentFile === null && files.length === 0 && uploadsPending) {
+      console.log('All files are sent. Closing upload pane.');
       setUploadsPending(false);
       handleClose();
       handleNavigate(currentDirectory);
