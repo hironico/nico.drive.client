@@ -1,6 +1,6 @@
 import { Component } from 'react';
 import { Navigate, useNavigate } from 'react-router';
-import { Pane, Heading, Table, Button, Dialog, TextInputField, toaster, Badge, Spinner, IconButton, ArrowLeftIcon, Switch, Label } from 'evergreen-ui';
+import { Pane, Heading, Table, Button, Dialog, TextInputField, toaster, Badge, Spinner, IconButton, ArrowLeftIcon, Switch, Label, SideSheet } from 'evergreen-ui';
 import { DavConfigurationContext } from '../AppSettings';
 
 class UserManagementView extends Component {
@@ -219,10 +219,11 @@ class UserManagementView extends Component {
                                         </Table.TextCell>
                                         <Table.TextCell>{user.rootDirectories.length}</Table.TextCell>
                                         <Table.TextCell>
-                                            <Button marginRight={8} onClick={() => this.openEditDialog(user)}>
+                                            <Button is="div" marginRight={8} onClick={() => this.openEditDialog(user)}>
                                                 Edit
                                             </Button>
                                             <Button
+                                                is="div"
                                                 intent="danger"
                                                 onClick={() => this.openDeleteDialog(user)}
                                                 disabled={user.isDefaultUser || user.username === this.context.username}
@@ -238,51 +239,72 @@ class UserManagementView extends Component {
                 </Pane>
 
                 {/* Edit User Dialog */}
-                <Dialog
+                <SideSheet
                     isShown={isEditDialogShown}
-                    title={`Edit User: ${selectedUser?.username}`}
-                    onCloseComplete={() => this.setState({ isEditDialogShown: false, selectedUser: null })}
-                    confirmLabel="Update"
-                    onConfirm={this.handleUpdateUser}
+                    onCloseComplete={() => this.setState({ isEditDialogShown: false, selectedUser: null })}                    
+                    position="bottom"                    
+                    containerProps={{
+                        display: 'flex',
+                        flex: '1',
+                        flexDirection: 'column',
+                        padding: '24px',
+                        rowGap: '16px'
+
+                    }}
                 >
-                    <TextInputField
-                        label="New Password (leave empty to keep current)"
-                        type="password"
-                        value={formData.password}
-                        onChange={(e) => this.updateFormData('password', e.target.value)}
-                    />
-                    <TextInputField
-                        label="Quota (GB)"
-                        type="number"
-                        value={formData.quota}
-                        onChange={(e) => this.updateFormData('quota', parseFloat(e.target.value))}
-                        required
-                    />
-                    <Pane marginTop={16}>
-                        <Label htmlFor="admin-switch" marginBottom={8} display="block">
-                            Administrator Privileges
-                        </Label>
-                        <Switch
-                            id="admin-switch"
-                            checked={formData.isAdministrator}
-                            onChange={(e) => this.updateFormData('isAdministrator', e.target.checked)}
-                            height={24}
-                        />
-                    </Pane>
-                </Dialog>
+                        <Heading size={600}>{`Edit User: ${selectedUser?.username}`}</Heading>
+                            <TextInputField
+                                label="New Password (leave empty to keep current)"
+                                type="password"
+                                value={formData.password}
+                                onChange={(e) => this.updateFormData('password', e.target.value)}
+                            />
+                            <TextInputField
+                                label="Quota (GB)"
+                                type="number"
+                                value={formData.quota}
+                                onChange={(e) => this.updateFormData('quota', parseFloat(e.target.value))}
+                                required
+                            />
+                            <Pane>
+                                <Label htmlFor="admin-switch" marginBottom={8} display="block">
+                                    Administrator Privileges
+                                </Label>
+                                <Switch
+                                    id="admin-switch"
+                                    checked={formData.isAdministrator}
+                                    onChange={(e) => this.updateFormData('isAdministrator', e.target.checked)}
+                                    height={24}
+                                />
+                            </Pane>
+                            <Pane marginTop={16} display="flex" flexDirection="row-reverse">
+                                <Button is="div" intent="success" appearance="primary" onClick={this.handleUpdateUser}>Save & Close</Button>
+                            </Pane>
+                </SideSheet>
 
                 {/* Delete User Dialog */}
-                <Dialog
+                <SideSheet
                     isShown={isDeleteDialogShown}
-                    title="Confirm Delete"
-                    intent="danger"
                     onCloseComplete={() => this.setState({ isDeleteDialogShown: false, selectedUser: null })}
-                    confirmLabel="Delete"
-                    onConfirm={this.handleDeleteUser}
+                    position="bottom"
+                    containerProps={{
+                        display: 'flex',
+                        flex: '1',
+                        flexDirection: 'column',
+                        padding: '24px',
+                        rowGap: '16px'
+
+                    }}                    
                 >
-                    <p>Are you sure you want to delete user <strong>{selectedUser?.username}</strong>?</p>
-                    <p>This action cannot be undone. User files will be preserved but the user will no longer be able to access them.</p>
-                </Dialog>
+                    <Heading size={600}>{`Delete user: ${selectedUser?.username}`}</Heading>
+                    <Pane>
+                        Are you sure you want to delete user <strong>{selectedUser?.username}</strong>?
+                        This action cannot be undone. User files will be preserved but the user will no longer be able to access them.
+                    </Pane>                    
+                    <Pane marginTop={16} display="flex" flexDirection="row-reverse">
+                        <Button is="div" intent="danger" appearance="primary" onClick={this.handleDeleteUser}>Delete</Button>
+                    </Pane>
+                </SideSheet>
             </Pane>
         );
     }
