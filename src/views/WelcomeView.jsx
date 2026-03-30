@@ -55,6 +55,11 @@ const WelcomeView = () => {
         );
     }
 
+    if (davContext.connectionValid) {
+        navigate('/explorer');
+        return <></>;
+    }
+
     // Show welcome view for both authenticated and non-authenticated users
     return (
         <header id="header">
