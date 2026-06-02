@@ -1,20 +1,32 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
     Popover, Pane, Text, Heading, Button, IconButton, Badge, Position,
-    CircleArrowUpIcon, TickCircleIcon, CrossIcon, BanCircleIcon,
-    Checkbox,
-    CleanIcon,
-    TrashIcon
+    CircleArrowUpIcon, TickCircleIcon, CrossIcon, BanCircleIcon
 } from "evergreen-ui";
 import { useUploadProgress } from "./UploadProgressContext";
 import ProgressBar from "./progressbar/ProgressBar";
 
 /**
  * Shows an icon in the toolbar whenever uploads are tracked.
- * Clicking the icon opens a popover with a per-file progress list.
+ * Clicking the icon opens/closes a popover with per-file progress bars.
+ *
+ * isOpen is managed as LOCAL state so that the user can freely toggle the
+ * popover. The context's isPopoverOpen is used only as a one-shot "force
+ * open" signal (e.g. when files are first queued): once consumed it is reset
+ * so it never interferes with subsequent user-driven open/close cycles.
  */
 export default function DavUploadProgressIndicator() {
-    const { uploads, clearCompleted } = useUploadProgress();
+    const { uploads, clearCompleted, isPopoverOpen, closePopover } = useUploadProgress();
+    // Local open state — the source of truth for the popover's visibility
+    const [isOpen, setIsOpen] = useState(false);
+
+    // Consume the "force open" signal from context once, then reset it
+    useEffect(() => {
+        if (isPopoverOpen) {
+            setIsOpen(true);
+            closePopover(); // reset signal so it won't interfere again
+        }
+    }, [isPopoverOpen, closePopover]);
 
     if (uploads.length === 0) {
         return null;
@@ -49,6 +61,8 @@ export default function DavUploadProgressIndicator() {
     return (
         <Popover
             position={Position.BOTTOM_RIGHT}
+            isShown={isOpen}
+            onClose={() => setIsOpen(false)}
             content={
                 <Pane padding={16} minWidth={340} maxWidth={380}>
                     <Pane display="flex" justifyContent="space-between" alignItems="center" marginBottom={12}>
@@ -57,7 +71,7 @@ export default function DavUploadProgressIndicator() {
                                 ? `Uploading ${activeCount} file${activeCount > 1 ? 's' : ''}…`
                                 : 'Uploads complete'}
                         </Heading>
-                        <IconButton icon={TrashIcon} intent="default" appearance="minimal" size="small" onClick={clearCompleted} />
+                        <Button size="small" onClick={clearCompleted}>Clear done</Button>
                     </Pane>
 
                     {uploads.map(upload => (
@@ -100,12 +114,19 @@ export default function DavUploadProgressIndicator() {
                 </Pane>
             }
         >
-            {/* Trigger: icon button with an active-count badge */}
-            <Pane position="relative" display="inline-flex" alignItems="center" marginRight={10}>
+            {/* Trigger button — clicking toggles the local open state */}
+            <Pane
+                position="relative"
+                display="inline-flex"
+                alignItems="center"
+                cursor="pointer"
+                marginRight={5}
+                onClick={(e) => { e.stopPropagation(); setIsOpen(o => !o); }}
+            >
                 <IconButton
                     icon={CircleArrowUpIcon}
-                    intent={activeCount > 0 ? 'warning' : 'success'}
                     appearance="default"
+                    intent={activeCount > 0 ? 'warning' : 'success'}
                     title="Upload progress"
                 />
                 {activeCount > 0 && (
