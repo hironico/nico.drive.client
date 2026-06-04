@@ -16,6 +16,8 @@ export default class Image extends RegularFile {
         this.state = {
             thumb: null
         }
+        // Holds the current thumb_ready listener so we can clean it up
+        this._thumbReadyHandler = null;
     }
 
     componentDidMount = () => {
@@ -32,7 +34,22 @@ export default class Image extends RegularFile {
         }
     }
 
+    componentWillUnmount = () => {
+        this._removeThumbReadyListener();
+    }
+
+    _removeThumbReadyListener = () => {
+        if (this._thumbReadyHandler) {
+            const socket = getSocket();
+            socket.off('thumb_ready', this._thumbReadyHandler);
+            this._thumbReadyHandler = null;
+        }
+    }
+
     generateThumb = () => {
+        // Clean up any pending listener from a previous attempt before starting fresh
+        this._removeThumbReadyListener();
+
         const authHeader = this.context.selectedUserRootDirectory.davClient.getHeaders()['Authorization'];
 
         let width;
@@ -98,14 +115,38 @@ export default class Image extends RegularFile {
                         requestId: requestId
                     });
 
-                    // Listen once for the thumb_ready notification from the server
-                    socket.once('thumb_ready', (notification) => {
-                        console.log('Socket.io: thumb_ready received:', notification);
-                        // Re-fetch the thumb now that it's generated
-                        that.generateThumb();
-                    });
-
                     console.log('Joined thumb room:', roomName);
+
+                    // Build a named, filtered listener so we only react to the notification
+                    // that belongs to THIS specific image. All Image components share the
+                    // same socket singleton; without filtering, a single thumb_ready event
+                    // would trigger every waiting component regardless of which image it is for.
+                    const relativeFilename = req.filename.startsWith('/')
+                        ? req.filename.slice(1)
+                        : req.filename;
+
+                    that._thumbReadyHandler = (notification) => {
+                        // Match on all identifying fields so we don't react to notifications
+                        // meant for sibling Image components.
+                        const filenameMatch =
+                            notification.filename === req.filename ||
+                            notification.filename.endsWith('/' + relativeFilename) ||
+                            notification.filename.endsWith('\\' + relativeFilename);
+
+                        if (
+                            notification.username === req.username &&
+                            notification.homeDir === req.homeDir &&
+                            notification.requestId === requestId &&
+                            filenameMatch
+                        ) {
+                            console.log('Socket.io: thumb_ready received for this image:', notification);
+                            that._removeThumbReadyListener();
+                            that.generateThumb();
+                        }
+                    };
+
+                    socket.on('thumb_ready', that._thumbReadyHandler);
+
                 } else {
                     res.blob()
                         .then(res => {
