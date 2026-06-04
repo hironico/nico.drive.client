@@ -4,6 +4,7 @@ import { Pane, Spinner, Alert } from 'evergreen-ui';
 import RegularFile from './RegularFile';
 
 import { DavConfigurationContext } from '../AppSettings';
+import { getSocket, connectSocket } from '../lib/socketio';
 
 import '../views/DavExplorerView.css';
 
@@ -84,10 +85,27 @@ export default class Image extends RegularFile {
         })
             .then(res => {
                 if (res.status === 202) {
-                    console.log('Image thumb is being gnerated. LOCKED by server. Trying again in 5 sec.');
-                    setTimeout(() => {
-                        this.generateThumb();
-                    }, 5000);
+                    console.log('Image thumb is being generated. Server locked. Waiting for socket.io notification...');
+
+                    // Connect the socket and join the thumb room
+                    const socket = connectSocket();
+                    const requestId = `${width}x${height}-${resizeFit}`;
+                    const roomName = `thumb_${req.username}_${req.homeDir}_${requestId}`;
+
+                    socket.emit('join_thumb_room', {
+                        username: req.username,
+                        homeDir: req.homeDir,
+                        requestId: requestId
+                    });
+
+                    // Listen once for the thumb_ready notification from the server
+                    socket.once('thumb_ready', (notification) => {
+                        console.log('Socket.io: thumb_ready received:', notification);
+                        // Re-fetch the thumb now that it's generated
+                        that.generateThumb();
+                    });
+
+                    console.log('Joined thumb room:', roomName);
                 } else {
                     res.blob()
                         .then(res => {
