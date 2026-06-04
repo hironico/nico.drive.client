@@ -87,6 +87,14 @@ export default defineConfig({
         cookieDomainRewrite: 'localhost',
         cookiePathRewrite: '/',
       },
+      // WebSocket proxy for Socket.IO — needed in dev mode so the client
+      // can connect via the Vite dev server (port 5173) to the backend.
+      '/socket.io': {
+        target: 'https://localhost:3443',
+        changeOrigin: true,
+        secure: false,
+        ws: true,
+      },
     },
   },
 })
