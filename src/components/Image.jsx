@@ -1,5 +1,5 @@
 
-import { Pane, Spinner, Alert } from 'evergreen-ui';
+import { Pane, Spinner, Alert, DocumentIcon } from 'evergreen-ui';
 
 import RegularFile from './RegularFile';
 
@@ -14,7 +14,8 @@ export default class Image extends RegularFile {
     constructor() {
         super();
         this.state = {
-            thumb: null
+            thumb: null,
+            thumbError: null
         }
         // Holds the current thumb_ready listener so we can clean it up
         this._thumbReadyHandler = null;
@@ -22,14 +23,16 @@ export default class Image extends RegularFile {
 
     componentDidMount = () => {
         this.setState({
-            thumb: null
+            thumb: null,
+            thumbError: null
         }, () => this.generateThumb());
     }
 
     componentDidUpdate = (prevProps, prevState) => {
         if (JSON.stringify(prevProps.fileItem) !== JSON.stringify(this.props.fileItem)) {
             this.setState({
-                thumb: null
+                thumb: null,
+                thumbError: null
             }, () => this.generateThumb());
         }
     }
@@ -139,9 +142,16 @@ export default class Image extends RegularFile {
                             notification.requestId === requestId &&
                             filenameMatch
                         ) {
-                            console.log('Socket.io: thumb_ready received for this image:', notification);
                             that._removeThumbReadyListener();
-                            that.generateThumb();
+
+                            if (notification.status === 'error') {
+                                // Thumb generation failed server-side — stop retrying and show error
+                                console.error('Socket.io: thumb generation failed for this image:', notification.error);
+                                that.setState({ thumbError: notification.error || 'Thumbnail generation failed.' });
+                            } else {
+                                console.log('Socket.io: thumb_ready received for this image:', notification);
+                                that.generateThumb();
+                            }
                         }
                     };
 
@@ -174,7 +184,11 @@ export default class Image extends RegularFile {
     }
 
     renderGridIcon = () => {
-        if (this.state.thumb !== null) {
+        if (this.state.thumbError !== null) {
+            return <Pane display="flex" alignItems="center" justifyContent="center" padding={4}>
+                <Alert intent="warning" title="Preview unavailable" />
+            </Pane>
+        } else if (this.state.thumb !== null) {
             const imgUrl = 'url(' + this.state.thumb + ')';
             const styleThumb = {
                 backgroundImage: imgUrl,
@@ -192,7 +206,12 @@ export default class Image extends RegularFile {
     }
 
     renderTableIcon = () => {
-        if (this.state.thumb !== null) {
+        if (this.state.thumbError !== null) {
+            // In compact table view fall back to the generic document icon
+            // (cannot use super.renderTableIcon() — arrow-function class properties
+            //  are instance-assigned and not reachable via the prototype chain)
+            return <DocumentIcon size={32} alignSelf="center" />;
+        } else if (this.state.thumb !== null) {
             const imgUrl = 'url(' + this.state.thumb + ')';
             const styleThumb = {
                 backgroundImage: imgUrl,
@@ -210,7 +229,15 @@ export default class Image extends RegularFile {
     }
 
     renderPhoto = () => {
-        if (this.state.thumb !== null) {
+        if (this.state.thumbError !== null) {
+            return <Pane display="flex" alignItems="center" justifyContent="center" height="100%">
+                <Alert
+                    intent="warning"
+                    title="Preview unavailable"
+                    marginBottom={32}
+                >{this.state.thumbError}</Alert>
+            </Pane>
+        } else if (this.state.thumb !== null) {
             const imgUrl = 'url(' + this.state.thumb + ')';
             const styleThumb = {
                 backgroundImage: imgUrl,
